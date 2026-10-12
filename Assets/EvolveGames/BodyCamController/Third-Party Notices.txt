@@ -1,0 +1,12 @@
+﻿This asset using only Legacy Particle Pack by Unity Technologies
+https://assetstore.unity.com/packages/vfx/particles/legacy-particle-pack-73777
+
+Roboto Fonts
+This project includes the Roboto fonts (e.g., Roboto Thin, Roboto Condensed Bold) developed by Google.
+
+License: Apache License, Version 2.0
+You may obtain a copy of the license at http://www.apache.org/licenses/LICENSE-2.0
+The fonts are distributed on an "AS IS" basis, without warranties or conditions of any kind, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+
+FPS Hands by https://sketchfab.com/ccransh

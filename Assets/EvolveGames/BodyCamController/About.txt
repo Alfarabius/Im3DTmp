@@ -1,0 +1,103 @@
+﻿╔═╗╔═╗╔═╗  ╔╗ ╔═╗╔╦╗╦ ╦╔═╗╔═╗╔╦╗  ╔═╗┌─┐┌┐┌┌┬┐┬─┐┌─┐┬  ┬  ┌─┐┬─┐
+╠╣ ╠═╝╚═╗  ╠╩╗║ ║ ║║╚╦╝║  ╠═╣║║║  ║  │ ││││ │ ├┬┘│ ││  │  ├┤ ├┬┘
+╚  ╩  ╚═╝  ╚═╝╚═╝═╩╝ ╩ ╚═╝╩ ╩╩ ╩  ╚═╝└─┘┘└┘ ┴ ┴└─└─┘┴─┘┴─┘└─┘┴└─
+												  by EvolveGames
+
+This asset provides functionalities for player control with effective movement and interaction in the game environment.
+It includes scripts for handling movement, shooting mechanics, camera recoil, and other features necessary for FPS games.
+
+Player Controls:
+Movement: Use W, A, S, D keys to move.
+Sprint: Hold the Left Shift key to sprint.
+Shooting: Left-click to shoot, right-click to aim.
+Weapon Switching: Scroll the mouse wheel to switch between weapons.
+Reload Weapon: Use R Key.
+
+Using Scripts:
+Scripts are attached to various components of the prefabs. You can modify their properties in the Inspector to suit your needs.
+
+Table of Contents:
+-	BulletImpact
+-	CameraRecoil
+-	EventTrigger
+-	GunManager
+-	HandsSmooth
+-	HealthEnemy
+-	ItemChange
+-	MoveBob
+-	PlayerMovement
+-	Target
+-	WallHide
+
+
+[--BulletImpact--]
+Description: This script specifies the types of hits that can occur.
+Usage: Assign the script to the object to be hit.
+Select the hit type in the inspector (e.g. Metal, Blood, Sand, etc.).
+
+
+[--CameraRecoil--]
+Description: Rrovides a camera recoil effect when shooting.
+Usage: Add a script to the camera.
+Set the recoil values (recoilX, recoilY, recoilZ).
+Call the FireRecoil() method when firing.
+
+
+[--EventTrigger--]
+Description: Allows you to respond to input events using UnityEvent.
+Usage: Assign a script to an object with a collision.
+In the inspector, assign methods to be called on input or output.
+
+
+[--GunManager--]
+Description: Manages the firing and reloading of the gun.
+Usage: Add a script to the gun object.
+Assign animators, texts and other reference objects.
+Make sure GunRay is set up correctly to detect hits.
+
+
+[--HandsSmooth--]
+Description: Ensures smooth hand movement as the player moves.
+Usage: Assign a script to a hand object.
+Adjust the values to set the smoothness of movement and rotation.
+
+
+[--HealthEnemy--]
+Description: Manages the health of enemy characters.
+Usage: Assign a script to an enemy object.
+Call the Hit(int count) method to deal damage.
+
+
+[--ItemChange--]
+Description: Allows you to change the player's equipment using the mouse wheel.
+Usage: Assign a script to an object that manages equipment.
+Add a list of items to be activated.
+
+
+[--MoveBob--]
+Description: Adds a "head bobbing" effect when the player moves.
+Usage: Assign the script to the player object.
+Adjust the parameters for intensity and frequency of movement.
+
+
+[--PlayerMovement--]
+Popis: Řídí pohyb hráče v prostředí.
+Použití: Přiřaďte skript k hráčovu objektu.
+Upravte rychlost a další parametry pohybu.
+
+
+[--Target--]
+Description: Allows you to change the material of the target object when hit.
+Usage: Assign a script to the target object.
+Call the Died() method to change the material.
+
+
+[--WallHide--]
+Description: The script allows you to hide the player's hands behind walls.
+Usage: Assign the script to a hand object.
+Set the initial detection and other parameters.
+
+Enjoy and make ;)
+
+if you need any further help please feel free to contact us on our discord: 
+https://discord.gg/evolve-games-server-903356031244042260

@@ -246,7 +246,7 @@
                     "id": "51660234-f521-439a-a54c-c68d44b45954",
                     "path": "<Mouse>/delta",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=0.6,y=0.6)",
                     "groups": "",
                     "action": "Look",
                     "isComposite": false,

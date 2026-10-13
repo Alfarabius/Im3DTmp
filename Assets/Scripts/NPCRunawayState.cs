@@ -12,7 +12,8 @@ public class NPCRunawayState : MonoBehaviour, ICharacterState
     private NPCBrain _brain;
     private float _safeTimer;
     [SerializeField] private float timeToFeelSafe = 5f; 
-    [SerializeField] private float runDistance = 15f;   
+    [SerializeField] private float runDistance = 15f;
+    [SerializeField] private NPCVoiceController voiceController;
 
     public Vector3 ThreatPosition { get; set; }
     
@@ -41,6 +42,7 @@ public class NPCRunawayState : MonoBehaviour, ICharacterState
         _brain.Agent.speed = runSpeed;
         
         _safeTimer = timeToFeelSafe;
+        voiceController.TryPanicScream();
         CalculateEscapeRoute();
     }
 

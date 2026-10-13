@@ -16,5 +16,7 @@ public interface ITargetable
     TargetCondition Condition { get; }
     
     // Враг передает вероятность попадания, а сама цель решает, сменится ли ее состояние
-    void TryApplyHit(float hitChance); 
+    void TryApplyHit(float hitChance);
+
+    bool IsPlayer();
 }

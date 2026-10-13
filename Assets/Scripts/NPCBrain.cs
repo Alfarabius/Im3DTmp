@@ -117,7 +117,7 @@ public class NPCBrain : MonoBehaviour, ITargetable
         }
     }
 
-    private void HandleGunshot(Vector3 shooterPosition)
+    private void HandleGunshot(Vector3 shooterPosition, Vector3 shootDirection)
     {
         if (Condition == TargetCondition.HeavyWounded || Condition == TargetCondition.Dead) return;
 
@@ -210,6 +210,8 @@ public class NPCBrain : MonoBehaviour, ITargetable
             ChangeState(GetComponent<NPCStressedState>());
         }
     }
+    
+    public bool IsPlayer() => false;
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()

@@ -18,6 +18,8 @@ public class PlayerBrain : MonoBehaviour, ITargetable
 
     private ICharacterState _currentState;
     
+    public event System.Action OnHitReceived;
+    
     [field: Header("Targeting")]
     [field: SerializeField] public float TargetWeight { get; set; } = 1.5f;
 
@@ -58,6 +60,8 @@ public class PlayerBrain : MonoBehaviour, ITargetable
 
     private void ApplyHit()
     {
+        OnHitReceived?.Invoke();
+        
         switch (Condition)
         {
             case TargetCondition.Normal:
@@ -75,4 +79,20 @@ public class PlayerBrain : MonoBehaviour, ITargetable
                 break;
         }
     }
+
+    public void Heal()
+    {
+        if (Condition == TargetCondition.Dead || Condition == TargetCondition.Normal) return;
+
+        Condition = TargetCondition.Normal;
+        CurrentStamina = MaxStamina;
+        Anim.SetBool("IsWounded", false);
+        
+        if (_currentState is PlayerHeavyWoundedState)
+        {
+            ChangeState(GetComponent<PlayerActiveState>());
+        }
+    }
+
+    public bool IsPlayer() => true;
 }

@@ -10,12 +10,15 @@ public class PatrolState : MonoBehaviour, ICharacterState
     [Tooltip("Скорость перемещения при патрулировании")] [SerializeField] private float patrolSpeed = 2f;
     [Tooltip("Скорость поворота при осмотре (градусы в сек.)")] [SerializeField] private float rotationSpeed = 120f;
     [Tooltip("Интервал между проверками видимости целей")] [SerializeField] private float scanInterval = 0.3f;
-    [Tooltip("Массив расставленных вручную точек маршрута")] [SerializeField] private Transform[] patrolPoints;
+    
     
     [Header("Смена приоритета (Поиск игрока)")]
     [Tooltip("Время до принудительного перехода к ближайшей к игроку точке")] [SerializeField] private float timeBeforeHunting = 10f;
     [Tooltip("Ссылка на трансформ игрока")] [SerializeField] private Transform playerTransform;
-
+    
+    [SerializeField] private Transform routeRoot;
+    private Transform[] _patrolPoints;
+    
     private EnemyBrain _brain;
     private float _scanTimer;
     private float _timeInState;
@@ -30,11 +33,22 @@ public class PatrolState : MonoBehaviour, ICharacterState
     private void Awake()
     {
         _brain = GetComponent<EnemyBrain>();
+        
+        if (routeRoot != null)
+        {
+            int childCount = routeRoot.transform.childCount;
+            _patrolPoints = new Transform[childCount];
+            
+            for (int i = 0; i < childCount; i++)
+            {
+                _patrolPoints[i] = routeRoot.transform.GetChild(i);
+            }
+        }
     }
 
     private void Start()
     {
-        if (patrolPoints != null && patrolPoints.Length > 0)
+        if (_patrolPoints != null && _patrolPoints.Length > 0)
         {
             StartLookingAround();
         }
@@ -54,7 +68,7 @@ public class PatrolState : MonoBehaviour, ICharacterState
         
         // Если мы возвращаемся из боя (осмотр из Start уже прошел), 
         // сразу выбираем новую точку, чтобы уйти с места убийства
-        if (!_isLookingAround && patrolPoints != null && patrolPoints.Length > 0)
+        if (!_isLookingAround && _patrolPoints != null && _patrolPoints.Length > 0)
         {
             SelectNextWeightedPoint();
         }
@@ -66,7 +80,7 @@ public class PatrolState : MonoBehaviour, ICharacterState
         _brain.Anim.SetFloat("Speed", _brain.Agent.velocity.magnitude);
         _brain.RegenStamina();
 
-        if (patrolPoints != null && patrolPoints.Length > 0)
+        if (_patrolPoints != null && _patrolPoints.Length > 0)
         {
             // Если враг крутится - блокируем остальную логику движения
             if (_isLookingAround)
@@ -216,11 +230,11 @@ public class PatrolState : MonoBehaviour, ICharacterState
     private void ResetUnvisitedPoints()
     {
         _unvisitedPoints.Clear();
-        for (int i = 0; i < patrolPoints.Length; i++)
+        for (int i = 0; i < _patrolPoints.Length; i++)
         {
-            if (patrolPoints[i] != null)
+            if (_patrolPoints[i] != null)
             {
-                _unvisitedPoints.Add(patrolPoints[i]);
+                _unvisitedPoints.Add(_patrolPoints[i]);
             }
         }
     }
@@ -232,9 +246,9 @@ public class PatrolState : MonoBehaviour, ICharacterState
         Transform closestPoint = null;
         float minDistance = float.MaxValue;
 
-        for (int i = 0; i < patrolPoints.Length; i++)
+        for (int i = 0; i < _patrolPoints.Length; i++)
         {
-            Transform point = patrolPoints[i];
+            Transform point = _patrolPoints[i];
             if (point == null) continue;
 
             float distance = Vector3.Distance(point.position, playerTransform.position);

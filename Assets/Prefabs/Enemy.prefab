@@ -54,7 +54,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBrain
   <Audio>k__BackingField: {fileID: 7460722045668695463}
   <ShootSound>k__BackingField: {fileID: 8300000, guid: 21d70ec6dacc9304984962225d7ae0a2, type: 3}
-  <MaxStamina>k__BackingField: 100
+  <MaxStamina>k__BackingField: 150
   staminaDrainRate: 15
   staminaRegenRate: 10
   visionRadius: 35
@@ -85,28 +85,9 @@ MonoBehaviour:
   patrolSpeed: 3
   rotationSpeed: 120
   scanInterval: 0.3
-  patrolPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  timeBeforeHunting: 10
+  timeBeforeHunting: 5
   playerTransform: {fileID: 0}
+  routeRoot: {fileID: 0}
 --- !u!114 &3766673632966218405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,7 +102,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ChaseState
   chaseRunSpeed: 5
   exhaustedWalkSpeed: 2
-  targetMemoryTime: 15
+  targetMemoryTime: 5
+  maxInvestigationTime: 3
 --- !u!114 &8911663346031397007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,7 +121,7 @@ MonoBehaviour:
   rotationSpeed: 10
   fireAngle: 15
   timeBetweenShots: 2
-  hitProbability: 0.6
+  hitProbability: 0.7
 --- !u!136 &8755355164475993485
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -81,7 +81,6 @@ public class AttackState : MonoBehaviour, ICharacterState
             {
                 _brain.Audio.PlayOneShot(_brain.ShootSound);
             }
-            GlobalAudioEvents.OnGunshotFired?.Invoke(transform.position);
 
             // Формирование физического луча выстрела
             Vector3 origin = transform.position + _brain.EyeOffset;
@@ -90,13 +89,19 @@ public class AttackState : MonoBehaviour, ICharacterState
             float maxDist = Vector3.Distance(origin, targetPos) + 2f; 
             LayerMask hitMask = _brain.TargetLayers | _brain.ObstacleLayer;
             
+            // Вызов события перенесен сюда для передачи вектора выстрела
+            GlobalAudioEvents.OnGunshotFired?.Invoke(origin, shootDir);
+
             // Нанесение урона первому объекту на траектории пули
             if (Physics.Raycast(origin, shootDir, out RaycastHit hit, maxDist, hitMask))
             {
                 var hitTarget = hit.collider.GetComponent<ITargetable>();
                 if (hitTarget != null)
                 {
-                    hitTarget.TryApplyHit(hitProbability);
+                    if (hitTarget.IsPlayer())
+                        hitTarget.TryApplyHit(hitProbability - 0.2f);
+                    else
+                        hitTarget.TryApplyHit(hitProbability);
                     
                     if (hitTarget.Condition == TargetCondition.Dead || hitTarget.Condition == TargetCondition.HeavyWounded)
                     {

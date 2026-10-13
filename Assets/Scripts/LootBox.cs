@@ -4,35 +4,27 @@ using UnityEngine.InputSystem;
 public class LootBox : MonoBehaviour
 {
     [Header("Настройки взаимодействия")]
-    [Tooltip("Ссылка на действие взаимодействия (Action из New Input System)")]
-    [SerializeField] private InputActionReference interactAction;
-    [Tooltip("Слой игрока для проверки (выбери слой Player)")]
-    [SerializeField] private LayerMask playerLayer;
+    [Tooltip("Ссылка на действие взаимодействия (Action из New Input System)")] [SerializeField] private InputActionReference interactAction;
+    [Tooltip("Слой игрока для проверки (выбери слой Player)")] [SerializeField] private LayerMask playerLayer;
     
     [Header("Визуал и UI")]
-    [Tooltip("Ссылка на UI подсказку (например, иконка F), которая лежит внутри коробки")]
-    [SerializeField] private GameObject promptUI;
-    [Tooltip("Рендерер коробки для управления свечением")]
-    [SerializeField] private MeshRenderer boxRenderer;
+    [Tooltip("Ссылка на UI подсказку (например, иконка F), которая лежит внутри коробки")] [SerializeField] private GameObject promptUI;
+    [Tooltip("Рендерер коробки для управления свечением")] [SerializeField] private MeshRenderer boxRenderer;
     
     [Header("Свечение (Emission)")]
-    [Tooltip("Базовый цвет свечения (HDR)")]
-    [SerializeField] private Color emissionColor = Color.yellow;
-    [Tooltip("Скорость пульсации")]
-    [SerializeField] private float pulseSpeed = 2f;
-    [Tooltip("Максимальная яркость свечения")]
-    [SerializeField] private float maxEmissionIntensity = 2f;
+    [Tooltip("Базовый цвет свечения (HDR)")] [SerializeField] private Color emissionColor = Color.yellow;
+    [Tooltip("Скорость пульсации")] [SerializeField] private float pulseSpeed = 2f;
+    [Tooltip("Максимальная яркость свечения")] [SerializeField] private float maxEmissionIntensity = 2f;
 
     [Header("Лут")]
-    [Tooltip("Префаб лута, который появится при открытии")]
-    [SerializeField] private GameObject lootPrefab;
-    [Tooltip("Точка спавна лута (можно оставить пустой, тогда заспавнится над коробкой)")]
-    [SerializeField] private Transform spawnPoint;
+    [Tooltip("Префаб лута, который появится при открытии")] [SerializeField] private GameObject lootPrefab;
+    [Tooltip("Точка спавна лута (можно оставить пустой, тогда заспавнится над коробкой)")] [SerializeField] private Transform spawnPoint;
 
     private MaterialPropertyBlock _propBlock;
     private bool _isPlayerInZone;
     private bool _isOpened;
     private Collider _triggerCollider;
+    private PlayerBrain _playerBrain;
 
     private void Awake()
     {
@@ -77,6 +69,8 @@ public class LootBox : MonoBehaviour
         if (_isOpened || ((1 << other.gameObject.layer) & playerLayer) == 0) return;
 
         _isPlayerInZone = true;
+        other.TryGetComponent(out _playerBrain);
+        
         if (promptUI != null) promptUI.SetActive(true);
         
         // Фаза фокуса: Фиксируем свечение на максимуме
@@ -88,6 +82,8 @@ public class LootBox : MonoBehaviour
         if (_isOpened || ((1 << other.gameObject.layer) & playerLayer) == 0) return;
 
         _isPlayerInZone = false;
+        _playerBrain = null;
+        
         if (promptUI != null) promptUI.SetActive(false);
     }
 
@@ -105,6 +101,12 @@ public class LootBox : MonoBehaviour
         
         // Отключаем свечение навсегда
         SetEmission(Color.black);
+
+        // Лечение игрока при открытии
+        if (_playerBrain != null)
+        {
+            _playerBrain.Heal();
+        }
 
         Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : transform.position + Vector3.up;
         if (lootPrefab != null)

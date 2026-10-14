@@ -51138,6 +51138,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: sfxMixerGroup
+      value: 
+      objectReference: {fileID: -4502576610630677228, guid: ddb28457edbc91f48946fc13af951299, type: 2}
+    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
       propertyPath: postProcessVolume
       value: 
       objectReference: {fileID: 832575518}

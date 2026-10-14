@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using Unity.Cinemachine;
+using UnityEngine.Audio;
 
 [RequireComponent(typeof(PlayerBrain))]
 [RequireComponent(typeof(CinemachineImpulseSource))]
@@ -12,7 +13,8 @@ public class PlayerDamageEffects : MonoBehaviour
     [SerializeField] private AudioSource audioSource2D; 
     [SerializeField] private AudioClip nearMissSound;
     [SerializeField] private AudioClip hitSound;
-
+    [SerializeField] private AudioMixerGroup sfxMixerGroup;
+    
     [Header("Настройки промаха (Near Miss)")]
     [SerializeField] private float nearMissRadius = 2f;
     [SerializeField] private float vignetteMissIntensity = 0.4f;
@@ -128,6 +130,13 @@ public class PlayerDamageEffects : MonoBehaviour
         src.rolloffMode = AudioRolloffMode.Linear;
         src.minDistance = 1f;
         src.maxDistance = 20f;
+        
+        // Направление звука в заданный канал AudioMixer
+        if (sfxMixerGroup != null)
+        {
+            src.outputAudioMixerGroup = sfxMixerGroup;
+        }
+        
         src.Play();
         
         Destroy(soundObj, nearMissSound.length + 0.1f);

@@ -95,6 +95,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "1fb85595-32d4-4b21-b9df-203e664dc79a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -246,7 +255,7 @@
                     "id": "51660234-f521-439a-a54c-c68d44b45954",
                     "path": "<Mouse>/delta",
                     "interactions": "",
-                    "processors": "ScaleVector2(x=0.6,y=0.6)",
+                    "processors": "ScaleVector2",
                     "groups": "",
                     "action": "Look",
                     "isComposite": false,
@@ -260,6 +269,67 @@
                     "processors": "",
                     "groups": "",
                     "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "71197cc0-e1b2-4d5b-ab00-66809c2ada7a",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6b53506a-febd-4d3c-9385-79c44249e9d3",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "UI",
+            "id": "cc2137c6-80b2-4805-b72e-61a262d1d0ba",
+            "actions": [
+                {
+                    "name": "Resume",
+                    "type": "Button",
+                    "id": "40a55a04-2392-4245-bfc2-da8264cd85c0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1550ed06-f056-4ebb-a453-4a1fa25356eb",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Resume",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "32127974-5613-4386-b1ce-6202f70324a8",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Resume",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

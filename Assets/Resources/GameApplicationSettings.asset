@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a7fb427b41c42ac90afe9d13105df72, type: 3}
+  m_Name: GameApplicationSettings
+  m_EditorClassIdentifier:
+  editorOverrideLang: ru
+  russianTable: {fileID: 11400000, guid: 04b751eadc1843baba68feca41f8ebd7, type: 2}
+  englishTable: {fileID: 11400000, guid: b041270235ca479ba512c0c1ed1f76a9, type: 2}
+  interfaceFont: {fileID: 12800000, guid: cd8575aadbf77854a809e76321bb6b1d, type: 3}

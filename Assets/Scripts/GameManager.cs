@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -59,13 +58,11 @@ public class GameManager : MonoBehaviour
         
         if (isWin)
         {
-            Debug.Log("Победа! Перезагрузка сцены...");
+            GameSessionController.CompleteGame();
         }
         else
         {
-            Debug.Log("Поражение! Перезагрузка сцены...");
+            GameSessionController.RestartGame();
         }
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

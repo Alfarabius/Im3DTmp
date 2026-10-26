@@ -1,0 +1,6 @@
+{
+    "name": "Game.Application.EditorTests",
+    "references": ["Game.Application", "Unity.Localization", "Unity.TextMeshPro"],
+    "includePlatforms": ["Editor"],
+    "optionalUnityReferences": ["TestAssemblies"]
+}

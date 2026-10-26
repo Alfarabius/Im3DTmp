@@ -2570,6 +2570,7 @@ GameObject:
   - component: {fileID: 101251228}
   - component: {fileID: 101251230}
   - component: {fileID: 101251229}
+  - component: {fileID: 8700000000000000001}
   m_Layer: 5
   m_Name: Item Label
   m_TagString: Untagged
@@ -8880,6 +8881,7 @@ GameObject:
   - component: {fileID: 416804605}
   - component: {fileID: 416804607}
   - component: {fileID: 416804606}
+  - component: {fileID: 8700000000000000002}
   m_Layer: 5
   m_Name: Volume Text (TMP) (1)
   m_TagString: Untagged
@@ -9635,6 +9637,7 @@ GameObject:
   - component: {fileID: 435449457}
   - component: {fileID: 435449459}
   - component: {fileID: 435449458}
+  - component: {fileID: 8700000000000000003}
   m_Layer: 5
   m_Name: Volume Text (TMP) (3)
   m_TagString: Untagged
@@ -31094,6 +31097,7 @@ GameObject:
   - component: {fileID: 1399718023}
   - component: {fileID: 1399718025}
   - component: {fileID: 1399718024}
+  - component: {fileID: 8700000000000000004}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -31485,6 +31489,7 @@ GameObject:
   - component: {fileID: 1403900729}
   - component: {fileID: 1403900731}
   - component: {fileID: 1403900730}
+  - component: {fileID: 8700000000000000005}
   m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
@@ -32607,6 +32612,7 @@ GameObject:
   - component: {fileID: 1422910019}
   - component: {fileID: 1422910021}
   - component: {fileID: 1422910020}
+  - component: {fileID: 8700000000000000006}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -33105,6 +33111,7 @@ GameObject:
   - component: {fileID: 1432555434}
   - component: {fileID: 1432555436}
   - component: {fileID: 1432555435}
+  - component: {fileID: 8700000000000000007}
   m_Layer: 5
   m_Name: Mouse Sensitivity Text (TMP)
   m_TagString: Untagged
@@ -39730,6 +39737,7 @@ GameObject:
   - component: {fileID: 1692850384}
   - component: {fileID: 1692850386}
   - component: {fileID: 1692850385}
+  - component: {fileID: 8700000000000000008}
   m_Layer: 5
   m_Name: ResolutionText (TMP) (1)
   m_TagString: Untagged
@@ -41264,6 +41272,7 @@ GameObject:
   - component: {fileID: 1743444850}
   - component: {fileID: 1743444852}
   - component: {fileID: 1743444851}
+  - component: {fileID: 8700000000000000009}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -41837,6 +41846,7 @@ GameObject:
   - component: {fileID: 1774180939}
   - component: {fileID: 1774180941}
   - component: {fileID: 1774180940}
+  - component: {fileID: 8700000000000000010}
   m_Layer: 5
   m_Name: Volume Text (TMP) (2)
   m_TagString: Untagged
@@ -43201,6 +43211,7 @@ GameObject:
   - component: {fileID: 1820711312}
   - component: {fileID: 1820711314}
   - component: {fileID: 1820711313}
+  - component: {fileID: 8700000000000000011}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -44157,6 +44168,7 @@ GameObject:
   - component: {fileID: 1843778805}
   - component: {fileID: 1843778807}
   - component: {fileID: 1843778806}
+  - component: {fileID: 8700000000000000012}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -46771,6 +46783,7 @@ GameObject:
   - component: {fileID: 1980132643}
   - component: {fileID: 1980132645}
   - component: {fileID: 1980132644}
+  - component: {fileID: 8700000000000000013}
   m_Layer: 5
   m_Name: LanguageTMP
   m_TagString: Untagged
@@ -49428,6 +49441,7 @@ GameObject:
   - component: {fileID: 2095612184}
   - component: {fileID: 2095612186}
   - component: {fileID: 2095612185}
+  - component: {fileID: 8700000000000000014}
   m_Layer: 5
   m_Name: Volume Text (TMP) (2)
   m_TagString: Untagged
@@ -51435,3 +51449,199 @@ SceneRoots:
   - {fileID: 1317534679}
   - {fileID: 1163827651}
   - {fileID: 1008532147}
+--- !u!114 &8700000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101251227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: ""
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 416804604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "settings.volume"
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435449456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "settings.sounds"
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399718022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "menu.resume"
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1403900728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: ""
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422910018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "menu.restart"
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432555433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "settings.mouse_sensitivity"
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1692850383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "settings.resolution"
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743444849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "language.english"
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774180938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "settings.master_volume"
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820711311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "menu.quit"
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843778804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "language.russian"
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1980132642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "settings.language"
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2095612183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "settings.ambient_volume"
+  bindingAction: {fileID: 0}

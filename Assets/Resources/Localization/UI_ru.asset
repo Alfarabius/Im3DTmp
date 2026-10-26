@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_ru
+  m_EditorClassIdentifier:
+  m_LocaleId:
+    m_Code: ru
+  m_SharedData: {fileID: 11400000, guid: 89550af684e14cdb9b8eed6d062fdd8c, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 1
+    m_Localized: "Продолжить"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2
+    m_Localized: "Начать заново"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3
+    m_Localized: "Выйти"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4
+    m_Localized: "Язык:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5
+    m_Localized: "Разрешение:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6
+    m_Localized: "Чувствительность мыши:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7
+    m_Localized: "Громкость"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8
+    m_Localized: "Звук:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9
+    m_Localized: "Общая:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10
+    m_Localized: "Окружение:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11
+    m_Localized: "Эффекты:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12
+    m_Localized: "Русский"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13
+    m_Localized: "English"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14
+    m_Localized: "[{key}] Открыть"
+    m_Metadata:
+      m_Items: []

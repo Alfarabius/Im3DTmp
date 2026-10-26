@@ -113,6 +113,7 @@ GameObject:
   - component: {fileID: 2787268875825167287}
   - component: {fileID: 5850077898078837031}
   - component: {fileID: 4274592126363807802}
+  - component: {fileID: 8737183193234094888}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -430,3 +431,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4578053501540272938}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8737183193234094888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4827521565517979382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: "interaction.open_loot"
+  bindingAction: {fileID: 4567194043086966269, guid: fc6c4fd205424bf49a2c9e1c94756076, type: 3}

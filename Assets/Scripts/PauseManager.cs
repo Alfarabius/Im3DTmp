@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 public class PauseManager : MonoBehaviour
 {
@@ -56,7 +52,8 @@ public class PauseManager : MonoBehaviour
     private const string PrefsMasterVol = "MasterVolume";
     private const string PrefsAmbientVol = "AmbientVolume";
     private const string PrefsSFXVol = "SFXVolume";
-    private const string PrefsResolution = "ResolutionIndex";
+    private const string PrefsResolutionWidth = "ResolutionWidth";
+    private const string PrefsResolutionHeight = "ResolutionHeight";
 
     private void Awake()
     {
@@ -108,6 +105,9 @@ public class PauseManager : MonoBehaviour
 
     public void PauseGame()
     {
+        // Обновляем список на случай смены дисплея после запуска игры.
+        InitializeResolutions();
+
         IsPaused = true;
         
         // Остановка времени и физики
@@ -185,15 +185,6 @@ public class PauseManager : MonoBehaviour
         float savedSFX = PlayerPrefs.GetFloat(PrefsSFXVol, 1f);
         if (sfxVolSlider != null) sfxVolSlider.value = savedSFX;
         ApplyVolume("SFXVolume", savedSFX);
-
-        // 5. Разрешение экрана
-        if (resolutionDropdown != null)
-        {
-            // Если разрешение ранее сохранялось - грузим его, иначе берем текущее из списка
-            int savedResIndex = PlayerPrefs.GetInt(PrefsResolution, resolutionDropdown.value);
-            resolutionDropdown.value = savedResIndex;
-            resolutionDropdown.RefreshShownValue();
-        }
     }
 
     // Вспомогательный метод для перевода линейного значения слайдера (0.0001 - 1) в децибелы (-80 - 0)
@@ -213,23 +204,12 @@ public class PauseManager : MonoBehaviour
 
     public void UIRestart()
     {
-        IsPaused = false;
-        Time.timeScale = 1f;
-        AudioListener.pause = false;
-        
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        GameSessionController.RestartGame();
     }
 
     public void UIQuit()
     {
-        // Перед выходом принудительно сохраняем все Prefs на диск
-        PlayerPrefs.Save();
-        
-#if UNITY_EDITOR
-        EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        GameSessionController.LeaveGame();
     }
 
     // --- Настройки Разрешения экрана ---
@@ -243,6 +223,10 @@ public class PauseManager : MonoBehaviour
         List<string> options = new List<string>();
         
         int targetIndex = 0;
+        int currentResolutionIndex = -1;
+        int savedResolutionIndex = -1;
+        int savedWidth = PlayerPrefs.GetInt(PrefsResolutionWidth, -1);
+        int savedHeight = PlayerPrefs.GetInt(PrefsResolutionHeight, -1);
 
         for (int i = 0; i < allResolutions.Length; i++)
         {
@@ -259,6 +243,16 @@ public class PauseManager : MonoBehaviour
                 {
                     targetIndex = filteredResolutions.Count - 1;
                 }
+
+                if (allResolutions[i].width == Screen.width && allResolutions[i].height == Screen.height)
+                {
+                    currentResolutionIndex = filteredResolutions.Count - 1;
+                }
+
+                if (allResolutions[i].width == savedWidth && allResolutions[i].height == savedHeight)
+                {
+                    savedResolutionIndex = filteredResolutions.Count - 1;
+                }
             }
         }
 
@@ -267,9 +261,14 @@ public class PauseManager : MonoBehaviour
 
         resolutionDropdown.ClearOptions();
         resolutionDropdown.AddOptions(options);
+        resolutionDropdown.interactable = _resolutions.Length > 0;
 
-        // Загружаем сохраненный индекс. Если сохранений нет — берем индекс для 1920x1080
-        int finalIndex = PlayerPrefs.GetInt(PrefsResolution, targetIndex);
+        if (_resolutions.Length == 0) return;
+
+        // Индекс мог измениться вместе со списком, поэтому ищем сохранённые размеры заново.
+        // Если режима больше нет, выбираем текущий, затем 1920x1080 или первый доступный.
+        int finalIndex = savedResolutionIndex >= 0 ? savedResolutionIndex :
+            currentResolutionIndex >= 0 ? currentResolutionIndex : targetIndex;
 
         // Тихо устанавливаем значение в Dropdown, чтобы не вызвать сброс сохранений
         resolutionDropdown.SetValueWithoutNotify(finalIndex);
@@ -279,10 +278,13 @@ public class PauseManager : MonoBehaviour
     // Назначается на событие OnValueChanged в компоненте Dropdown
     public void SetResolution(int resolutionIndex)
     {
+        if (_resolutions == null || resolutionIndex < 0 || resolutionIndex >= _resolutions.Length) return;
+
         Resolution resolution = _resolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
         
-        PlayerPrefs.SetInt(PrefsResolution, resolutionIndex);
+        PlayerPrefs.SetInt(PrefsResolutionWidth, resolution.width);
+        PlayerPrefs.SetInt(PrefsResolutionHeight, resolution.height);
         PlayerPrefs.Save();
     }
 
@@ -340,11 +342,11 @@ public class PauseManager : MonoBehaviour
     // Назначается на событие OnClick кнопок с флагами
     public void SetLanguageRussian()
     {
-        // Вызов системы локализации
+        LocalizationService.SetLanguage("ru");
     }
 
     public void SetLanguageEnglish()
     {
-        // Вызов системы локализации
+        LocalizationService.SetLanguage("en");
     }
 }

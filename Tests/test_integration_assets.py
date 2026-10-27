@@ -19,6 +19,18 @@ def table_values(locale):
 
 
 class IntegrationAssetsTests(unittest.TestCase):
+    def test_table_editor_settings_are_registered_and_point_to_localization_asset(self):
+        settings = ASSETS / "Localization/Localization Settings.asset"
+        guid = re.search(r"guid: (\w+)", Path(str(settings) + ".meta").read_text())[1]
+        build = (ROOT / "ProjectSettings/EditorBuildSettings.asset").read_text()
+        self.assertIn(f"com.unity.localization.settings: {{fileID: 11400000, guid: {guid}, type: 2}}", build)
+        self.assertIn("guid: a07b5cd0b1b829245bc8c4b6978793e8", settings.read_text())
+        self.assertIn("m_InitializeSynchronously: 0", settings.read_text())
+        collection = (ASSETS / "Localization/UI.asset").read_text()
+        for locale in ["ru", "en"]:
+            table_meta = ASSETS / f"Resources/Localization/UI_{locale}.asset.meta"
+            self.assertIn(re.search(r"guid: (\w+)", table_meta.read_text())[1], collection)
+
     def setUp(self):
         shared = (ASSETS / "Resources/Localization/UI Shared Data.asset").read_text()
         self.keys = {int(entry_id): key for entry_id, key in

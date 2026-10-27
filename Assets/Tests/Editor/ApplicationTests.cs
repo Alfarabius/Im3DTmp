@@ -1,9 +1,29 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Localization.Tables;
+using UnityEngine.Localization.Settings;
+using UnityEditor;
+using UnityEditor.Localization;
 
 public class ApplicationTests
 {
+    [Test]
+    public void TableEditorHasActiveSettingsAndExistingUiCollection()
+    {
+        Assert.That(EditorBuildSettings.TryGetConfigObject<LocalizationSettings>("com.unity.localization.settings", out var settings), Is.True);
+        Assert.That(settings, Is.Not.Null);
+        Assert.That(settings.GetAvailableLocales(), Is.Not.Null);
+        Assert.That(settings.GetStringDatabase(), Is.Not.Null);
+        Assert.That(settings.GetAssetDatabase(), Is.Not.Null);
+        Assert.That(LocalizationEditorSettings.ActiveLocalizationSettings, Is.SameAs(settings));
+
+        var collection = LocalizationEditorSettings.GetStringTableCollection("UI");
+        Assert.That(collection, Is.Not.Null);
+        Assert.That(collection.StringTables.Count, Is.EqualTo(2));
+        Assert.That(collection.GetTable("ru"), Is.Not.Null);
+        Assert.That(collection.GetTable("en"), Is.Not.Null);
+    }
+
     [TestCase(null, "en")]
     [TestCase("", "en")]
     [TestCase(" ru ", "ru")]

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2783350948651294607}
   - component: {fileID: 8736874641888502049}
+  - component: {fileID: 843000000000000101}
   - component: {fileID: 6823027890462101001}
   - component: {fileID: 6823027890462101002}
   - component: {fileID: 3087166897470010314}
@@ -44,6 +45,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6905221367175798760}
+  - {fileID: 843000000000000103}
   - {fileID: 6217357032570441250}
   - {fileID: 4616362224827413077}
   m_Father: {fileID: 0}
@@ -448,7 +450,6 @@ GameObject:
   - component: {fileID: 8614243624063147375}
   - component: {fileID: 5895369397630731500}
   - component: {fileID: 4997180449340784261}
-  - component: {fileID: 842000000000000101}
   m_Layer: 7
   m_Name: PlayerCamera
   m_TagString: MainCamera
@@ -502,7 +503,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
+  near clip plane: 0.02
   far clip plane: 5000
   field of view: 60
   orthographic: 0
@@ -510,7 +511,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294965247
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -617,6 +618,8 @@ GameObject:
   - component: {fileID: 2369382121996869939}
   - component: {fileID: 1307511825770946381}
   - component: {fileID: 6313024385542061186}
+  - component: {fileID: 843000000000000104}
+  - component: {fileID: 843000000000000105}
   m_Layer: 7
   m_Name: PlayerCinemachine
   m_TagString: Untagged
@@ -659,13 +662,13 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 0}
+    TrackingTarget: {fileID: 843000000000000103}
     LookAtTarget: {fileID: 0}
-    CustomLookAtTarget: 0
+    CustomLookAtTarget: 1
   Lens:
     FieldOfView: 60
     OrthographicSize: 10
-    NearClipPlane: 0.1
+    NearClipPlane: 0.02
     FarClipPlane: 5000
     Dutch: 0
     ModeOverride: 0
@@ -1208,86 +1211,103 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &842000000000000101
+--- !u!114 &843000000000000101
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2651749885146976730}
+  m_GameObject: {fileID: 211337067421969027}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 532984f193d55114b97b2d734d5f3701, type: 3}
+  m_Script: {fileID: 11500000, guid: 1c12a775ea25510a964783011b579c9c, type: 3}
   m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerCameraCollision
-  player: {fileID: 8736874641888502049}
-  bodyRoot: {fileID: 6217357032570441250}
-  environmentMask:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerFirstPersonView
+  controller: {fileID: 1697429712441409556}
+  viewCamera: {fileID: 5251672335652677741}
+  cameraTarget: {fileID: 6905221367175798760}
+  collisionTarget: {fileID: 843000000000000103}
+  modelRoot: {fileID: 6217357032570441250}
+  headLayer: 11
+--- !u!1 &843000000000000102
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 843000000000000103}
+  m_Layer: 2
+  m_Name: CameraCollisionTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &843000000000000103
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843000000000000102}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2783350948651294607}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &843000000000000104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3208550605443839198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbe43d662878a7c43bcd44d43c9e2094, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineDeoccluder
+  CollideAgainst:
     serializedVersion: 2
-    m_Bits: 4294967259
-  minimumRadius: 0.04
-  surfacePadding: 0.01
-  solverIterations: 8
-  returnSpeed: 10
-  recoveryDistance: 0.8
-  bodyVolumes:
-  - boneName: spine01
-    center: {x: 0, y: 0.00233916835, z: 0.000215848487}
-    size: {x: 0.0160666699, y: 0.0136383371, z: 0.00367169737}
-  - boneName: spine02
-    center: {x: -1.16825124e-10, y: 0.00391265612, z: 0.000240000191}
-    size: {x: 0.0160666699, y: 0.0148414939, z: 0.00372000405}
-  - boneName: forearm.L
-    center: {x: -1.42613036e-06, y: 0.00240500548, z: 0.000215850142}
-    size: {x: 0.00648000211, y: 0.011770001, z: 0.00367170158}
-  - boneName: hand.L
-    center: {x: -1.42427285e-06, y: 0.000732504594, z: 0.000215850142}
-    size: {x: 0.00648000107, y: 0.00849499954, z: 0.00367170158}
-  - boneName: neck
-    center: {x: 0, y: 0.00157357658, z: 2.16840434e-18}
-    size: {x: 0.0111800019, y: 0.00821000197, z: 0.00324000275}
-  - boneName: shoulder.R
-    center: {x: 0.0018642535, y: 0.00149757902, z: 1.9236176e-10}
-    size: {x: 0.0149846599, y: 0.0100066285, z: 0.00324000045}
-  - boneName: forearm.R
-    center: {x: 1.42613036e-06, y: 0.00240500548, z: 0.000215845226}
-    size: {x: 0.00648000211, y: 0.011770001, z: 0.00367169174}
-  - boneName: hand.R
-    center: {x: 1.42427285e-06, y: 0.000732504594, z: 0.000215845226}
-    size: {x: 0.00648000107, y: 0.00849499954, z: 0.00367169174}
-  - boneName: chin.L
-    center: {x: -4.11418105e-05, y: 0.0026774191, z: -0.000215848579}
-    size: {x: 0.00701583046, y: 0.0115640976, z: 0.00367169848}
-  - boneName: foot.L
-    center: {x: -5.3060684e-05, y: 0.000730629183, z: -0.000215848506}
-    size: {x: 0.00675585819, y: 0.0088147652, z: 0.00367169972}
-  - boneName: chin.R
-    center: {x: 4.11418105e-05, y: 0.0026774191, z: -0.000215846597}
-    size: {x: 0.00701583046, y: 0.0115640976, z: 0.00367169451}
-  - boneName: foot.R
-    center: {x: 5.3060684e-05, y: 0.000730629183, z: -0.000215846278}
-    size: {x: 0.00675585819, y: 0.0088147652, z: 0.00367169527}
-  - boneName: head
-    center: {x: 0, y: 0.00597357804, z: 0.000146545265}
-    size: {x: 0.0158000026, y: 0.0183900044, z: 0.00353309402}
-  - boneName: shoulder.L
-    center: {x: -0.0018642535, y: 0.00149757902, z: 1.9236148e-10}
-    size: {x: 0.0149846599, y: 0.0100066285, z: 0.00324000045}
-  - boneName: upper_arm.L
-    center: {x: -3.12215808e-06, y: 0.00367062071, z: 2.07393831e-10}
-    size: {x: 0.00649352387, y: 0.0136995, z: 0.00324000281}
-  - boneName: upper_arm.R
-    center: {x: 3.12215808e-06, y: 0.00367062071, z: 2.07391021e-10}
-    size: {x: 0.00649352387, y: 0.0136995, z: 0.00324000281}
-  - boneName: waist.L
-    center: {x: -0.00301520423, y: 0.00165294927, z: -1.09648123e-09}
-    size: {x: 0.0145137057, y: 0.00906035527, z: 0.0032400054}
-  - boneName: hip.L
-    center: {x: 8.33961866e-06, y: 0.0048667807, z: 8.24806352e-11}
-    size: {x: 0.00756305635, y: 0.0124525268, z: 0.00324000169}
-  - boneName: waist.R
-    center: {x: 0.00301520423, y: 0.00165294927, z: -1.09648123e-09}
-    size: {x: 0.0145137057, y: 0.00906035527, z: 0.0032400054}
-  - boneName: hip.R
-    center: {x: -8.33961866e-06, y: 0.0048667807, z: 8.24806352e-11}
-    size: {x: 0.00756305635, y: 0.0124525268, z: 0.00324000169}
+    m_Bits: 4294967131
+  IgnoreTag: Player
+  TransparentLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  MinimumDistanceFromTarget: 0.01
+  AvoidObstacles:
+    Enabled: 1
+    DistanceLimit: 0
+    MinimumOcclusionTime: 0
+    CameraRadius: 0.08
+    UseFollowTarget:
+      Enabled: 1
+      YOffset: 0
+    Strategy: 0
+    MaximumEffort: 4
+    SmoothingTime: 0
+    Damping: 0.1
+    DampingWhenOccluded: 0
+  ShotQualityEvaluation:
+    Enabled: 0
+--- !u!114 &843000000000000105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3208550605443839198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54ca17e0b96659eab9f984aabd3cc0da, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCameraNoiseCollision
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 4294967131
+  cameraRadius: 0.04

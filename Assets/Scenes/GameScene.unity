@@ -51167,6 +51167,10 @@ PrefabInstance:
       propertyPath: postProcessVolume
       value: 
       objectReference: {fileID: 832575518}
+    - target: {fileID: 6823027890462101001, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: postProcessVolume
+      value:
+      objectReference: {fileID: 832575518}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

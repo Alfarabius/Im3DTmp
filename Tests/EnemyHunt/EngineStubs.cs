@@ -75,8 +75,12 @@ namespace UnityEngine
     {
         public static float Max(float a,float b) => Math.Max(a,b);
         public static float Clamp(float v,float a,float b) => Math.Max(a,Math.Min(v,b));
+        public static float Clamp01(float value) => Clamp(value,0,1);
+        public static float Lerp(float a,float b,float t) => a+(b-a)*Clamp01(t);
+        public static float MoveTowards(float current,float target,float delta) => Math.Abs(target-current)<=delta ? target : current+Math.Sign(target-current)*delta;
+        public static float SmoothStep(float a,float b,float t) { t=Clamp01(t); return a+(b-a)*t*t*(3-2*t); }
     }
-    public static class Random { public static float Range(float min,float max) => min; }
+    public static class Random { public static float value=0.5f; public static float Range(float min,float max) => min; }
     public class Animator : Component
     {
         public readonly Dictionary<string,bool> Bools = new Dictionary<string,bool>();
@@ -85,7 +89,16 @@ namespace UnityEngine
         public void SetTrigger(string key) {}
     }
     public class AudioClip : Object {}
-    public class AudioSource : Component { public void PlayOneShot(AudioClip clip) {} }
+    public class AudioSource : Component
+    {
+        public AudioClip clip;
+        public float volume=1,spatialBlend=1;
+        public bool loop,playOnAwake=true,isPlaying;
+        public int Plays,Stops;
+        public void PlayOneShot(AudioClip clip) {}
+        public void Play() { Plays++; isPlaying=true; }
+        public void Stop() { Stops++; isPlaying=false; }
+    }
     public class Collider : Component {}
     public struct RaycastHit { public Collider collider; }
     public static class Physics
@@ -102,6 +115,7 @@ namespace UnityEngine
     public class Tooltip : Attribute { public Tooltip(string text) {} }
     public class Range : Attribute { public Range(float min,float max) {} }
     public class Min : Attribute { public Min(float min) {} }
+    public class DefaultExecutionOrder : Attribute { public DefaultExecutionOrder(int order) {} }
 }
 namespace UnityEngine.AI
 {

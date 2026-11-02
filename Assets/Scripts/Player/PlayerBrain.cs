@@ -13,7 +13,24 @@ public class PlayerBrain : MonoBehaviour, ITargetable
     [field: SerializeField] public float MaxStamina { get; private set; } = 100f;
     [field: SerializeField] public TargetCondition Condition { get; private set; } = TargetCondition.Normal;
     
-    public float CurrentStamina { get; set; }
+    public const float ExhaustionRecoveryThreshold = 15f;
+    public bool IsStaminaDepleted { get; private set; }
+    public event System.Action<bool> OnStaminaDepletedChanged;
+
+    private float _currentStamina;
+    public float CurrentStamina
+    {
+        get => _currentStamina;
+        set
+        {
+            _currentStamina = value;
+            // Эффект начинается только при полном истощении, а заканчивается строго выше 15.
+            bool depleted = IsStaminaDepleted ? value <= ExhaustionRecoveryThreshold : value <= 0f;
+            if (depleted == IsStaminaDepleted) return;
+            IsStaminaDepleted = depleted;
+            OnStaminaDepletedChanged?.Invoke(depleted);
+        }
+    }
     public Transform TargetTransform => transform;
 
     private ICharacterState _currentState;

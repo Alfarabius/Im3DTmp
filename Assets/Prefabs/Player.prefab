@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2783350948651294607}
   - component: {fileID: 8736874641888502049}
+  - component: {fileID: 6823027890462101001}
+  - component: {fileID: 6823027890462101002}
   - component: {fileID: 3087166897470010314}
   - component: {fileID: 5294772691111863449}
   - component: {fileID: 5347796025234251549}
@@ -1077,3 +1079,121 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a2601fb6aa97f914a8fb0f9f12bfa731, type: 3}
   m_PrefabInstance: {fileID: 5891487019273431497}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6823027890462101001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211337067421969027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aacb378c45824331be1957f7dc714d7d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStaminaEffects
+  breathingAudio: {fileID: 6823027890462101002}
+  cameraNoise: {fileID: 6313024385542061186}
+  postProcessVolume: {fileID: 0}
+  breathingVolume: 0.7
+  shakeAmplitudeMultiplier: 2
+  shakeFrequencyMultiplier: 1.25
+  chromaticAberrationBoost: 0.35
+  fadeInDuration: 0.8
+  fadeOutDuration: 1.2
+--- !u!82 &6823027890462101002
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211337067421969027}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: -4502576610630677228, guid: ddb28457edbc91f48946fc13af951299, type: 2}
+  m_audioClip: {fileID: 8300000, guid: c93d6e824b684413a0918c717c2cced4, type: 3}
+  m_Resource: {fileID: 8300000, guid: c93d6e824b684413a0918c717c2cced4, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

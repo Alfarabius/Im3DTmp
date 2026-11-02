@@ -14,8 +14,18 @@ def documents(path):
 
 def table_values(locale):
     text = (ASSETS / f"Resources/Localization/UI_{locale}.asset").read_text()
-    return {int(entry_id): json.loads(value) for entry_id, value in
-            re.findall(r"m_Id: (\d+)\n    m_Localized: (.+)", text)}
+    return {int(entry_id): yaml_string(value) for entry_id, value in
+            re.findall(r"m_Id: (\d+)\n    m_Localized: (.*?)(?=\n    m_Metadata:)", text, re.S)}
+
+
+def yaml_string(value):
+    # Unity при сохранении убирает кавычки и переносит длинные строки с Unicode escapes.
+    value = re.sub(r"\n\s+", " ", value).strip()
+    if value.startswith('"'):
+        return json.loads(value)
+    if value.startswith("'"):
+        return value[1:-1].replace("''", "'")
+    return value
 
 
 class IntegrationAssetsTests(unittest.TestCase):
@@ -61,7 +71,7 @@ class IntegrationAssetsTests(unittest.TestCase):
                     text_objects.add(owner)
                 if f"guid: {self.bindings}" in doc:
                     bound_objects.add(owner)
-                    used_keys.append(json.loads(re.search(r'^  key: (.*)$', doc, re.M)[1]))
+                    used_keys.append(yaml_string(re.search(r'^  key: (.*)$', doc, re.M)[1]))
             self.assertTrue(text_objects, relative)
             self.assertEqual(text_objects, bound_objects, relative)
             self.assertTrue(all(not key or key in self.keys.values() for key in used_keys))

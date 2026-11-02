@@ -9,6 +9,7 @@ namespace UnityEngine
     public enum FindObjectsSortMode { None, InstanceID }
     public class Object
     {
+        public static T Instantiate<T>(T original,Vector3 position,Quaternion rotation) where T:Object => original;
         public static void Destroy(Object value, float delay=0) {}
         public static T[] FindObjectsByType<T>(FindObjectsSortMode mode) where T:class =>
             GameObject.SceneObjects.Where(go=>go.activeSelf).Select(go=>go.GetComponent<T>()).Where(component=>component!=null).ToArray();
@@ -18,6 +19,8 @@ namespace UnityEngine
         public GameObject gameObject;
         public Transform transform => gameObject.transform;
         public T GetComponent<T>() where T : class => gameObject.GetComponent<T>();
+        public T[] GetComponents<T>() where T:class => gameObject.GetComponents<T>();
+        public bool TryGetComponent<T>(out T component) where T:class { component=GetComponent<T>(); return component!=null; }
     }
     public class MonoBehaviour : Component {}
     public class GameObject : Object
@@ -31,6 +34,7 @@ namespace UnityEngine
         public void SetActive(bool value) { activeSelf=value; }
         public T AddComponent<T>() where T : Component, new() { var value = new T { gameObject = this }; components.Add(value); return value; }
         public T GetComponent<T>() where T : class => components.OfType<T>().FirstOrDefault();
+        public T[] GetComponents<T>() where T:class => components.OfType<T>().ToArray();
     }
     public class Transform : Component
     {
@@ -68,6 +72,7 @@ namespace UnityEngine
     }
     public struct Quaternion
     {
+        public static Quaternion identity => new Quaternion(Vector3.forward);
         public Vector3 direction;
         public Quaternion(Vector3 value) { direction=value; }
         public static Quaternion LookRotation(Vector3 direction) => new Quaternion(direction.normalized);
@@ -92,6 +97,7 @@ namespace UnityEngine
         public static float MoveTowards(float current,float target,float delta) => Math.Abs(target-current)<=delta ? target : current+Math.Sign(target-current)*delta;
         public static float SmoothStep(float a,float b,float t) { t=Clamp01(t); return a+(b-a)*t*t*(3-2*t); }
         public static float Sin(float value) => (float)Math.Sin(value);
+        public static float PingPong(float t,float length) { float phase=t%(2*length); return phase<=length ? phase : 2*length-phase; }
     }
     public static class Random
     {
@@ -123,15 +129,17 @@ namespace UnityEngine
         public void Play() { Plays++; isPlaying=true; }
         public void Stop() { Stops++; isPlaying=false; }
     }
-    public class Collider : Component {}
-    public struct RaycastHit { public Collider collider; }
+    public class Collider : Component { public bool isTrigger,enabled=true; }
+    public struct RaycastHit { public Collider collider; public Vector3 point; }
     public static class Physics
     {
         public static readonly List<Collider> Targets = new List<Collider>();
         public static bool Blocked;
+        public static Collider HitCollider;
+        public static Vector3 HitPoint;
         public static Collider[] OverlapSphere(Vector3 point,float radius,LayerMask mask) => Targets.Where(c => (mask.value & (1<<c.gameObject.layer)) != 0 && Vector3.Distance(point,c.transform.position)<=radius).ToArray();
         public static bool Raycast(Vector3 origin,Vector3 direction,float distance,LayerMask mask) => Blocked;
-        public static bool Raycast(Vector3 origin,Vector3 direction,out RaycastHit hit,float distance,LayerMask mask) { hit=new RaycastHit(); return false; }
+        public static bool Raycast(Vector3 origin,Vector3 direction,out RaycastHit hit,float distance,LayerMask mask) { hit=new RaycastHit { collider=HitCollider,point=HitPoint }; return HitCollider!=null; }
     }
     [AttributeUsage(AttributeTargets.Class,AllowMultiple=true)]
     public class RequireComponent : Attribute { public RequireComponent(Type a) {} public RequireComponent(Type a,Type b) {} }
@@ -169,7 +177,6 @@ namespace UnityEngine.AI
 }
 // Other gameplay boundaries; TargetCondition has the same values as NPCBrain.cs.
 public enum TargetCondition { Normal, Wounded, HeavyWounded, Dead }
-public class LootBox : UnityEngine.MonoBehaviour {}
 public static class GameSessionController
 {
     public static int Wins, Restarts;

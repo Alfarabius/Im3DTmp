@@ -5,13 +5,16 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.AI;
 
+public class LootBox : MonoBehaviour {}
 public class FakeTarget : MonoBehaviour, ITargetable
 {
     public bool Player;
     public float TargetWeight => 1;
     public Transform TargetTransform => transform;
     public TargetCondition Condition { get; set; }
-    public void TryApplyHit(float chance) {}
+    public int HitCount;
+    public float LastHitProbability;
+    public void TryApplyHit(float chance) { HitCount++; LastHitProbability=chance; }
     public bool IsPlayer() => Player;
 }
 class Fixture : IDisposable
@@ -36,7 +39,7 @@ class Fixture : IDisposable
     public Transform Point => (Transform)Read(Hunt,"_currentPoint");
     public Fixture(bool start=true)
     {
-        Physics.Targets.Clear(); Physics.Blocked=false; Time.deltaTime=1;
+        Physics.Targets.Clear(); Physics.Blocked=false; Physics.HitCollider=null; Time.deltaTime=1;
         GameSessionController.Wins=0; GameSessionController.Restarts=0;
         typeof(GameManager).GetProperty("Instance").SetValue(null,null);
         Game=new GameObject().AddComponent<GameManager>(); Set(Game,"requiredLootBoxes",100); Call(Game,"Awake");
@@ -130,7 +133,26 @@ class Program
         Run("player detection takes priority over arrival", f=> { f.Brain.BeginHunt(); f.Agent.Warp(f.Agent.destination); f.Target(true,f.Agent.transform.position+new Vector3(0,0,10)); f.Tick(); Assert(f.State==f.Attack,"arrival hid visible player"); });
         Run("missing route returns to Patrol", f=> { Fixture.Set(f.Patrol,"routeRoot",null); f.Brain.BeginHunt(); Assert(f.State==f.Patrol,"missing route stuck in Hunt"); });
         Run("partial path returns to Patrol", f=> { f.Brain.BeginHunt(); f.Agent.pathStatus=NavMeshPathStatus.PathPartial; f.Tick(); Assert(f.State==f.Patrol,"partial path stuck in Hunt"); });
-        Console.WriteLine("33 behavior checks passed. Native Unity behavior is not covered by these engine stubs.");
+        Run("shot effects event uses the physical impact point and preserves damage", f=>
+        {
+            var target=f.Target(true,new Vector3(0,0,10)); f.Brain.ScanForTargets(); f.Brain.ChangeState(f.Attack);
+            Physics.HitCollider=target.GetComponent<Collider>(); Physics.HitPoint=new Vector3(0,1,9.5f);
+            int shots=0; Vector3 end=Vector3.zero;
+            f.Attack.OnShotFired+=(origin,point)=> { shots++; end=point; };
+            f.Tick(2);
+            Assert(shots==1 && Vector3.Distance(end,Physics.HitPoint)<0.0001f,"shot did not report impact point once");
+            Assert(target.HitCount==1 && Math.Abs(target.LastHitProbability-0.4f)<0.0001f,"effect changed hit probability");
+            f.Tick(); Assert(shots==1,"effect ran between shots");
+        });
+        Run("a raycast miss still emits a shot effect toward the target", f=>
+        {
+            f.Target(false,new Vector3(0,0,10)); f.Brain.ScanForTargets(); f.Brain.ChangeState(f.Attack);
+            int shots=0; Vector3 start=Vector3.zero,end=Vector3.zero;
+            f.Attack.OnShotFired+=(origin,point)=> { shots++; start=origin; end=point; };
+            f.Tick(2);
+            Assert(shots==1 && end.z>10 && Vector3.Distance(start,end)>10,"miss had no tracer endpoint");
+        });
+        Console.WriteLine("35 behavior checks passed. Native Unity behavior is not covered by these engine stubs.");
         return 0;
     }
 }

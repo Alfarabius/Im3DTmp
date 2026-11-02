@@ -21,6 +21,7 @@ else:
         parser.error('Install Mono/C# compiler or supply --unity-data.')
     compiler = [csc]
 sources = [root / 'Assets/Scripts/ICharacterState.cs', root / 'Assets/Scripts/GlobalAudioEvents.cs', root / 'Assets/Scripts/Player/PlayerBrain.cs', root / 'Assets/Scripts/Player/PlayerStaminaEffects.cs', root / 'Assets/Scripts/Player/PlayerDamageEffects.cs', root / 'Tests/EnemyHunt/EngineStubs.cs', Path(__file__).with_name('EngineBoundaries.cs'), Path(__file__).with_name('Program.cs')]
+sources += [root / 'Assets/Scripts/GameManager.cs', root / 'Assets/Scripts/LootBox.cs']
 with tempfile.TemporaryDirectory(prefix='im3d-stamina-') as directory:
     executable = str(Path(directory) / 'PlayerStaminaChecks.exe')
     subprocess.run([*compiler, '-nologo', '-out:' + executable, *map(str, sources)], check=True)

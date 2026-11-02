@@ -29,6 +29,8 @@ class Fixture : IDisposable
     {
         PauseManager.IsPaused=false;
         Time.time=0;
+        GameObject.SceneObjects.Clear();
+        typeof(GameManager).GetProperty("Instance").SetValue(null,null);
         var player=new GameObject(); Brain=player.AddComponent<PlayerBrain>();
         Set(Brain,"Anim",player.AddComponent<Animator>());
         Audio=player.AddComponent<AudioSource>(); BreathingClip=new AudioClip(); PainClip=new AudioClip(); Audio.clip=BreathingClip;
@@ -254,6 +256,27 @@ class Program
             f.Tick(0.1f,12); Assert(!f.Audio.isPlaying,"death left pain");
             Fixture.Call(f.Effects,"OnDisable");
             Assert(ReferenceEquals(f.Audio.clip,f.BreathingClip),"disable left pain clip assigned");
+        });
+        Run("loot opening notifies effects once, heals and disables only the trigger",f=>
+        {
+            var box=new GameObject(); var solid=box.AddComponent<Collider>();
+            var trigger=box.AddComponent<Collider>(); trigger.isTrigger=true;
+            var loot=box.AddComponent<LootBox>(); Fixture.Set(loot,"_playerBrain",f.Brain);
+            Fixture.Call(loot,"Awake");
+            f.Brain.TryApplyHit(1f); int opened=0;
+            loot.OnOpened+=()=>opened++;
+            Fixture.Call(loot,"OpenBox"); Fixture.Call(loot,"OpenBox");
+            Assert(opened==1 && !trigger.enabled && solid.enabled,"opening effects repeated or solid collider disabled");
+            Assert(f.Brain.Condition==TargetCondition.Normal && f.Brain.CurrentStamina==100,"opening no longer heals");
+        });
+        Run("loot opening notifies effects before reporting victory",f=>
+        {
+            GameSessionController.Wins=0;
+            var game=new GameObject().AddComponent<GameManager>(); Fixture.Set(game,"requiredLootBoxes",1); Fixture.Call(game,"Awake");
+            var loot=new GameObject().AddComponent<LootBox>(); Fixture.Call(loot,"Awake");
+            int winsDuringEffect=-1; loot.OnOpened+=()=>winsDuringEffect=GameSessionController.Wins;
+            Fixture.Call(loot,"OpenBox");
+            Assert(winsDuringEffect==0 && GameSessionController.Wins==1,"victory happened before opening effects");
         });
         using(var f=new Fixture(visuals:false)) { f.Exhaust(); Assert(f.Audio.isPlaying,"audio-only failed"); count++; Console.WriteLine("PASS audio without visual references"); }
         using(var f=new Fixture(audio:false)) { f.Exhaust(); Near(f.Noise.AmplitudeGain,2,"visual-only failed"); count++; Console.WriteLine("PASS visuals without audio reference"); }

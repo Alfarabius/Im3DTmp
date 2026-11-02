@@ -3,6 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyBrain))]
 public class AttackState : MonoBehaviour, ICharacterState
 {
+    public event System.Action<Vector3, Vector3> OnShotFired;
+
     [SerializeField] private float combatWalkSpeed = 1.5f;
     [SerializeField, Range(0.1f, 0.9f)] private float standOffMultiplier = 0.8f;
     [SerializeField] private float rotationSpeed = 10f;
@@ -92,8 +94,12 @@ public class AttackState : MonoBehaviour, ICharacterState
             // Вызов события перенесен сюда для передачи вектора выстрела
             GlobalAudioEvents.OnGunshotFired?.Invoke(origin, shootDir);
 
+            bool hasHit = Physics.Raycast(origin, shootDir, out RaycastHit hit, maxDist, hitMask);
+            Vector3 end = hasHit ? hit.point : origin + shootDir * maxDist;
+            OnShotFired?.Invoke(origin, end);
+
             // Нанесение урона первому объекту на траектории пули
-            if (Physics.Raycast(origin, shootDir, out RaycastHit hit, maxDist, hitMask))
+            if (hasHit)
             {
                 var hitTarget = hit.collider.GetComponent<ITargetable>();
                 if (hitTarget != null)

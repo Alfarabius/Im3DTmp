@@ -5,12 +5,21 @@ namespace UnityEngine
     {
         public float r,g,b,a;
         public static Color red => new Color { r=1,a=1 };
+        public static Color yellow => new Color { r=1,g=1,a=1 };
+        public static Color black => new Color { a=1 };
+        public static Color operator *(Color c,float scale) => new Color { r=c.r*scale,g=c.g*scale,b=c.b*scale,a=c.a*scale };
     }
+    public class MaterialPropertyBlock { public void SetColor(string name,Color color) {} }
+    public class MeshRenderer : Component { public void GetPropertyBlock(MaterialPropertyBlock block) {} public void SetPropertyBlock(MaterialPropertyBlock block) {} }
     public class CharacterController : Component {}
     public enum CursorLockMode { None, Locked }
     public static class Cursor { public static CursorLockMode lockState; public static bool visible; }
 }
-namespace UnityEngine.InputSystem { public class InputActionReference {} }
+namespace UnityEngine.InputSystem
+{
+    public class InputActionReference { public InputAction action=new InputAction(); }
+    public class InputAction { public bool WasPressedThisFrame() => false; }
+}
 namespace Unity.Cinemachine
 {
     public class CinemachineImpulseSource : UnityEngine.Component { public int Impulses; public void GenerateImpulse() { Impulses++; } }

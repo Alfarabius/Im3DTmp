@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class LootBox : MonoBehaviour
 {
+    public event System.Action OnOpened;
+
     [Header("Настройки взаимодействия")]
     [Tooltip("Ссылка на действие взаимодействия (Action из New Input System)")] [SerializeField] private InputActionReference interactAction;
     [Tooltip("Слой игрока для проверки (выбери слой Player)")] [SerializeField] private LayerMask playerLayer;
@@ -89,6 +91,7 @@ public class LootBox : MonoBehaviour
 
     private void OpenBox()
     {
+        if (_isOpened) return;
         _isOpened = true;
         
         // Отключаем именно триггер, оставляя физический коллайдер рабочим
@@ -114,6 +117,7 @@ public class LootBox : MonoBehaviour
             Instantiate(lootPrefab, spawnPos, Quaternion.identity);
         }
         
+        OnOpened?.Invoke();
         if (GameManager.Instance != null) GameManager.Instance.RegisterLootBoxOpened();
     }
 

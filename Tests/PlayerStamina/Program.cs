@@ -35,23 +35,25 @@ class Fixture : IDisposable
         Noise=player.AddComponent<CinemachineBasicMultiChannelPerlin>();
         Volume=player.AddComponent<Volume>(); Volume.sharedProfile.Chromatic.intensity.value=0.128f; Volume.sharedProfile.Chromatic.intensity.overrideState=true;
         Effects=player.AddComponent<PlayerStaminaEffects>();
-        Set(Effects,"painClip",PainClip);
         player.AddComponent<CinemachineImpulseSource>();
         Damage=player.AddComponent<PlayerDamageEffects>();
+        Set(Damage,"painClip",PainClip);
         Set(Damage,"postProcessVolume",Volume);
-        if(audio) Set(Effects,"breathingAudio",Audio);
+        if(audio) { Set(Effects,"breathingAudio",Audio); Set(Damage,"painAudio",Audio); }
         if(visuals) { Set(Effects,"cameraNoise",Noise); Set(Effects,"postProcessVolume",Volume); }
         Call(Brain,"Awake"); Brain.OnStaminaDepletedChanged+=Events.Add;
         Call(Effects,"Awake"); Call(Effects,"OnEnable");
         Call(Damage,"Awake"); Call(Damage,"OnEnable");
     }
-    public void Tick(float seconds=0.1f,int count=1)
+    public void Tick(float seconds=0.1f,int count=1,bool stamina=true)
     {
         for(int i=0;i<count;i++)
         {
             Time.deltaTime=PauseManager.IsPaused ? 0 : seconds;
             Time.time+=Time.deltaTime;
-            Call(Damage,"Update"); Call(Effects,"LateUpdate"); Call(Damage,"LateUpdate");
+            Call(Damage,"Update");
+            if(stamina) Call(Effects,"LateUpdate");
+            Call(Damage,"LateUpdate");
         }
     }
     public void Exhaust() { Brain.CurrentStamina=0; Tick(0.1f,8); }
@@ -150,6 +152,37 @@ class Program
             f.Brain.TryApplyHit(1f); f.Tick(0.05f);
             Assert(f.Audio.volume>fading && f.Audio.volume<0.8f && f.Audio.Plays==plays,"repeat injury snapped/restarted pain");
         });
+        Run("damage manages pain and healing independently of disabled stamina effects",f=>
+        {
+            Fixture.Call(f.Effects,"OnDisable");
+            f.Brain.TryApplyHit(1f); f.Tick(0.1f,5,stamina:false);
+            Assert(ReferenceEquals(f.Audio.clip,f.PainClip) && f.Audio.isPlaying,"damage did not start pain independently");
+            Near(f.Audio.volume,0.8f,"independent pain peak");
+            f.Brain.Heal(); f.Tick(0.2f,stamina:false);
+            Assert(f.Audio.volume>0 && f.Audio.volume<0.8f,"independent healing did not fade pain");
+            f.Tick(0.2f,6,stamina:false);
+            Assert(!f.Audio.isPlaying && ReferenceEquals(f.Audio.clip,f.BreathingClip),"damage did not restore source independently");
+        });
+        Run("disabling stamina effects does not stop damage audio on the shared source",f=>
+        {
+            f.Brain.TryApplyHit(1f); f.Tick(0.1f,5);
+            float volume=f.Audio.volume;
+            Fixture.Call(f.Effects,"OnDisable");
+            Assert(f.Audio.isPlaying && ReferenceEquals(f.Audio.clip,f.PainClip),"stamina disable interrupted pain");
+            Near(f.Audio.volume,volume,"stamina disable changed pain volume");
+            Fixture.Call(f.Damage,"OnDisable");
+            Assert(!f.Audio.isPlaying && ReferenceEquals(f.Audio.clip,f.BreathingClip),"damage disable did not release source");
+        });
+        Run("exhaustion waits for pain to finish fading before reusing the source",f=>
+        {
+            f.Brain.TryApplyHit(1f); f.Tick(0.1f,5);
+            f.Brain.Heal(); f.Brain.CurrentStamina=0; f.Tick(0.1f,11);
+            Assert(ReferenceEquals(f.Audio.clip,f.PainClip) && f.Audio.isPlaying && f.Audio.volume<0.8f,"exhaustion interrupted pain fade");
+            f.Tick(0.2f);
+            Assert(ReferenceEquals(f.Audio.clip,f.BreathingClip) && !f.Audio.isPlaying,"damage did not release source after fade");
+            f.Tick(0.1f);
+            Assert(f.Audio.isPlaying && f.Audio.volume>0 && f.Audio.volume<0.7f,"breathing resumed abruptly");
+        });
         Run("wounded redness has a stronger sustained pulse",f=>
         {
             f.Brain.TryApplyHit(1f); f.Tick(0.1f,5);
@@ -209,7 +242,7 @@ class Program
         });
         Run("missing pain clip silences breathing without playing a null clip",f=>
         {
-            f.Exhaust(); Fixture.Set(f.Effects,"painClip",null); f.Brain.TryApplyHit(1f); f.Tick(0.1f,5);
+            f.Exhaust(); Fixture.Set(f.Damage,"painClip",null); f.Brain.TryApplyHit(1f); f.Tick(0.1f,5);
             Assert(!f.Audio.isPlaying && f.Audio.clip==null && f.Audio.Plays==1,"missing pain played breathing/null clip");
             Near(f.Noise.AmplitudeGain,1,"missing pain left fatigue shake");
         });

@@ -87,6 +87,11 @@ MonoBehaviour:
   vignetteMissIntensity: 0.4
   vignetteDecaySpeed: 2
   vignetteHitIntensity: 0.8
+  painAudio: {fileID: 6823027890462101002}
+  painClip: {fileID: 8300000, guid: 9750920fd0cd4a6791bd53ef9489ec8d, type: 3}
+  painVolume: 0.8
+  painFadeInDuration: 0.3
+  painFadeOutDuration: 1.2
   woundedVignetteIntensity: 0.45
   woundedPulseAmplitude: 0.15
   woundedPulseSpeed: 7
@@ -1108,10 +1113,6 @@ MonoBehaviour:
   chromaticAberrationBoost: 0.35
   fadeInDuration: 0.8
   fadeOutDuration: 1.2
-  painClip: {fileID: 8300000, guid: 9750920fd0cd4a6791bd53ef9489ec8d, type: 3}
-  painVolume: 0.8
-  painFadeInDuration: 0.3
-  painFadeOutDuration: 1.2
 --- !u!82 &6823027890462101002
 AudioSource:
   m_ObjectHideFlags: 0

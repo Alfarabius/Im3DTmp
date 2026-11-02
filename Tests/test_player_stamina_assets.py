@@ -18,8 +18,8 @@ def blocks(path):
     return re.split(r"(?=^--- !u!)", path.read_text(), flags=re.M)
 
 
-def effects():
-    script = guid(ASSETS / "Scripts/Player/PlayerStaminaEffects.cs")
+def effects(script_name="PlayerStaminaEffects"):
+    script = guid(ASSETS / f"Scripts/Player/{script_name}.cs")
     matches = [block for block in blocks(PLAYER) if block.startswith("--- !u!114 ") and f"guid: {script}" in block]
     assert len(matches) == 1
     return matches[0]
@@ -62,7 +62,12 @@ class PlayerStaminaAssetTests(unittest.TestCase):
         self.assertNotIn("NoiseProfile: {fileID: 0}", noise)
 
     def test_pain_clip_is_assigned_without_adding_an_audio_source(self):
-        self.assertIn(f"painClip: {{fileID: 8300000, guid: {guid(PAIN_CLIP)}, type: 3}}", effects())
+        damage = effects("PlayerDamageEffects")
+        self.assertIn(f"painClip: {{fileID: 8300000, guid: {guid(PAIN_CLIP)}, type: 3}}", damage)
+        self.assertNotIn("painClip:", effects())
+        pain_source = re.search(r"painAudio: \{fileID: (\d+)", damage)[1]
+        breathing_source = re.search(r"breathingAudio: \{fileID: (\d+)", effects())[1]
+        self.assertEqual(pain_source, breathing_source)
         sources = [block for block in blocks(PLAYER) if block.startswith("--- !u!82 ")]
         self.assertEqual(len(sources), 3)  # footsteps, hit, shared breathing/pain
         with wave.open(str(PAIN_CLIP)) as clip:

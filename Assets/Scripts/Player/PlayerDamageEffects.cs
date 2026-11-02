@@ -23,6 +23,13 @@ public class PlayerDamageEffects : MonoBehaviour
     [Header("Настройки попадания (Hit)")]
     [SerializeField] private float vignetteHitIntensity = 0.8f;
 
+    [Header("Звук боли")]
+    [SerializeField] private AudioSource painAudio;
+    [SerializeField] private AudioClip painClip;
+    [SerializeField, Range(0f, 1f)] private float painVolume = 0.8f;
+    [SerializeField, Min(0.01f)] private float painFadeInDuration = 0.3f;
+    [SerializeField, Min(0.01f)] private float painFadeOutDuration = 1.2f;
+
     [Header("Покраснение при ранении")]
     [SerializeField, Range(0f, 1f)] private float woundedVignetteIntensity = 0.45f;
     [SerializeField, Range(0f, 1f)] private float woundedPulseAmplitude = 0.15f;
@@ -40,10 +47,15 @@ public class PlayerDamageEffects : MonoBehaviour
     private float _currentVignetteTarget;
     private float _woundBlend;
     private float _lastWoundPulse;
-    
+    private bool _painAudioActive;
+    private float _painBlend;
+    private AudioClip _previousClip;
+
     // Переменные для отложенной обработки промаха
     private bool _hasPendingNearMiss;
     private Vector3 _pendingNearMissPos;
+
+    public bool IsUsingAudioSource(AudioSource source) => _painAudioActive && painAudio == source;
 
     private void Awake()
     {
@@ -68,6 +80,7 @@ public class PlayerDamageEffects : MonoBehaviour
     {
         GlobalAudioEvents.OnGunshotFired -= HandleGunshot;
         _playerBrain.OnHitReceived -= HandleHit;
+        StopPainAudio();
     }
 
     private void Update()
@@ -78,6 +91,8 @@ public class PlayerDamageEffects : MonoBehaviour
 
     private void LateUpdate()
     {
+        UpdatePainAudio();
+
         // Обработка промаха в конце кадра, чтобы физическое попадание могло его отменить
         if (_hasPendingNearMiss)
         {
@@ -152,6 +167,49 @@ public class PlayerDamageEffects : MonoBehaviour
         src.Play();
         
         Destroy(soundObj, nearMissSound.length + 0.1f);
+    }
+
+    private void UpdatePainAudio()
+    {
+        if (PauseManager.IsPaused || painAudio == null) return;
+
+        bool wounded = _playerBrain.Condition == TargetCondition.Wounded || _playerBrain.Condition == TargetCondition.HeavyWounded;
+        if (wounded && !_painAudioActive)
+        {
+            _previousClip = painAudio.clip;
+            painAudio.Stop();
+            painAudio.clip = painClip;
+            painAudio.volume = 0f;
+            painAudio.playOnAwake = false;
+            painAudio.loop = true;
+            painAudio.spatialBlend = 0f;
+            _painAudioActive = true;
+        }
+
+        if (!_painAudioActive) return;
+
+        float duration = wounded ? painFadeInDuration : painFadeOutDuration;
+        _painBlend = Mathf.MoveTowards(_painBlend, wounded ? 1f : 0f, Time.deltaTime / Mathf.Max(0.01f, duration));
+        if (_painBlend <= 0f)
+        {
+            StopPainAudio();
+            return;
+        }
+
+        painAudio.volume = painVolume * Mathf.SmoothStep(0f, 1f, _painBlend);
+        if (painAudio.clip != null && !painAudio.isPlaying) painAudio.Play();
+    }
+
+    private void StopPainAudio()
+    {
+        if (_painAudioActive && painAudio != null)
+        {
+            painAudio.Stop();
+            painAudio.volume = 0f;
+            painAudio.clip = _previousClip;
+        }
+        _painAudioActive = false;
+        _painBlend = 0f;
     }
 
     private void UpdateVignette()

@@ -22,6 +22,12 @@ public class PlayerStaminaEffects : MonoBehaviour
     [Tooltip("Время плавного затухания после восстановления стамины, секунды")]
     [SerializeField, Min(0.01f)] private float fadeOutDuration = 1.2f;
 
+    [Header("Боль — тот же AudioSource")]
+    [SerializeField] private AudioClip painClip;
+    [SerializeField, Range(0f, 1f)] private float painVolume = 0.8f;
+    [SerializeField, Min(0.01f)] private float painFadeInDuration = 0.3f;
+    [SerializeField, Min(0.01f)] private float painFadeOutDuration = 1.2f;
+
     private PlayerBrain _brain;
     private bool _depleted;
     private float _blend;
@@ -32,12 +38,17 @@ public class PlayerStaminaEffects : MonoBehaviour
     private float _baseChromaticIntensity;
     private bool _baseChromaticActive;
     private bool _baseChromaticOverride;
+    private enum VoiceMode { None, Breathing, Pain }
+    private VoiceMode _voiceMode;
+    private float _voiceBlend;
+    private AudioClip _breathingClip;
 
     private void Awake()
     {
         _brain = GetComponent<PlayerBrain>();
         if (breathingAudio != null)
         {
+            _breathingClip = breathingAudio.clip;
             breathingAudio.playOnAwake = false;
             breathingAudio.loop = true;
             breathingAudio.spatialBlend = 0f;
@@ -54,7 +65,8 @@ public class PlayerStaminaEffects : MonoBehaviour
     private void OnDisable()
     {
         _brain.OnStaminaDepletedChanged -= HandleStaminaDepleted;
-        StopAndRestore();
+        RestoreStaminaVisuals();
+        ChangeVoiceMode(VoiceMode.None);
     }
 
     private void HandleStaminaDepleted(bool depleted) => _depleted = depleted;
@@ -65,23 +77,26 @@ public class PlayerStaminaEffects : MonoBehaviour
     {
         if (PauseManager.IsPaused) return;
 
-        bool active = _depleted && _brain.Condition != TargetCondition.Dead;
+        bool wounded = _brain.Condition == TargetCondition.Wounded || _brain.Condition == TargetCondition.HeavyWounded;
+        bool active = _depleted && _brain.Condition == TargetCondition.Normal;
+        UpdateVoice(wounded, active);
+
+        // Боль имеет приоритет: никакого остаточного усиления усталости у раненого.
+        if (wounded)
+        {
+            RestoreStaminaVisuals();
+            return;
+        }
         float duration = active ? fadeInDuration : fadeOutDuration;
         _blend = Mathf.MoveTowards(_blend, active ? 1f : 0f, Time.deltaTime / Mathf.Max(0.01f, duration));
         if (_blend <= 0f)
         {
-            if (_effectsApplied) StopAndRestore();
+            if (_effectsApplied) RestoreStaminaVisuals();
             return;
         }
 
         if (!_effectsApplied) CaptureBaseline();
         float strength = Mathf.SmoothStep(0f, 1f, _blend);
-
-        if (breathingAudio != null)
-        {
-            breathingAudio.volume = breathingVolume * strength;
-            if (!breathingAudio.isPlaying) breathingAudio.Play();
-        }
 
         if (cameraNoise != null)
         {
@@ -118,14 +133,46 @@ public class PlayerStaminaEffects : MonoBehaviour
         _effectsApplied = true;
     }
 
-    private void StopAndRestore()
+    private void UpdateVoice(bool wounded, bool exhausted)
+    {
+        if (breathingAudio == null) return;
+
+        VoiceMode desired = wounded ? VoiceMode.Pain : exhausted ? VoiceMode.Breathing : VoiceMode.None;
+        if (desired == VoiceMode.Pain && _voiceMode != VoiceMode.Pain)
+            ChangeVoiceMode(VoiceMode.Pain);
+        else if (_voiceMode == VoiceMode.None && desired != VoiceMode.None)
+            ChangeVoiceMode(desired);
+
+        bool active = _voiceMode != VoiceMode.None && _voiceMode == desired;
+        float duration = _voiceMode == VoiceMode.Pain
+            ? (active ? painFadeInDuration : painFadeOutDuration)
+            : (active ? fadeInDuration : fadeOutDuration);
+        _voiceBlend = Mathf.MoveTowards(_voiceBlend, active ? 1f : 0f, Time.deltaTime / Mathf.Max(0.01f, duration));
+        if (_voiceBlend <= 0f)
+        {
+            if (_voiceMode != VoiceMode.None) ChangeVoiceMode(VoiceMode.None);
+            return;
+        }
+
+        float volume = _voiceMode == VoiceMode.Pain ? painVolume : breathingVolume;
+        breathingAudio.volume = volume * Mathf.SmoothStep(0f, 1f, _voiceBlend);
+        if (breathingAudio.clip != null && !breathingAudio.isPlaying) breathingAudio.Play();
+    }
+
+    private void ChangeVoiceMode(VoiceMode mode)
     {
         if (breathingAudio != null)
         {
             breathingAudio.Stop();
             breathingAudio.volume = 0f;
+            breathingAudio.clip = mode == VoiceMode.Pain ? painClip : _breathingClip;
         }
+        _voiceMode = mode;
+        _voiceBlend = 0f;
+    }
 
+    private void RestoreStaminaVisuals()
+    {
         if (_effectsApplied)
         {
             if (cameraNoise != null)

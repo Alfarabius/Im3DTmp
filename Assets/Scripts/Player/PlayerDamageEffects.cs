@@ -21,13 +21,25 @@ public class PlayerDamageEffects : MonoBehaviour
     [SerializeField] private float vignetteDecaySpeed = 2f;
 
     [Header("Настройки попадания (Hit)")]
-    [SerializeField] private float vignetteHitIntensity = 0.6f;
+    [SerializeField] private float vignetteHitIntensity = 0.8f;
+
+    [Header("Покраснение при ранении")]
+    [SerializeField, Range(0f, 1f)] private float woundedVignetteIntensity = 0.45f;
+    [SerializeField, Range(0f, 1f)] private float woundedPulseAmplitude = 0.15f;
+    [SerializeField] private float woundedPulseSpeed = 7f;
+    [SerializeField, Range(0f, 1f)] private float heavyWoundedVignetteIntensity = 0.65f;
+    [SerializeField, Range(0f, 1f)] private float heavyWoundedPulseAmplitude = 0.2f;
+    [SerializeField] private float heavyWoundedPulseSpeed = 10f;
+    [SerializeField, Min(0.01f)] private float woundFadeInDuration = 0.3f;
+    [SerializeField, Min(0.01f)] private float woundFadeOutDuration = 1.2f;
 
     private PlayerBrain _playerBrain;
     private CinemachineImpulseSource _impulseSource;
     private Vignette _vignette;
     private ColorAdjustments _colorAdjustments;
     private float _currentVignetteTarget;
+    private float _woundBlend;
+    private float _lastWoundPulse;
     
     // Переменные для отложенной обработки промаха
     private bool _hasPendingNearMiss;
@@ -155,15 +167,20 @@ public class PlayerDamageEffects : MonoBehaviour
 
         float finalIntensity = _currentVignetteTarget;
 
-        // Наложение перманентной пульсации при различных стадиях ранения
-        if (_playerBrain.Condition == TargetCondition.Wounded)
+        bool wounded = _playerBrain.Condition == TargetCondition.Wounded || _playerBrain.Condition == TargetCondition.HeavyWounded;
+        if (wounded)
         {
-            finalIntensity = Mathf.Max(finalIntensity, 0.2f + Mathf.Sin(Time.time * 3f) * 0.05f);
+            bool heavy = _playerBrain.Condition == TargetCondition.HeavyWounded;
+            float intensity = heavy ? heavyWoundedVignetteIntensity : woundedVignetteIntensity;
+            float amplitude = heavy ? heavyWoundedPulseAmplitude : woundedPulseAmplitude;
+            float speed = heavy ? heavyWoundedPulseSpeed : woundedPulseSpeed;
+            _lastWoundPulse = Mathf.Clamp01(intensity + Mathf.Sin(Time.time * speed) * amplitude);
         }
-        else if (_playerBrain.Condition == TargetCondition.HeavyWounded)
-        {
-            finalIntensity = Mathf.Max(finalIntensity, 0.4f + Mathf.Sin(Time.time * 5f) * 0.1f);
-        }
+        float duration = wounded ? woundFadeInDuration : woundFadeOutDuration;
+        _woundBlend = Mathf.MoveTowards(_woundBlend, wounded ? 1f : 0f, Time.deltaTime / Mathf.Max(0.01f, duration));
+
+        // После лечения фиксируем последнюю фазу пульса, чтобы краснота только убывала.
+        finalIntensity = Mathf.Max(finalIntensity, _lastWoundPulse * Mathf.SmoothStep(0f, 1f, _woundBlend));
 
         _vignette.intensity.value = finalIntensity;
         _vignette.color.value = Color.red; 

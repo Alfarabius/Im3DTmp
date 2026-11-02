@@ -1,4 +1,4 @@
-"""Verify the uploaded breathing clip and Player's audio/camera/volume wiring."""
+"""Verify the uploaded voice clips and Player's audio/camera/volume wiring."""
 import re
 import unittest
 import wave
@@ -7,6 +7,7 @@ from pathlib import Path
 ASSETS = Path(__file__).resolve().parents[1] / "Assets"
 PLAYER = ASSETS / "Prefabs/Player.prefab"
 CLIP = ASSETS / "Audio/516696__amekiano__respiracion-agitada-heavy-breathing.wav"
+PAIN_CLIP = ASSETS / "Audio/876075__sebasteks__man-in-excruciating-pain.wav"
 
 
 def guid(path):
@@ -59,6 +60,16 @@ class PlayerStaminaAssetTests(unittest.TestCase):
         noise = next(block for block in blocks(PLAYER) if block.startswith(f"--- !u!114 &{noise_id}\n"))
         self.assertIn("CinemachineBasicMultiChannelPerlin", noise)
         self.assertNotIn("NoiseProfile: {fileID: 0}", noise)
+
+    def test_pain_clip_is_assigned_without_adding_an_audio_source(self):
+        self.assertIn(f"painClip: {{fileID: 8300000, guid: {guid(PAIN_CLIP)}, type: 3}}", effects())
+        sources = [block for block in blocks(PLAYER) if block.startswith("--- !u!82 ")]
+        self.assertEqual(len(sources), 3)  # footsteps, hit, shared breathing/pain
+        with wave.open(str(PAIN_CLIP)) as clip:
+            self.assertEqual(clip.getnchannels(), 2)
+            self.assertEqual(clip.getframerate(), 96000)
+            self.assertEqual(clip.getsampwidth(), 2)
+            self.assertAlmostEqual(clip.getnframes() / clip.getframerate(), 6.886208333333333)
 
     def test_scene_volume_is_same_as_damage_effects(self):
         scene = (ASSETS / "Scenes/GameScene.unity").read_text()

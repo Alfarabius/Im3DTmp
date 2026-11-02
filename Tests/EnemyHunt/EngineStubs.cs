@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace UnityEngine
 {
-    public class Object { public static void Destroy(Object value) {} }
+    public class Object { public static void Destroy(Object value, float delay=0) {} }
     public class Component : Object
     {
         public GameObject gameObject;
@@ -19,7 +19,7 @@ namespace UnityEngine
         readonly List<Component> components = new List<Component>();
         public Transform transform;
         public int layer;
-        public GameObject() { transform = AddComponent<Transform>(); }
+        public GameObject(string name="") { transform = AddComponent<Transform>(); }
         public T AddComponent<T>() where T : Component, new() { var value = new T { gameObject = this }; components.Add(value); return value; }
         public T GetComponent<T>() where T : class => components.OfType<T>().FirstOrDefault();
     }
@@ -49,6 +49,8 @@ namespace UnityEngine
         public static Vector3 operator *(Vector3 a, float b) => new Vector3(a.x*b,a.y*b,a.z*b);
         public static Vector3 operator /(Vector3 a, float b) => new Vector3(a.x/b,a.y/b,a.z/b);
         public static float Distance(Vector3 a, Vector3 b) => (a-b).magnitude;
+        public static float Dot(Vector3 a, Vector3 b) => a.x*b.x+a.y*b.y+a.z*b.z;
+        public static Vector3 Cross(Vector3 a, Vector3 b) => new Vector3(a.y*b.z-a.z*b.y,a.z*b.x-a.x*b.z,a.x*b.y-a.y*b.x);
         public static float Angle(Vector3 a, Vector3 b)
         {
             float norm=a.magnitude*b.magnitude;
@@ -70,7 +72,7 @@ namespace UnityEngine
         public static implicit operator int(LayerMask m) => m.value;
         public static implicit operator LayerMask(int value) => new LayerMask { value=value };
     }
-    public static class Time { public static float deltaTime = 1; }
+    public static class Time { public static float deltaTime = 1,time; }
     public static class Mathf
     {
         public static float Max(float a,float b) => Math.Max(a,b);
@@ -79,6 +81,7 @@ namespace UnityEngine
         public static float Lerp(float a,float b,float t) => a+(b-a)*Clamp01(t);
         public static float MoveTowards(float current,float target,float delta) => Math.Abs(target-current)<=delta ? target : current+Math.Sign(target-current)*delta;
         public static float SmoothStep(float a,float b,float t) { t=Clamp01(t); return a+(b-a)*t*t*(3-2*t); }
+        public static float Sin(float value) => (float)Math.Sin(value);
     }
     public static class Random { public static float value=0.5f; public static float Range(float min,float max) => min; }
     public class Animator : Component
@@ -88,12 +91,16 @@ namespace UnityEngine
         public void SetFloat(string key,float value) {}
         public void SetTrigger(string key) {}
     }
-    public class AudioClip : Object {}
+    public class AudioClip : Object { public float length=4; }
+    public enum AudioRolloffMode { Logarithmic, Linear }
     public class AudioSource : Component
     {
         public AudioClip clip;
         public float volume=1,spatialBlend=1;
         public bool loop,playOnAwake=true,isPlaying;
+        public AudioRolloffMode rolloffMode;
+        public float minDistance,maxDistance;
+        public object outputAudioMixerGroup;
         public int Plays,Stops;
         public void PlayOneShot(AudioClip clip) {}
         public void Play() { Plays++; isPlaying=true; }
@@ -109,6 +116,7 @@ namespace UnityEngine
         public static bool Raycast(Vector3 origin,Vector3 direction,float distance,LayerMask mask) => Blocked;
         public static bool Raycast(Vector3 origin,Vector3 direction,out RaycastHit hit,float distance,LayerMask mask) { hit=new RaycastHit(); return false; }
     }
+    [AttributeUsage(AttributeTargets.Class,AllowMultiple=true)]
     public class RequireComponent : Attribute { public RequireComponent(Type a) {} public RequireComponent(Type a,Type b) {} }
     public class SerializeField : Attribute {}
     public class Header : Attribute { public Header(string text) {} }

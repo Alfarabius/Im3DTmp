@@ -26298,6 +26298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e260c9c4152b7434a8bdcae7a779f062, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  activeLootBoxesCount: 10
   enableLootBoxWin: 1
   requiredLootBoxes: 7
   enableEnemyDeathWin: 0

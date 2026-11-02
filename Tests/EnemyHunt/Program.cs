@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.AI;
@@ -62,6 +63,38 @@ class Fixture : IDisposable
 class Program
 {
     static void Assert(bool condition,string message) { if(!condition) throw new Exception(message); }
+    static string SelectLootBoxes(int total,int seed=1,int? limit=null)
+    {
+        GameObject.SceneObjects.Clear();
+        typeof(GameManager).GetProperty("Instance").SetValue(null,null);
+        UnityEngine.Random.InitState(seed);
+        var boxes=new LootBox[total];
+        for(int i=0;i<total;i++) boxes[i]=new GameObject().AddComponent<LootBox>();
+        var inactive=new GameObject(); inactive.AddComponent<LootBox>(); inactive.SetActive(false);
+        var unrelated=new GameObject();
+        var game=new GameObject().AddComponent<GameManager>();
+        if(limit.HasValue) Fixture.Set(game,"activeLootBoxesCount",limit.Value);
+        Fixture.Call(game,"Awake");
+        int expected=Math.Min(total,Math.Max(0,limit ?? 10));
+        Assert(boxes.Count(box=>box.gameObject.activeSelf)==expected,"wrong active loot box count for "+total);
+        Assert(!inactive.activeSelf && unrelated.activeSelf,"changed an inactive box or unrelated object");
+        Assert(GameSessionController.Wins==0,"selection counted as opening loot boxes");
+        return string.Join(",",boxes.Select((box,index)=>box.gameObject.activeSelf ? index.ToString() : ""));
+    }
+    static void CheckLootBoxSelection()
+    {
+        GameSessionController.Wins=0;
+        foreach(int total in new[] {0,6,10,24})
+        {
+            SelectLootBoxes(total);
+            Console.WriteLine("PASS startup loot selection with "+total+" boxes");
+        }
+        Assert(SelectLootBoxes(24,seed:1)!=SelectLootBoxes(24,seed:2),"selection always kept the same boxes");
+        Console.WriteLine("PASS different random seeds select different loot boxes");
+        SelectLootBoxes(24,limit:3); SelectLootBoxes(24,limit:0);
+        Console.WriteLine("PASS inspector loot limit controls active box count");
+        GameObject.SceneObjects.Clear();
+    }
     static void Run(string name,Action<Fixture> test)
     {
         using(var f=new Fixture()) test(f);
@@ -69,6 +102,7 @@ class Program
     }
     static int Main()
     {
+        CheckLootBoxSelection();
         Run("10 seconds in patrol enter Hunt", f=> { f.Tick(9); Assert(f.State==f.Patrol,"early hunt"); f.Tick(); Assert(f.State==f.Hunt,"timer did not enter Hunt"); });
         Run("look-around time counts toward patrol timeout", f=> { Fixture.Set(f.Patrol,"rotationSpeed",1f); f.Tick(10); Assert(f.State==f.Hunt,"look-around blocked timer"); });
         Run("patrol re-entry resets timeout", f=> { f.Tick(9); f.Brain.ChangeState(f.Chase); f.Brain.ChangeState(f.Patrol); f.Tick(9); Assert(f.State==f.Patrol,"timer not reset"); f.Tick(); Assert(f.State==f.Hunt,"reset timer did not expire"); });
@@ -96,7 +130,7 @@ class Program
         Run("player detection takes priority over arrival", f=> { f.Brain.BeginHunt(); f.Agent.Warp(f.Agent.destination); f.Target(true,f.Agent.transform.position+new Vector3(0,0,10)); f.Tick(); Assert(f.State==f.Attack,"arrival hid visible player"); });
         Run("missing route returns to Patrol", f=> { Fixture.Set(f.Patrol,"routeRoot",null); f.Brain.BeginHunt(); Assert(f.State==f.Patrol,"missing route stuck in Hunt"); });
         Run("partial path returns to Patrol", f=> { f.Brain.BeginHunt(); f.Agent.pathStatus=NavMeshPathStatus.PathPartial; f.Tick(); Assert(f.State==f.Patrol,"partial path stuck in Hunt"); });
-        Console.WriteLine("27 behavior checks passed. Native Unity behavior is not covered by these engine stubs.");
+        Console.WriteLine("33 behavior checks passed. Native Unity behavior is not covered by these engine stubs.");
         return 0;
     }
 }

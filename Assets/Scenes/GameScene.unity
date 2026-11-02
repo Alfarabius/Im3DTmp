@@ -52465,30 +52465,6 @@ PrefabInstance:
       propertyPath: postProcessVolume
       value: 
       objectReference: {fileID: 832575518}
-    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
-      propertyPath: woundedPulseSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
-      propertyPath: woundedPulseAmplitude
-      value: 0.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
-      propertyPath: heavyWoundedPulseSpeed
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
-      propertyPath: woundedVignetteIntensity
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
-      propertyPath: heavyWoundedPulseAmplitude
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
-      propertyPath: heavyWoundedVignetteIntensity
-      value: 0.35
-      objectReference: {fileID: 0}
     - target: {fileID: 6823027890462101001, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
       propertyPath: postProcessVolume
       value: 

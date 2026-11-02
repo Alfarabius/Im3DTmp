@@ -89,6 +89,7 @@ namespace UnityEngine
     public static class Time { public static float deltaTime = 1,time; }
     public static class Mathf
     {
+        public const float PI=3.14159274f;
         public static float Max(float a,float b) => Math.Max(a,b);
         public static float Clamp(float v,float a,float b) => Math.Max(a,Math.Min(v,b));
         public static int Clamp(int v,int a,int b) => Math.Max(a,Math.Min(v,b));

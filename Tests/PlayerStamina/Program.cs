@@ -17,6 +17,7 @@ class Fixture : IDisposable
     public Volume Volume;
     public ChromaticAberration Chromatic => Volume.profile.Chromatic;
     public Vignette Vignette => Volume.profile.Vignette;
+    public float Redness => 1f-Vignette.color.value.g;
     public List<bool> Events=new List<bool>();
     public static void Set(object target,string name,object value)
     {
@@ -36,6 +37,7 @@ class Fixture : IDisposable
         Audio=player.AddComponent<AudioSource>(); BreathingClip=new AudioClip(); PainClip=new AudioClip(); Audio.clip=BreathingClip;
         Noise=player.AddComponent<CinemachineBasicMultiChannelPerlin>();
         Volume=player.AddComponent<Volume>(); Volume.sharedProfile.Chromatic.intensity.value=0.128f; Volume.sharedProfile.Chromatic.intensity.overrideState=true;
+        Volume.sharedProfile.Vignette.intensity.value=0.451f; Volume.sharedProfile.Vignette.color.value=Color.white;
         Effects=player.AddComponent<PlayerStaminaEffects>();
         player.AddComponent<CinemachineImpulseSource>();
         Damage=player.AddComponent<PlayerDamageEffects>();
@@ -185,61 +187,84 @@ class Program
             f.Tick(0.1f);
             Assert(f.Audio.isPlaying && f.Audio.volume>0 && f.Audio.volume<0.7f,"breathing resumed abruptly");
         });
-        Run("wounded redness has a stronger sustained pulse",f=>
+        Run("injury gently pulses only the red tint within a fixed vignette",f=>
         {
             f.Brain.TryApplyHit(1f); f.Tick(0.1f,5);
             float min=1,max=0;
             for(int i=0;i<120;i++)
             {
-                f.Tick(0.02f); float red=f.Vignette.intensity.value;
-                Assert(red>=0.2999f && red<=0.6001f,"wounded redness outside configured range");
+                f.Tick(0.02f); float red=f.Redness;
+                Assert(red>=0.0999f && red<=0.3001f,"redness outside configured range");
+                Near(f.Vignette.intensity.value,0.451f,"pulse changed vignette geometry");
+                Near(f.Vignette.color.value.g,f.Vignette.color.value.b,"pulse changed tint hue");
                 min=Math.Min(min,red); max=Math.Max(max,red);
             }
-            Assert(max-min>0.29f,"wounded pulse too weak");
-            Near(f.Vignette.color.value.r,1,"vignette not red"); Near(f.Vignette.color.value.g,0,"vignette not red");
+            Assert(max-min>0.19f,"redness did not pulse between its limits");
+            Near(f.Vignette.color.value.r,1,"pulse darkened the red channel");
         });
-        Run("heavy wounded redness is stronger and pulses more intensely",f=>
+        Run("wounded and heavy wounded use exactly the same tint pulse",f=>
         {
-            f.Brain.TryApplyHit(1f); f.Brain.TryApplyHit(1f); f.Tick(0.1f,5);
-            float min=1,max=0;
-            for(int i=0;i<120;i++)
+            f.Brain.TryApplyHit(1f); f.Tick(0.1f,5);
+            float startTime=Time.time;
+            var normal=new float[120];
+            for(int i=0;i<normal.Length;i++) { f.Tick(0.02f); normal[i]=f.Redness; }
+            Fixture.Set(f.Brain,"Condition",TargetCondition.HeavyWounded); Time.time=startTime;
+            for(int i=0;i<normal.Length;i++)
             {
-                f.Tick(0.02f); float red=f.Vignette.intensity.value;
-                Assert(red>=0.4499f && red<=0.8501f,"heavy redness outside configured range");
-                min=Math.Min(min,red); max=Math.Max(max,red);
+                f.Tick(0.02f);
+                Near(f.Redness,normal[i],"wound severity changed the red tint");
+                Near(f.Vignette.intensity.value,0.451f,"heavy wound changed vignette geometry");
             }
-            Assert(max-min>0.39f,"heavy pulse too weak");
+        });
+        Run("hit flashes and healing preserve the volume's configured vignette shape",f=>
+        {
+            f.Vignette.intensity.value=0.37f;
+            f.Brain.TryApplyHit(1f); f.Tick(0.05f);
+            Near(f.Vignette.intensity.value,0.37f,"hit flash changed vignette geometry");
+            f.Brain.TryApplyHit(1f); f.Tick(0.05f);
+            Near(f.Vignette.intensity.value,0.37f,"second hit changed vignette geometry");
+            f.Brain.Heal();
+            for(int i=0;i<15;i++) { f.Tick(0.1f); Near(f.Vignette.intensity.value,0.37f,"healing resized vignette"); }
+            Near(f.Redness,0,"healing left a tint");
+        });
+        Run("healthy player has a neutral tint with the configured vignette shape",f=>
+        {
+            f.Tick(); Near(f.Redness,0,"healthy player was tinted");
+            Near(f.Vignette.color.value.r,1,"neutral tint altered red channel");
+            Near(f.Vignette.color.value.b,1,"neutral tint altered blue channel");
+            Near(f.Vignette.intensity.value,0.451f,"healthy update altered vignette geometry");
         });
         Run("healing fades redness and pain together with no upward pulse or abrupt stop",f=>
         {
             f.Brain.TryApplyHit(1f); f.Tick(0.1f,5);
-            float start=f.Vignette.intensity.value, previous=start, volume=f.Audio.volume;
+            float start=f.Redness, previous=start, volume=f.Audio.volume;
             f.Brain.Heal();
             for(int i=0;i<11;i++)
             {
-                f.Tick(0.1f); float red=f.Vignette.intensity.value;
+                f.Tick(0.1f); float red=f.Redness;
                 Assert(red>0 && red<previous,"healing redness snapped or pulsed upwards");
                 Assert(f.Audio.volume>0 && f.Audio.volume<volume && f.Audio.isPlaying,"healing audio snapped or rose");
                 Near(red/start,f.Audio.volume/0.8f,"healing envelopes diverged");
                 previous=red; volume=f.Audio.volume;
             }
-            f.Tick(0.1f,2); Near(f.Vignette.intensity.value,0,"healing left redness");
+            f.Tick(0.1f,2); Near(f.Redness,0,"healing left redness");
             Assert(!f.Audio.isPlaying,"healing left pain");
         });
         Run("pause freezes the healing audio and redness envelopes",f=>
         {
             f.Brain.TryApplyHit(1f); f.Tick(0.1f,5); f.Brain.Heal(); f.Tick(0.2f);
-            float red=f.Vignette.intensity.value,volume=f.Audio.volume;
+            float red=f.Redness,volume=f.Audio.volume;
             PauseManager.IsPaused=true; f.Tick(1,5);
-            Near(f.Vignette.intensity.value,red,"pause advanced redness fade"); Near(f.Audio.volume,volume,"pause advanced pain fade");
+            Near(f.Redness,red,"pause advanced redness fade"); Near(f.Audio.volume,volume,"pause advanced pain fade");
             PauseManager.IsPaused=false; f.Tick(0.2f);
-            Assert(f.Vignette.intensity.value<red && f.Audio.volume<volume,"resume did not advance healing fade");
+            Assert(f.Redness<red && f.Audio.volume<volume,"resume did not advance healing fade");
         });
         Run("injury effects only modify the runtime volume instance",f=>
         {
             f.Brain.TryApplyHit(1f); f.Tick(0.1f,5);
-            Assert(f.Vignette.intensity.value>0,"no runtime wound effect");
-            Near(f.Volume.sharedProfile.Vignette.intensity.value,0,"injury modified shared vignette");
+            Assert(f.Redness>0,"no runtime wound effect");
+            Near(f.Volume.sharedProfile.Vignette.intensity.value,0.451f,"injury modified shared vignette geometry");
+            Near(f.Volume.sharedProfile.Vignette.color.value.g,1,"injury modified shared vignette tint");
             Near(f.Volume.sharedProfile.Color.saturation.value,0,"injury modified shared saturation");
         });
         Run("missing pain clip silences breathing without playing a null clip",f=>

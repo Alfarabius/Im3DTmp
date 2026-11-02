@@ -5,9 +5,14 @@ namespace UnityEngine
     {
         public float r,g,b,a;
         public static Color red => new Color { r=1,a=1 };
+        public static Color white => new Color { r=1,g=1,b=1,a=1 };
         public static Color yellow => new Color { r=1,g=1,a=1 };
         public static Color black => new Color { a=1 };
         public static Color operator *(Color c,float scale) => new Color { r=c.r*scale,g=c.g*scale,b=c.b*scale,a=c.a*scale };
+        public static Color Lerp(Color from,Color to,float t) => new Color
+        {
+            r=Mathf.Lerp(from.r,to.r,t),g=Mathf.Lerp(from.g,to.g,t),b=Mathf.Lerp(from.b,to.b,t),a=Mathf.Lerp(from.a,to.a,t)
+        };
     }
     public class MaterialPropertyBlock { public void SetColor(string name,Color color) {} }
     public class MeshRenderer : Component { public void GetPropertyBlock(MaterialPropertyBlock block) {} public void SetPropertyBlock(MaterialPropertyBlock block) {} }

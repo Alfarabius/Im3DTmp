@@ -94,3 +94,15 @@ class PlayerStaminaAssetTests(unittest.TestCase):
         self.assertIn("  fadeInDuration: 0.8\n", fx)
         self.assertIn("  fadeOutDuration: 1.2\n", fx)
         self.assertIn("  shakeAmplitudeMultiplier: 2\n", fx)
+
+    def test_redness_settings_are_shared_for_both_wound_conditions(self):
+        damage = effects("PlayerDamageEffects")
+        self.assertIn("  minWoundRedness: 0.1\n", damage)
+        self.assertIn("  maxWoundRedness: 0.3\n", damage)
+        self.assertIn("  woundPulseFrequency: 0.8\n", damage)
+        obsolete = ["woundedVignetteIntensity", "woundedPulseAmplitude", "woundedPulseSpeed",
+                    "heavyWoundedVignetteIntensity", "heavyWoundedPulseAmplitude", "heavyWoundedPulseSpeed"]
+        scene = (ASSETS / "Scenes/GameScene.unity").read_text()
+        for name in obsolete:
+            self.assertNotIn(name + ":", damage)
+            self.assertNotIn("propertyPath: " + name + "\n", scene)

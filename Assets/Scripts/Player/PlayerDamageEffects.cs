@@ -17,11 +17,11 @@ public class PlayerDamageEffects : MonoBehaviour
     
     [Header("Настройки промаха (Near Miss)")]
     [SerializeField] private float nearMissRadius = 2f;
-    [SerializeField] private float vignetteMissIntensity = 0.4f;
-    [SerializeField] private float vignetteDecaySpeed = 2f;
+    [SerializeField, Range(0f, 1f)] private float nearMissRedness = 0.25f;
+    [SerializeField] private float rednessDecaySpeed = 2f;
 
     [Header("Настройки попадания (Hit)")]
-    [SerializeField] private float vignetteHitIntensity = 0.8f;
+    [SerializeField, Range(0f, 1f)] private float hitRedness = 0.4f;
 
     [Header("Звук боли")]
     [SerializeField] private AudioSource painAudio;
@@ -31,12 +31,10 @@ public class PlayerDamageEffects : MonoBehaviour
     [SerializeField, Min(0.01f)] private float painFadeOutDuration = 1.2f;
 
     [Header("Покраснение при ранении")]
-    [SerializeField, Range(0f, 1f)] private float woundedVignetteIntensity = 0.45f;
-    [SerializeField, Range(0f, 1f)] private float woundedPulseAmplitude = 0.15f;
-    [SerializeField] private float woundedPulseSpeed = 7f;
-    [SerializeField, Range(0f, 1f)] private float heavyWoundedVignetteIntensity = 0.65f;
-    [SerializeField, Range(0f, 1f)] private float heavyWoundedPulseAmplitude = 0.2f;
-    [SerializeField] private float heavyWoundedPulseSpeed = 10f;
+    [SerializeField, Range(0f, 1f)] private float minWoundRedness = 0.1f;
+    [SerializeField, Range(0f, 1f)] private float maxWoundRedness = 0.3f;
+    [Tooltip("Число пульсаций в секунду")]
+    [SerializeField, Min(0f)] private float woundPulseFrequency = 0.8f;
     [SerializeField, Min(0.01f)] private float woundFadeInDuration = 0.3f;
     [SerializeField, Min(0.01f)] private float woundFadeOutDuration = 1.2f;
 
@@ -44,9 +42,9 @@ public class PlayerDamageEffects : MonoBehaviour
     private CinemachineImpulseSource _impulseSource;
     private Vignette _vignette;
     private ColorAdjustments _colorAdjustments;
-    private float _currentVignetteTarget;
+    private float _currentRedness;
     private float _woundBlend;
-    private float _lastWoundPulse;
+    private float _lastWoundRedness;
     private bool _painAudioActive;
     private float _painBlend;
     private AudioClip _previousClip;
@@ -85,7 +83,7 @@ public class PlayerDamageEffects : MonoBehaviour
 
     private void Update()
     {
-        UpdateVignette();
+        UpdateRedness();
         UpdateColorAdjustments();
     }
 
@@ -97,7 +95,7 @@ public class PlayerDamageEffects : MonoBehaviour
         if (_hasPendingNearMiss)
         {
             PlayNearMissSound(_pendingNearMissPos);
-            _currentVignetteTarget = Mathf.Max(_currentVignetteTarget, vignetteMissIntensity);
+            _currentRedness = Mathf.Max(_currentRedness, nearMissRedness);
             
             _hasPendingNearMiss = false; 
         }
@@ -134,7 +132,7 @@ public class PlayerDamageEffects : MonoBehaviour
             audioSource2D.PlayOneShot(hitSound);
         }
 
-        _currentVignetteTarget = vignetteHitIntensity;
+        _currentRedness = hitRedness;
         
         // Активация тряски камеры при попадании
         if (_impulseSource != null)
@@ -212,36 +210,26 @@ public class PlayerDamageEffects : MonoBehaviour
         _painBlend = 0f;
     }
 
-    private void UpdateVignette()
+    private void UpdateRedness()
     {
         if (_vignette == null) return;
 
-        // Плавное затухание от вспышек промаха или попадания
-        if (_currentVignetteTarget > 0)
-        {
-            _currentVignetteTarget -= Time.deltaTime * vignetteDecaySpeed;
-            _currentVignetteTarget = Mathf.Max(0, _currentVignetteTarget);
-        }
-
-        float finalIntensity = _currentVignetteTarget;
+        _currentRedness = Mathf.MoveTowards(_currentRedness, 0f, Time.deltaTime * rednessDecaySpeed);
 
         bool wounded = _playerBrain.Condition == TargetCondition.Wounded || _playerBrain.Condition == TargetCondition.HeavyWounded;
         if (wounded)
         {
-            bool heavy = _playerBrain.Condition == TargetCondition.HeavyWounded;
-            float intensity = heavy ? heavyWoundedVignetteIntensity : woundedVignetteIntensity;
-            float amplitude = heavy ? heavyWoundedPulseAmplitude : woundedPulseAmplitude;
-            float speed = heavy ? heavyWoundedPulseSpeed : woundedPulseSpeed;
-            _lastWoundPulse = Mathf.Clamp01(intensity + Mathf.Sin(Time.time * speed) * amplitude);
+            float pulse = 0.5f + 0.5f * Mathf.Sin(Time.time * woundPulseFrequency * 2f * Mathf.PI);
+            _lastWoundRedness = Mathf.Lerp(minWoundRedness, maxWoundRedness, pulse);
         }
         float duration = wounded ? woundFadeInDuration : woundFadeOutDuration;
         _woundBlend = Mathf.MoveTowards(_woundBlend, wounded ? 1f : 0f, Time.deltaTime / Mathf.Max(0.01f, duration));
 
         // После лечения фиксируем последнюю фазу пульса, чтобы краснота только убывала.
-        finalIntensity = Mathf.Max(finalIntensity, _lastWoundPulse * Mathf.SmoothStep(0f, 1f, _woundBlend));
+        float redness = Mathf.Max(_currentRedness, _lastWoundRedness * Mathf.SmoothStep(0f, 1f, _woundBlend));
 
-        _vignette.intensity.value = finalIntensity;
-        _vignette.color.value = Color.red; 
+        // Белый цвет нейтрален для URP Vignette: меняем только оттенок, сохраняя её форму.
+        _vignette.color.value = Color.Lerp(Color.white, Color.red, redness);
     }
 
     private void UpdateColorAdjustments()

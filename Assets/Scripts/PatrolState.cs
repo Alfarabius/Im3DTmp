@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -12,17 +11,17 @@ public class PatrolState : MonoBehaviour, ICharacterState
     [Tooltip("Интервал между проверками видимости целей")] [SerializeField] private float scanInterval = 0.3f;
     
     
-    [Header("Смена приоритета (Поиск игрока)")]
-    [Tooltip("Время до принудительного перехода к ближайшей к игроку точке")] [SerializeField] private float timeBeforeHunting = 10f;
-    [Tooltip("Ссылка на трансформ игрока")] [SerializeField] private Transform playerTransform;
+    [Header("Переход к охоте")]
+    [Tooltip("Время в патруле до перехода в HuntState, включая осмотр местности")]
+    [SerializeField, Min(0.1f)] private float timeBeforeHunting = 10f;
     
     [SerializeField] private Transform routeRoot;
+    public Transform RouteRoot => routeRoot;
     private Transform[] _patrolPoints;
     
     private EnemyBrain _brain;
     private float _scanTimer;
     private float _timeInState;
-    private bool _isHuntingPlayer;
     private Transform _currentPoint;
     private readonly List<Transform> _unvisitedPoints = new List<Transform>();
 
@@ -58,7 +57,6 @@ public class PatrolState : MonoBehaviour, ICharacterState
     {
         _brain.Agent.speed = patrolSpeed;
         _timeInState = 0f;
-        _isHuntingPlayer = false;
 
         // Сбрасываем старый маршрут, чтобы не идти к убитой цели (трупу)
         if (_brain.Agent.isActiveAndEnabled)
@@ -76,6 +74,9 @@ public class PatrolState : MonoBehaviour, ICharacterState
 
     public void UpdateState()
     {
+        _timeInState += Time.deltaTime;
+        if (_timeInState >= timeBeforeHunting && _brain.BeginHunt()) return;
+
         // Обновляем анимацию (когда агент стоит во время осмотра, velocity.magnitude равно 0)
         _brain.Anim.SetFloat("Speed", _brain.Agent.velocity.magnitude);
         _brain.RegenStamina();
@@ -89,23 +90,9 @@ public class PatrolState : MonoBehaviour, ICharacterState
                 return; 
             }
 
-            _timeInState += Time.deltaTime;
-
-            // Смена приоритета на ближайшую к игроку точку
-            if (!_isHuntingPlayer && _timeInState >= timeBeforeHunting && playerTransform != null)
-            {
-                ForceGoToPointClosestToPlayer();
-            }
-
             // Проверка достижения точки
             if (!_brain.Agent.pathPending && _brain.Agent.remainingDistance <= _brain.Agent.stoppingDistance)
             {
-                if (_isHuntingPlayer)
-                {
-                    _isHuntingPlayer = false;
-                    _timeInState = 0f;
-                }
-
                 // Дошли до точки — запускаем осмотр местности
                 StartLookingAround();
             }
@@ -130,6 +117,7 @@ public class PatrolState : MonoBehaviour, ICharacterState
 
     public void Exit()
     {
+        _isLookingAround = false;
         if (_brain.Agent.isActiveAndEnabled)
         {
             // Снимаем блокировку движения на случай, если вышли из стейта во время поворота
@@ -239,31 +227,4 @@ public class PatrolState : MonoBehaviour, ICharacterState
         }
     }
 
-    private void ForceGoToPointClosestToPlayer()
-    {
-        _isHuntingPlayer = true;
-
-        Transform closestPoint = null;
-        float minDistance = float.MaxValue;
-
-        for (int i = 0; i < _patrolPoints.Length; i++)
-        {
-            Transform point = _patrolPoints[i];
-            if (point == null) continue;
-
-            float distance = Vector3.Distance(point.position, playerTransform.position);
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                closestPoint = point;
-            }
-        }
-
-        if (closestPoint != null)
-        {
-            _currentPoint = closestPoint;
-            _unvisitedPoints.Remove(closestPoint);
-            _brain.Agent.SetDestination(closestPoint.position);
-        }
-    }
 }

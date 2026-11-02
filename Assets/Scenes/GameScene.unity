@@ -50856,7 +50856,7 @@ PrefabInstance:
       propertyPath: routeRoot
       value: 
       objectReference: {fileID: 1372539958}
-    - target: {fileID: 8137374466525431364, guid: d7c1cd9188969334285fc06900fab650, type: 3}
+    - target: {fileID: 7562018390451820001, guid: d7c1cd9188969334285fc06900fab650, type: 3}
       propertyPath: playerTransform
       value: 
       objectReference: {fileID: 165825903}

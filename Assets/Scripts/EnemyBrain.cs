@@ -47,6 +47,34 @@ public class EnemyBrain : MonoBehaviour
     public Vector3 GeneralPatrolArea { get; set; } 
 
     private ICharacterState _currentState;
+    private bool _hasStarted;
+    private bool _huntRequested;
+
+    private void OnEnable() => GameManager.OnLootBoxOpened += HandleLootBoxOpened;
+
+    private void OnDisable() => GameManager.OnLootBoxOpened -= HandleLootBoxOpened;
+
+    private void HandleLootBoxOpened(int openedCount)
+    {
+        if (openedCount > 0 && openedCount % 2 == 0) BeginHunt();
+    }
+
+    public bool BeginHunt()
+    {
+        var huntState = GetComponent<HuntState>();
+        if (huntState == null) return false;
+
+        // Сигнал от ящиков мог прийти до завершения стартовой подготовки NavMesh.
+        if (!_hasStarted)
+        {
+            _huntRequested = true;
+            return true;
+        }
+
+        _huntRequested = false;
+        ChangeState(huntState);
+        return true;
+    }
 
     private void Awake()
     {
@@ -75,8 +103,9 @@ public class EnemyBrain : MonoBehaviour
             }
         }
 
-        // Только теперь, когда агент гарантированно на сетке, запускаем логику
-        ChangeState(GetComponent<PatrolState>());
+        // Только после подготовки агента запускаем выбранное состояние.
+        _hasStarted = true;
+        if (!_huntRequested || !BeginHunt()) ChangeState(GetComponent<PatrolState>());
     }
 
     private void Update() => _currentState?.UpdateState();
@@ -113,10 +142,10 @@ public class EnemyBrain : MonoBehaviour
         return !Physics.Raycast(origin, dirToTarget, dist, obstacleLayer);
     }
 
-    public void ScanForTargets()
+    public void ScanForTargets(bool playerOnly = false)
     {
         CurrentTarget = null;
-        List<ITargetable> visibleTargets = GetVisibleTargets();
+        List<ITargetable> visibleTargets = GetVisibleTargets(playerOnly);
         
         foreach (var target in visibleTargets)
         {
@@ -165,7 +194,7 @@ public class EnemyBrain : MonoBehaviour
         CurrentTarget = null;
     }
 
-    private List<ITargetable> GetVisibleTargets()
+    private List<ITargetable> GetVisibleTargets(bool playerOnly)
     {
         List<ITargetable> validTargets = new List<ITargetable>();
         Collider[] hits = Physics.OverlapSphere(transform.position, visionRadius, targetLayers);
@@ -174,7 +203,7 @@ public class EnemyBrain : MonoBehaviour
         {
             var target = hit.GetComponent<ITargetable>();
             
-            if (target != null && target.Condition != TargetCondition.Dead)
+            if (target != null && target.Condition != TargetCondition.Dead && (!playerOnly || target.IsPlayer()))
             {
                 float dist = Vector3.Distance(transform.position, target.TargetTransform.position);
                 

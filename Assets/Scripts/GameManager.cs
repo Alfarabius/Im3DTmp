@@ -3,6 +3,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    public static event System.Action<int> OnLootBoxOpened;
 
     [Header("Условия победы")]
     [Tooltip("Активировать победу при сборе заданного числа лутбоксов")] [SerializeField] private bool enableLootBoxWin = true;
@@ -28,14 +29,17 @@ public class GameManager : MonoBehaviour
 
     public void RegisterLootBoxOpened()
     {
-        if (_isGameOver || !enableLootBoxWin) return;
+        if (_isGameOver) return;
 
         _openedLootBoxesCount++;
         
-        if (_openedLootBoxesCount >= requiredLootBoxes)
+        if (enableLootBoxWin && _openedLootBoxesCount >= requiredLootBoxes)
         {
             EndGame(true);
+            return;
         }
+
+        OnLootBoxOpened?.Invoke(_openedLootBoxesCount);
     }
 
     public void ReportEnemyDeath()

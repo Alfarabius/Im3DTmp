@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4460386674477859660}
   - component: {fileID: 1707511787342389546}
+  - component: {fileID: 7562018390451820001}
   - component: {fileID: 8137374466525431364}
   - component: {fileID: 3766673632966218405}
   - component: {fileID: 8911663346031397007}
@@ -85,8 +86,7 @@ MonoBehaviour:
   patrolSpeed: 3
   rotationSpeed: 120
   scanInterval: 0.3
-  timeBeforeHunting: 5
-  playerTransform: {fileID: 0}
+  timeBeforeHunting: 10
   routeRoot: {fileID: 0}
 --- !u!114 &3766673632966218405
 MonoBehaviour:
@@ -447,3 +447,20 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 37938f7089e93274ab22e5c189b9a7a8, type: 3}
   m_PrefabInstance: {fileID: 7127872589587500764}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7562018390451820001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8099521190135249281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be6323ac25a4977a68575e9b695d340, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::HuntState
+  playerTransform: {fileID: 0}
+  runSpeed: 5
+  updatePatrolPointWhileRunning: 0
+  pointUpdateInterval: 0.3
+  arrivalTolerance: 0.5

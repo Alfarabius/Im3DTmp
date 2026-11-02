@@ -42689,8 +42689,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.70419306, y: 1.4374985, z: 0.7027183}
-  m_Center: {x: -1.7367142e-10, y: 0.71785736, z: -0.015267828}
+  m_Size: {x: 0.7658698, y: 1.4374985, z: 0.76175547}
+  m_Center: {x: -1.7367142e-10, y: 0.71785736, z: -0.0152678285}
 --- !u!1001 &1767275794
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -43016,8 +43016,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.70419306, y: 1.4374985, z: 0.7027183}
-  m_Center: {x: -1.7367142e-10, y: 0.71785736, z: -0.015267828}
+  m_Size: {x: 0.7767879, y: 1.4374985, z: 0.8078587}
+  m_Center: {x: -5.3359456e-10, y: 0.71785736, z: -0.015267832}
 --- !u!1 &1775243515
 GameObject:
   m_ObjectHideFlags: 0
@@ -52478,7 +52478,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 832575518}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7968875663756236209, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+    - {fileID: 875459210784677761, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}

@@ -52417,6 +52417,14 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 843000000000000104, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: CollideAgainst.m_Bits
+      value: 1875
+      objectReference: {fileID: 0}
+    - target: {fileID: 843000000000000105, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: obstacleLayers.m_Bits
+      value: 1875
+      objectReference: {fileID: 0}
     - target: {fileID: 2783350948651294607, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2
@@ -52473,6 +52481,14 @@ PrefabInstance:
       propertyPath: postProcessVolume
       value: 
       objectReference: {fileID: 832575518}
+    - target: {fileID: 3607199056480098260, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3607199056480098260, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00809
+      objectReference: {fileID: 0}
     - target: {fileID: 6823027890462101001, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
       propertyPath: postProcessVolume
       value: 

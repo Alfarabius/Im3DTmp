@@ -40,9 +40,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < keepCount; i++)
         {
             int randomIndex = Random.Range(i, lootBoxes.Length);
-            LootBox selected = lootBoxes[randomIndex];
-            lootBoxes[randomIndex] = lootBoxes[i];
-            lootBoxes[i] = selected;
+            (lootBoxes[randomIndex], lootBoxes[i]) = (lootBoxes[i], lootBoxes[randomIndex]);
         }
 
         for (int i = keepCount; i < lootBoxes.Length; i++)

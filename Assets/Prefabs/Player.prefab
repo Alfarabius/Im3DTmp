@@ -511,7 +511,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294965247
+    m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1224,11 +1224,8 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFirstPersonView
   controller: {fileID: 1697429712441409556}
-  viewCamera: {fileID: 5251672335652677741}
   cameraTarget: {fileID: 6905221367175798760}
   collisionTarget: {fileID: 843000000000000103}
-  modelRoot: {fileID: 6217357032570441250}
-  headLayer: 11
 --- !u!1 &843000000000000102
 GameObject:
   m_ObjectHideFlags: 0

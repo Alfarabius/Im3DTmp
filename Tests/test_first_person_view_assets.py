@@ -21,19 +21,6 @@ class FirstPersonViewAssetTests(unittest.TestCase):
         self.assertIn("Strategy: 0", self.prefab)
         self.assertIn("DampingWhenOccluded: 0", self.prefab)
 
-    def test_head_layer_is_excluded_only_from_players_camera(self):
-        camera = next(b for b in re.split(r"(?=^--- !u!)", self.prefab, flags=re.M) if b.startswith("--- !u!20 "))
-        mask = int(re.search(r"m_CullingMask:\n    serializedVersion: 2\n    m_Bits: (\d+)", camera)[1])
-        self.assertFalse(mask & (1 << 11))
-        self.assertTrue(mask & (1 << 7))
-        self.assertIn("  - PlayerHead\n", (ASSETS.parent / "ProjectSettings/TagManager.asset").read_text())
-
-    def test_model_data_is_readable_for_one_time_head_separation(self):
-        importer = ASSETS / "Animations/GingerNPC/Standing W_Briefcase Idle.fbx.meta"
-        self.assertIn("isReadable: 1", importer.read_text())
-        self.assertIn("modelRoot: {fileID: 6217357032570441250}", self.prefab)
-        self.assertIn("Assembly-CSharp::PlayerFirstPersonView", self.prefab)
-
     def test_lens_and_noise_guard_are_configured(self):
         self.assertIn("near clip plane: 0.02", self.prefab)
         self.assertIn("NearClipPlane: 0.02", self.prefab)

@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
   m_Name: UI_ru
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   m_LocaleId:
     m_Code: ru
   m_SharedData: {fileID: 11400000, guid: 89550af684e14cdb9b8eed6d062fdd8c, type: 2}
@@ -19,58 +19,62 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 1
-    m_Localized: "Продолжить"
+    m_Localized: "\u041F\u0440\u043E\u0434\u043E\u043B\u0436\u0438\u0442\u044C"
     m_Metadata:
       m_Items: []
   - m_Id: 2
-    m_Localized: "Начать заново"
+    m_Localized: "\u0417\u0430\u043D\u043E\u0432\u043E"
     m_Metadata:
       m_Items: []
   - m_Id: 3
-    m_Localized: "Выйти"
+    m_Localized: "\u0412\u044B\u0439\u0442\u0438"
     m_Metadata:
       m_Items: []
   - m_Id: 4
-    m_Localized: "Язык:"
+    m_Localized: "\u042F\u0437\u044B\u043A:"
     m_Metadata:
       m_Items: []
   - m_Id: 5
-    m_Localized: "Разрешение:"
+    m_Localized: "\u0420\u0430\u0437\u0440\u0435\u0448\u0435\u043D\u0438\u0435:"
     m_Metadata:
       m_Items: []
   - m_Id: 6
-    m_Localized: "Чувствительность мыши:"
+    m_Localized: "\u0427\u0443\u0432\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u044C
+      \u043C\u044B\u0448\u0438:"
     m_Metadata:
       m_Items: []
   - m_Id: 7
-    m_Localized: "Громкость"
+    m_Localized: "\u0413\u0440\u043E\u043C\u043A\u043E\u0441\u0442\u044C"
     m_Metadata:
       m_Items: []
   - m_Id: 8
-    m_Localized: "Звук:"
+    m_Localized: "\u0417\u0432\u0443\u043A:"
     m_Metadata:
       m_Items: []
   - m_Id: 9
-    m_Localized: "Общая:"
+    m_Localized: "\u041E\u0431\u0449\u0430\u044F:"
     m_Metadata:
       m_Items: []
   - m_Id: 10
-    m_Localized: "Окружение:"
+    m_Localized: "\u041E\u043A\u0440\u0443\u0436\u0435\u043D\u0438\u0435:"
     m_Metadata:
       m_Items: []
   - m_Id: 11
-    m_Localized: "Эффекты:"
+    m_Localized: "\u042D\u0444\u0444\u0435\u043A\u0442\u044B:"
     m_Metadata:
       m_Items: []
   - m_Id: 12
-    m_Localized: "Русский"
+    m_Localized: "\u0420\u0443\u0441\u0441\u043A\u0438\u0439"
     m_Metadata:
       m_Items: []
   - m_Id: 13
-    m_Localized: "English"
+    m_Localized: English
     m_Metadata:
       m_Items: []
   - m_Id: 14
-    m_Localized: "[{key}] Открыть"
+    m_Localized: "[{key}] \u041E\u0442\u043A\u0440\u044B\u0442\u044C"
     m_Metadata:
       m_Items: []
+  references:
+    version: 2
+    RefIds: []

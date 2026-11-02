@@ -50848,6 +50848,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7562018390451820001, guid: d7c1cd9188969334285fc06900fab650, type: 3}
+      propertyPath: playerTransform
+      value: 
+      objectReference: {fileID: 165825903}
+    - target: {fileID: 7562018390451820001, guid: d7c1cd9188969334285fc06900fab650, type: 3}
+      propertyPath: pointUpdateInterval
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562018390451820001, guid: d7c1cd9188969334285fc06900fab650, type: 3}
+      propertyPath: updatePatrolPointWhileRunning
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8099521190135249281, guid: d7c1cd9188969334285fc06900fab650, type: 3}
       propertyPath: m_Name
       value: Enemy
@@ -50856,10 +50868,6 @@ PrefabInstance:
       propertyPath: routeRoot
       value: 
       objectReference: {fileID: 1372539958}
-    - target: {fileID: 7562018390451820001, guid: d7c1cd9188969334285fc06900fab650, type: 3}
-      propertyPath: playerTransform
-      value: 
-      objectReference: {fileID: 165825903}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -51373,6 +51381,202 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 973fca3d67597af4b9606760b890bb0c, type: 3}
+--- !u!114 &8700000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101251227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: 
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 416804604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: settings.volume
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435449456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: settings.sounds
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399718022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: menu.resume
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1403900728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: 
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422910018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: menu.restart
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432555433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: settings.mouse_sensitivity
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1692850383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: settings.resolution
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743444849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: language.english
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774180938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: settings.master_volume
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820711311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: menu.quit
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843778804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: language.russian
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1980132642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: settings.language
+  bindingAction: {fileID: 0}
+--- !u!114 &8700000000000000014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2095612183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Application::LocalizedText
+  key: settings.ambient_volume
+  bindingAction: {fileID: 0}
 --- !u!1001 &9055321591074827569
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -51449,199 +51653,3 @@ SceneRoots:
   - {fileID: 1317534679}
   - {fileID: 1163827651}
   - {fileID: 1008532147}
---- !u!114 &8700000000000000001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 101251227}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: ""
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 416804604}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "settings.volume"
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 435449456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "settings.sounds"
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1399718022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "menu.resume"
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1403900728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: ""
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1422910018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "menu.restart"
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000007
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432555433}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "settings.mouse_sensitivity"
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000008
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1692850383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "settings.resolution"
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000009
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1743444849}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "language.english"
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000010
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1774180938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "settings.master_volume"
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1820711311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "menu.quit"
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1843778804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "language.russian"
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1980132642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "settings.language"
-  bindingAction: {fileID: 0}
---- !u!114 &8700000000000000014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2095612183}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a98b4a90ea413986efe56d74caf0ab, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Game.Application::LocalizedText
-  key: "settings.ambient_volume"
-  bindingAction: {fileID: 0}

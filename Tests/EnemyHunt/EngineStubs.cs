@@ -6,7 +6,13 @@ using System.Linq;
 
 namespace UnityEngine
 {
-    public class Object { public static void Destroy(Object value, float delay=0) {} }
+    public enum FindObjectsSortMode { None, InstanceID }
+    public class Object
+    {
+        public static void Destroy(Object value, float delay=0) {}
+        public static T[] FindObjectsByType<T>(FindObjectsSortMode mode) where T:class =>
+            GameObject.SceneObjects.Where(go=>go.activeSelf).Select(go=>go.GetComponent<T>()).Where(component=>component!=null).ToArray();
+    }
     public class Component : Object
     {
         public GameObject gameObject;
@@ -16,10 +22,13 @@ namespace UnityEngine
     public class MonoBehaviour : Component {}
     public class GameObject : Object
     {
+        public static readonly List<GameObject> SceneObjects = new List<GameObject>();
         readonly List<Component> components = new List<Component>();
         public Transform transform;
         public int layer;
-        public GameObject(string name="") { transform = AddComponent<Transform>(); }
+        public bool activeSelf=true;
+        public GameObject(string name="") { transform = AddComponent<Transform>(); SceneObjects.Add(this); }
+        public void SetActive(bool value) { activeSelf=value; }
         public T AddComponent<T>() where T : Component, new() { var value = new T { gameObject = this }; components.Add(value); return value; }
         public T GetComponent<T>() where T : class => components.OfType<T>().FirstOrDefault();
     }
@@ -77,13 +86,21 @@ namespace UnityEngine
     {
         public static float Max(float a,float b) => Math.Max(a,b);
         public static float Clamp(float v,float a,float b) => Math.Max(a,Math.Min(v,b));
+        public static int Clamp(int v,int a,int b) => Math.Max(a,Math.Min(v,b));
         public static float Clamp01(float value) => Clamp(value,0,1);
         public static float Lerp(float a,float b,float t) => a+(b-a)*Clamp01(t);
         public static float MoveTowards(float current,float target,float delta) => Math.Abs(target-current)<=delta ? target : current+Math.Sign(target-current)*delta;
         public static float SmoothStep(float a,float b,float t) { t=Clamp01(t); return a+(b-a)*t*t*(3-2*t); }
         public static float Sin(float value) => (float)Math.Sin(value);
     }
-    public static class Random { public static float value=0.5f; public static float Range(float min,float max) => min; }
+    public static class Random
+    {
+        public static float value=0.5f;
+        static System.Random generator=new System.Random(1);
+        public static void InitState(int seed) { generator=new System.Random(seed); }
+        public static int Range(int min,int max) => generator.Next(min,max);
+        public static float Range(float min,float max) => min;
+    }
     public class Animator : Component
     {
         public readonly Dictionary<string,bool> Bools = new Dictionary<string,bool>();
@@ -152,6 +169,7 @@ namespace UnityEngine.AI
 }
 // Other gameplay boundaries; TargetCondition has the same values as NPCBrain.cs.
 public enum TargetCondition { Normal, Wounded, HeavyWounded, Dead }
+public class LootBox : UnityEngine.MonoBehaviour {}
 public static class GameSessionController
 {
     public static int Wins, Restarts;

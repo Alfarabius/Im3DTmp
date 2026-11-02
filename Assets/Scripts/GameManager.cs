@@ -5,6 +5,9 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
     public static event System.Action<int> OnLootBoxOpened;
 
+    [Header("Лутбоксы")]
+    [SerializeField, Min(0)] private int activeLootBoxesCount = 10;
+
     [Header("Условия победы")]
     [Tooltip("Активировать победу при сборе заданного числа лутбоксов")] [SerializeField] private bool enableLootBoxWin = true;
     [Tooltip("Необходимое количество лутбоксов для победы")] [SerializeField] private int requiredLootBoxes = 7;
@@ -25,6 +28,25 @@ public class GameManager : MonoBehaviour
         }
         
         Instance = this;
+        InitializeLootBoxes();
+    }
+
+    private void InitializeLootBoxes()
+    {
+        LootBox[] lootBoxes = FindObjectsByType<LootBox>(FindObjectsSortMode.None);
+        int keepCount = Mathf.Clamp(activeLootBoxesCount, 0, lootBoxes.Length);
+        if (keepCount == lootBoxes.Length) return;
+
+        for (int i = 0; i < keepCount; i++)
+        {
+            int randomIndex = Random.Range(i, lootBoxes.Length);
+            LootBox selected = lootBoxes[randomIndex];
+            lootBoxes[randomIndex] = lootBoxes[i];
+            lootBoxes[i] = selected;
+        }
+
+        for (int i = keepCount; i < lootBoxes.Length; i++)
+            lootBoxes[i].gameObject.SetActive(false);
     }
 
     public void RegisterLootBoxOpened()

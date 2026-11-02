@@ -49476,14 +49476,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1565733382}
     m_Modifications:
-    - target: {fileID: 102890319528737220, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 1855872731}
-    - target: {fileID: 1560546914094859153, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4578053501540272938, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 32.79
@@ -49524,17 +49516,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4827521565517979382, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5158666984559105811, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
       propertyPath: m_Name
       value: LootBox (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 5158666984559105811, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
-      propertyPath: m_Layer
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -52102,6 +52086,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1572245496}
     m_Modifications:
+    - target: {fileID: 820000000000000101, guid: d7c1cd9188969334285fc06900fab650, type: 3}
+      propertyPath: flashSize
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4460386674477859660, guid: d7c1cd9188969334285fc06900fab650, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.03548646
@@ -52425,6 +52413,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 211337067421969027, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 2783350948651294607, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2
@@ -52473,6 +52465,30 @@ PrefabInstance:
       propertyPath: postProcessVolume
       value: 
       objectReference: {fileID: 832575518}
+    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: woundedPulseSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: woundedPulseAmplitude
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: heavyWoundedPulseSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: woundedVignetteIntensity
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: heavyWoundedPulseAmplitude
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3087166897470010314, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: heavyWoundedVignetteIntensity
+      value: 0.35
+      objectReference: {fileID: 0}
     - target: {fileID: 6823027890462101001, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
       propertyPath: postProcessVolume
       value: 

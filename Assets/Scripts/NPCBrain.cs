@@ -18,6 +18,8 @@ public enum TargetCondition
 [RequireComponent(typeof(NavMeshAgent), typeof(Animator))]
 public class NPCBrain : MonoBehaviour, ITargetable
 {
+    public event Action<Vector3, Vector3> OnHit;
+
     [Header("Vision Settings")]
     [SerializeField] private float visionRange = 25f;
     [SerializeField] private float visionAngle = 120f;
@@ -155,9 +157,18 @@ public class NPCBrain : MonoBehaviour, ITargetable
 
     public void TryApplyHit(float hitProbability)
     {
+        TryApplyHit(hitProbability, transform.position + Vector3.up, -transform.forward);
+    }
+
+    public void TryApplyHit(float hitProbability, Vector3 hitPoint, Vector3 hitNormal)
+    {
         if (Condition == TargetCondition.Dead) return;
 
-        if (Random.value <= hitProbability) ApplyHit();
+        if (Random.value <= hitProbability)
+        {
+            ApplyHit();
+            OnHit?.Invoke(hitPoint, hitNormal);
+        }
         else HandleNearMiss();
     }
 

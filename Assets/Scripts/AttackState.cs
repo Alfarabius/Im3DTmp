@@ -104,7 +104,9 @@ public class AttackState : MonoBehaviour, ICharacterState
                 var hitTarget = hit.collider.GetComponent<ITargetable>();
                 if (hitTarget != null)
                 {
-                    if (hitTarget.IsPlayer())
+                    if (hitTarget is NPCBrain npc)
+                        npc.TryApplyHit(hitProbability, hit.point, hit.normal);
+                    else if (hitTarget.IsPlayer())
                         hitTarget.TryApplyHit(hitProbability - 0.2f);
                     else
                         hitTarget.TryApplyHit(hitProbability);

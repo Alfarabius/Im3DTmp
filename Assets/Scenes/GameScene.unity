@@ -26827,7 +26827,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   activeLootBoxesCount: 10
-  enableLootBoxWin: 1
+  randomLootPrefabs:
+  - {fileID: 840000000000000300, guid: c76c298d221050ef8c8fbfed2f468bb3, type: 3}
+  - {fileID: 840000000000000300, guid: 052c5a6f882c56f6a766ca710895737c, type: 3}
+  - {fileID: 840000000000000300, guid: d3b2c4c5a12d55d0ba1dd83bd75156d0, type: 3}
+  phonePrefab: {fileID: 840000000000000300, guid: fa4a06fac9e75ce699336dc6485ca338, type: 3}
+  phoneCountdownDuration: 20
   requiredLootBoxes: 7
   enableEnemyDeathWin: 0
   enablePlayerDeathLoss: 1

@@ -41,6 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4460386674477859660}
   - component: {fileID: 1707511787342389546}
+  - component: {fileID: 846000000000000101}
   - component: {fileID: 7562018390451820001}
   - component: {fileID: 8137374466525431364}
   - component: {fileID: 3766673632966218405}
@@ -522,3 +523,15 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 37938f7089e93274ab22e5c189b9a7a8, type: 3}
   m_PrefabInstance: {fileID: 7127872589587500764}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &846000000000000101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8099521190135249281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bd2dc852c315286ba4976c6ec1fdaf4, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::StunState

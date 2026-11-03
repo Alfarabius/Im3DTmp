@@ -64,7 +64,7 @@ public class PlayerInventory : MonoBehaviour
         if (SelectedItem != null) SelectedItem.Store(transform);
         SelectedSlot = index;
         CancelUse();
-        _requireRelease = Mouse.current != null && Mouse.current.rightButton.isPressed;
+        _requireRelease = Mouse.current != null && Mouse.current.leftButton.isPressed;
         if (SelectedItem != null && view != null) SelectedItem.Equip(view);
         Changed?.Invoke();
     }
@@ -90,20 +90,26 @@ public class PlayerInventory : MonoBehaviour
         }
         var mouse = Mouse.current;
         if (mouse == null) return;
-        if (!mouse.rightButton.isPressed)
-        {
-            _requireRelease = false;
-            CancelUse();
-        }
-        if (mouse.leftButton.wasPressedThisFrame)
+        if (mouse.rightButton.wasPressedThisFrame)
         {
             DropSelected();
+            _requireRelease = mouse.leftButton.isPressed;
             return;
         }
         var item = SelectedItem;
-        if (item == null || !mouse.rightButton.isPressed || _requireRelease) return;
+        if (!mouse.leftButton.isPressed)
+        {
+            if (item != null && item.Definition.Kind == InventoryItemKind.Ball &&
+                (_useElapsed > 0f || mouse.leftButton.wasPressedThisFrame) && !_requireRelease)
+                ThrowSelected();
+            _requireRelease = false;
+            CancelUse();
+            return;
+        }
+        if (item == null || _requireRelease || item.Definition.Kind == InventoryItemKind.Shield) return;
         _useElapsed += Time.deltaTime;
         UseProgress = Mathf.Clamp01(_useElapsed / item.Definition.UseDuration);
+        if (item.Definition.Kind == InventoryItemKind.Ball) return;
         if (UseProgress < 1f) return;
         _requireRelease = true;
         CancelUse();
@@ -122,13 +128,48 @@ public class PlayerInventory : MonoBehaviour
         UseProgress = 0f;
     }
 
+    private void ThrowSelected()
+    {
+        var item = SelectedItem;
+        if (item == null || view == null) return;
+        float impulse = Mathf.Lerp(item.Definition.MinThrowImpulse, item.Definition.MaxThrowImpulse, UseProgress);
+        Vector3 position = GetDropPosition();
+        _slots[SelectedSlot] = null;
+        SelectedSlot = -1;
+        item.Throw(position, view.forward * impulse, _brain);
+        Changed?.Invoke();
+    }
+
+    public bool TryBlockShot(Vector3 sourceDirection)
+    {
+        var item = SelectedItem;
+        if (item == null || item.Definition.Kind != InventoryItemKind.Shield || !item.gameObject.activeInHierarchy ||
+            (_brain.Condition != TargetCondition.Normal && _brain.Condition != TargetCondition.Wounded)) return false;
+        sourceDirection.y = 0f;
+        Vector3 forward = transform.forward;
+        forward.y = 0f;
+        if (Vector3.Dot(forward, sourceDirection) <= 0f) return false;
+        _slots[SelectedSlot] = null;
+        SelectedSlot = -1;
+        CancelUse();
+        Destroy(item.gameObject);
+        Changed?.Invoke();
+        return true;
+    }
+
+    private Vector3 GetDropPosition()
+    {
+        Vector3 position = view.position + view.forward * 0.8f;
+        if (Physics.Raycast(view.position, view.forward, out RaycastHit hit, 0.8f,
+            environmentMask, QueryTriggerInteraction.Ignore)) position = hit.point - view.forward * 0.15f;
+        return position;
+    }
+
     public void DropSelected()
     {
         var item = SelectedItem;
         if (item == null || view == null) return;
-        Vector3 position = view.position + view.forward * 0.8f;
-        if (Physics.Raycast(view.position, view.forward, out RaycastHit hit, 0.8f,
-            environmentMask, QueryTriggerInteraction.Ignore)) position = hit.point - view.forward * 0.15f;
+        Vector3 position = GetDropPosition();
         _slots[SelectedSlot] = null;
         SelectedSlot = -1;
         CancelUse();
@@ -144,8 +185,16 @@ public class PlayerInventory : MonoBehaviour
         item.gameObject.SetActive(visible);
         if (!visible) return;
         var definition = item.Definition;
-        item.transform.SetPositionAndRotation(view.position + view.rotation * definition.HeldPosition,
-            view.rotation * Quaternion.Euler(definition.HeldEulerAngles));
+        Vector3 heldPosition = definition.HeldPosition;
+        Vector3 heldAngles = definition.HeldEulerAngles;
+        if (definition.Kind == InventoryItemKind.Heal && UseProgress > 0f)
+        {
+            float raise = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(UseProgress * 4f));
+            heldPosition += new Vector3(-0.12f, 0.13f, -0.1f) * raise;
+            heldAngles += new Vector3(-65f, 0f, 0f) * raise;
+        }
+        item.transform.SetPositionAndRotation(view.position + view.rotation * heldPosition,
+            view.rotation * Quaternion.Euler(heldAngles));
         if (!reachWithRightHand || _upperArm == null || _forearm == null || _hand == null) return;
 
         Vector3 target = item.transform.TransformPoint(definition.GripOffset);

@@ -63,6 +63,11 @@ public class EnemyBrain : MonoBehaviour
     {
         var huntState = GetComponent<HuntState>();
         if (huntState == null) return false;
+        if (_currentState is StunState)
+        {
+            _huntRequested = true;
+            return true;
+        }
 
         // Сигнал от ящиков мог прийти до завершения стартовой подготовки NavMesh.
         if (!_hasStarted)
@@ -105,10 +110,34 @@ public class EnemyBrain : MonoBehaviour
 
         // Только после подготовки агента запускаем выбранное состояние.
         _hasStarted = true;
+        if (_currentState is StunState) yield break;
         if (!_huntRequested || !BeginHunt()) ChangeState(GetComponent<PatrolState>());
     }
 
     private void Update() => _currentState?.UpdateState();
+
+    public void Stun(float duration)
+    {
+        var state = GetComponent<StunState>();
+        if (state == null) state = gameObject.AddComponent<StunState>();
+        state.SetDuration(duration);
+        if (!object.ReferenceEquals(_currentState, state)) ChangeState(state);
+    }
+
+    public void FinishStun()
+    {
+        if (_huntRequested)
+        {
+            _huntRequested = false;
+            ChangeState(GetComponent<HuntState>());
+            return;
+        }
+        ScanForTargets();
+        if (CurrentTarget == null) ChangeState(GetComponent<PatrolState>());
+        else if (Vector3.Distance(transform.position, CurrentTarget.TargetTransform.position) <= AttackDistance)
+            ChangeState(GetComponent<AttackState>());
+        else ChangeState(GetComponent<ChaseState>());
+    }
 
     public void ChangeState(ICharacterState newState)
     {

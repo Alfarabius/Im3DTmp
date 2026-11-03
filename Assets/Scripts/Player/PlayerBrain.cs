@@ -37,6 +37,8 @@ public class PlayerBrain : MonoBehaviour, ITargetable
     
     public event System.Action OnHitReceived;
     public event System.Action<Vector3, Vector3> OnHit;
+    public event System.Action OnShotBlocked;
+    private PlayerInventory _inventory;
     
     [field: Header("Targeting")]
     [field: SerializeField] public float TargetWeight { get; set; } = 1.5f;
@@ -44,6 +46,7 @@ public class PlayerBrain : MonoBehaviour, ITargetable
     private void Awake()
     {
         CurrentStamina = MaxStamina;
+        _inventory = GetComponent<PlayerInventory>();
     }
 
     private void Start()
@@ -78,9 +81,19 @@ public class PlayerBrain : MonoBehaviour, ITargetable
 
     public void TryApplyHit(float hitProbability, Vector3 hitPoint, Vector3 hitNormal)
     {
-        TargetCondition previousCondition = Condition;
-        TryApplyHit(hitProbability);
-        if (Condition != previousCondition) OnHit?.Invoke(hitPoint, hitNormal);
+        TryApplyHit(hitProbability, hitPoint, hitNormal, hitPoint + hitNormal);
+    }
+
+    public void TryApplyHit(float hitProbability, Vector3 hitPoint, Vector3 hitNormal, Vector3 shooterPosition)
+    {
+        if (Condition == TargetCondition.Dead || Random.value > hitProbability) return;
+        if (_inventory != null && _inventory.TryBlockShot(shooterPosition - transform.position))
+        {
+            OnShotBlocked?.Invoke();
+            return;
+        }
+        ApplyHit();
+        OnHit?.Invoke(hitPoint, hitNormal);
     }
 
     private void ApplyHit()

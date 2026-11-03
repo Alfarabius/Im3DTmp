@@ -194,6 +194,7 @@ MonoBehaviour:
   maxEmissionIntensity: 0.7
   lootPrefab: {fileID: 840000000000000300, guid: 3f901d5229755472aa96907c3cfbefad, type: 3}
   spawnPoint: {fileID: 4462327695519346988}
+  healOnOpen: 1
 --- !u!114 &830000000000000101
 MonoBehaviour:
   m_ObjectHideFlags: 0

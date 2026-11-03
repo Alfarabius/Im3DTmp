@@ -21,6 +21,7 @@ public class LootBox : MonoBehaviour
     [Header("Лут")]
     [Tooltip("Префаб лута, который появится при открытии")] [SerializeField] private GameObject lootPrefab;
     [Tooltip("Точка спавна лута (можно оставить пустой, тогда заспавнится над коробкой)")] [SerializeField] private Transform spawnPoint;
+    [Tooltip("Лечить игрока при открытии коробки")] [SerializeField] private bool healOnOpen = true;
 
     private MaterialPropertyBlock _propBlock;
     private bool _isPlayerInZone;
@@ -111,7 +112,7 @@ public class LootBox : MonoBehaviour
         SetEmission(Color.black);
 
         // Лечение игрока при открытии
-        if (_playerBrain != null)
+        if (healOnOpen && _playerBrain != null)
         {
             _playerBrain.Heal();
         }
@@ -123,10 +124,12 @@ public class LootBox : MonoBehaviour
     private void FinishOpening()
     {
         Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : transform.position + Vector3.up;
-        if (lootPrefab != null)
+        GameObject contents = GameManager.Instance != null ? GameManager.Instance.GetNextLootPrefab() : null;
+        if (contents == null) contents = lootPrefab;
+        if (contents != null)
         {
             Vector3 origin = boxRenderer != null ? boxRenderer.bounds.center : transform.position + Vector3.up * 0.5f;
-            var loot = Instantiate(lootPrefab, origin, Quaternion.identity);
+            var loot = Instantiate(contents, origin, Quaternion.identity);
             var collectible = loot.GetComponent<Collectible>();
             if (collectible != null) collectible.Launch(origin, spawnPos, playerLayer);
         }

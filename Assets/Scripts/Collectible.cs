@@ -12,7 +12,7 @@ public class Collectible : MonoBehaviour
 
     private SphereCollider _trigger;
     private Rigidbody _body;
-    private BoxCollider _solid;
+    private Collider _solid;
     private LayerMask _playerLayer = 1 << 7;
     private Vector3 _worldScale;
     private PlayerBrain _dropper;
@@ -23,6 +23,7 @@ public class Collectible : MonoBehaviour
     private float _elapsed;
     private bool _flying;
     private bool _ready;
+    private bool _thrown;
     public InventoryItemDefinition Definition => itemDefinition;
     public bool IsStored { get; private set; }
 
@@ -39,14 +40,27 @@ public class Collectible : MonoBehaviour
         _solid = GetComponent<BoxCollider>();
         if (_solid == null)
         {
-            _solid = gameObject.AddComponent<BoxCollider>();
             var renderers = GetComponentsInChildren<Renderer>();
+            Bounds bounds = new Bounds(transform.position, Vector3.one * 0.2f);
             if (renderers.Length > 0)
             {
-                Bounds bounds = renderers[0].bounds;
+                bounds = renderers[0].bounds;
                 foreach (var renderer in renderers) bounds.Encapsulate(renderer.bounds);
-                _solid.center = transform.InverseTransformPoint(bounds.center);
-                _solid.size = new Vector3(bounds.size.x / _worldScale.x, bounds.size.y / _worldScale.y, bounds.size.z / _worldScale.z);
+            }
+            if (itemDefinition != null && itemDefinition.Kind == InventoryItemKind.Ball)
+            {
+                var sphere = gameObject.AddComponent<SphereCollider>();
+                sphere.center = transform.InverseTransformPoint(bounds.center);
+                sphere.radius = Mathf.Max(bounds.extents.x / _worldScale.x,
+                    Mathf.Max(bounds.extents.y / _worldScale.y, bounds.extents.z / _worldScale.z));
+                _solid = sphere;
+            }
+            else
+            {
+                var box = gameObject.AddComponent<BoxCollider>();
+                box.center = transform.InverseTransformPoint(bounds.center);
+                box.size = new Vector3(bounds.size.x / _worldScale.x, bounds.size.y / _worldScale.y, bounds.size.z / _worldScale.z);
+                _solid = box;
             }
         }
         _solid.enabled = false;
@@ -116,8 +130,10 @@ public class Collectible : MonoBehaviour
             _body.linearVelocity = Vector3.zero;
             _body.angularVelocity = Vector3.zero;
         }
+        _body.collisionDetectionMode = CollisionDetectionMode.Discrete;
         _body.isKinematic = true;
         _body.useGravity = false;
+        _thrown = false;
         transform.SetParent(parent, true);
         gameObject.SetActive(false);
     }
@@ -132,6 +148,7 @@ public class Collectible : MonoBehaviour
 
     public void Drop(Vector3 position, Vector3 velocity, PlayerBrain owner)
     {
+        _thrown = itemDefinition.Kind == InventoryItemKind.Ball;
         transform.SetParent(null, true);
         transform.localScale = _worldScale;
         transform.position = position;
@@ -149,6 +166,23 @@ public class Collectible : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+    public void Throw(Vector3 position, Vector3 impulse, PlayerBrain owner)
+    {
+        Drop(position, Vector3.zero, owner);
+        _body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        _body.AddForce(impulse, ForceMode.Impulse);
+        _thrown = true;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!_thrown || itemDefinition.Kind != InventoryItemKind.Ball) return;
+        var enemy = collision.collider.GetComponentInParent<EnemyBrain>();
+        if (enemy == null) return;
+        _thrown = false;
+        enemy.Stun(itemDefinition.StunDuration);
+    }
+
     private void ClearDropper()
     {
         if (_dropper != null) Physics.IgnoreCollision(_solid, _dropper.Controller, false);
@@ -157,6 +191,9 @@ public class Collectible : MonoBehaviour
 
     public void Use(PlayerBrain player)
     {
+        if (itemDefinition.Kind == InventoryItemKind.Heal) player.Heal();
+        else if (itemDefinition.Kind == InventoryItemKind.Phone && GameManager.Instance != null)
+            GameManager.Instance.StartPhoneCountdown();
         onUsed?.Invoke(player);
         if (itemDefinition.ConsumeOnUse) Destroy(gameObject);
     }

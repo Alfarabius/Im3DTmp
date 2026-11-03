@@ -14,6 +14,7 @@ public class LootBoxHUD : MonoBehaviour
     private readonly HashSet<LootBox> _nearby = new HashSet<LootBox>();
     private float _counterAge;
     private bool _counterVisible;
+    private int _lastPhoneSecond = -1;
 
     private void Awake()
     {
@@ -46,7 +47,7 @@ public class LootBoxHUD : MonoBehaviour
 
     private void ShowCounter(int openedCount)
     {
-        if (GameManager.Instance == null) return;
+        if (GameManager.Instance == null || GameManager.Instance.PhoneCountdownActive) return;
         counter.text = $"{openedCount}/{GameManager.Instance.RequiredLootBoxes}";
         counter.alpha = 1f;
         counter.gameObject.SetActive(true);
@@ -56,6 +57,20 @@ public class LootBoxHUD : MonoBehaviour
 
     private void Update()
     {
+        var manager = GameManager.Instance;
+        if (manager != null && manager.PhoneCountdownActive)
+        {
+            int seconds = Mathf.CeilToInt(manager.PhoneTimeRemaining);
+            if (seconds != _lastPhoneSecond)
+            {
+                counter.SetText("{0}", seconds);
+                _lastPhoneSecond = seconds;
+            }
+            counter.alpha = 1f;
+            counter.gameObject.SetActive(true);
+            _counterVisible = false;
+            return;
+        }
         if (!_counterVisible) return;
         _counterAge += Time.deltaTime;
         counter.alpha = 1f - Mathf.Clamp01((_counterAge - displayDuration) / fadeDuration);

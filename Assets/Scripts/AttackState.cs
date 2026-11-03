@@ -108,7 +108,7 @@ public class AttackState : MonoBehaviour, ICharacterState
                     if (hitTarget is NPCBrain npc)
                         npc.TryApplyHit(hitProbability, hit.point, hit.normal);
                     else if (hitTarget is PlayerBrain player)
-                        player.TryApplyHit(hitProbability - 0.2f, hit.point, hit.normal);
+                        player.TryApplyHit(hitProbability - 0.2f, hit.point, hit.normal, origin);
                     else if (hitTarget.IsPlayer())
                         hitTarget.TryApplyHit(hitProbability - 0.2f);
                     else

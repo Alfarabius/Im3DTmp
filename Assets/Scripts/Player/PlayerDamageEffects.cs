@@ -87,6 +87,7 @@ public class PlayerDamageEffects : MonoBehaviour
         GlobalAudioEvents.OnGunshotFired += HandleGunshot;
         _playerBrain.OnHitReceived += HandleHit;
         _playerBrain.OnHit += HandleBloodHit;
+        _playerBrain.OnShotBlocked += HandleBlockedShot;
     }
 
     private void OnDisable()
@@ -94,6 +95,7 @@ public class PlayerDamageEffects : MonoBehaviour
         GlobalAudioEvents.OnGunshotFired -= HandleGunshot;
         _playerBrain.OnHitReceived -= HandleHit;
         _playerBrain.OnHit -= HandleBloodHit;
+        _playerBrain.OnShotBlocked -= HandleBlockedShot;
         if (_bloodSplatter != null) _bloodSplatter.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         StopPainAudio();
     }
@@ -158,6 +160,8 @@ public class PlayerDamageEffects : MonoBehaviour
             _impulseSource.GenerateImpulse();
         }
     }
+
+    private void HandleBlockedShot() => _hasPendingNearMiss = false;
 
     private void HandleBloodHit(Vector3 point, Vector3 normal)
     {

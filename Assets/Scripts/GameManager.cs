@@ -7,10 +7,12 @@ public class GameManager : MonoBehaviour
 
     [Header("Лутбоксы")]
     [SerializeField, Min(0)] private int activeLootBoxesCount = 10;
+    [SerializeField] private GameObject[] randomLootPrefabs;
+    [SerializeField] private GameObject phonePrefab;
+    [SerializeField, Min(0.1f)] private float phoneCountdownDuration = 20f;
 
     [Header("Условия победы")]
-    [Tooltip("Активировать победу при сборе заданного числа лутбоксов")] [SerializeField] private bool enableLootBoxWin = true;
-    [Tooltip("Необходимое количество лутбоксов для победы")] [SerializeField] private int requiredLootBoxes = 7;
+    [Tooltip("Номер открытого сундука, в котором появляется телефон")] [SerializeField, Min(1)] private int requiredLootBoxes = 7;
     [Tooltip("Активировать победу при смерти врага")] [SerializeField] private bool enableEnemyDeathWin = true;
 
     [Header("Условия поражения")]
@@ -20,6 +22,8 @@ public class GameManager : MonoBehaviour
     private bool _isGameOver;
 
     public int RequiredLootBoxes => requiredLootBoxes;
+    public bool PhoneCountdownActive { get; private set; }
+    public float PhoneTimeRemaining { get; private set; }
 
     private void Awake()
     {
@@ -55,12 +59,27 @@ public class GameManager : MonoBehaviour
 
         _openedLootBoxesCount++;
         OnLootBoxOpened?.Invoke(_openedLootBoxesCount);
-        
-        if (enableLootBoxWin && _openedLootBoxesCount >= requiredLootBoxes)
-        {
-            EndGame(true);
-            return;
-        }
+    }
+
+    public GameObject GetNextLootPrefab()
+    {
+        if (_openedLootBoxesCount + 1 == requiredLootBoxes) return phonePrefab;
+        if (randomLootPrefabs == null || randomLootPrefabs.Length == 0) return null;
+        return randomLootPrefabs[Random.Range(0, randomLootPrefabs.Length)];
+    }
+
+    public void StartPhoneCountdown()
+    {
+        if (_isGameOver || PhoneCountdownActive) return;
+        PhoneTimeRemaining = phoneCountdownDuration;
+        PhoneCountdownActive = true;
+    }
+
+    private void Update()
+    {
+        if (!PhoneCountdownActive || _isGameOver) return;
+        PhoneTimeRemaining = Mathf.Max(0f, PhoneTimeRemaining - Time.deltaTime);
+        if (PhoneTimeRemaining <= 0f) EndGame(true);
     }
 
     public void ReportEnemyDeath()
@@ -80,6 +99,7 @@ public class GameManager : MonoBehaviour
     private void EndGame(bool isWin)
     {
         _isGameOver = true;
+        PhoneCountdownActive = false;
         
         if (isWin)
         {

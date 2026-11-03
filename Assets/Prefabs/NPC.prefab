@@ -242,6 +242,27 @@ MonoBehaviour:
   pixelationMaterial: {fileID: 2100000, guid: 1ebd8d915b37513192ed36cb4644f54d, type: 2}
   pixelSize: 32
   faceSize: {x: 0.65, y: 0.7}
+--- !u!114 &844000000000000102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8033185028667360198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1afb2d48aa715b11b5d8bb465ede3415, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCBloodEffects
+  bloodMaterial: {fileID: 2100000, guid: e4dcedaa50dc52f6bca3cbdb8be4c954, type: 2}
+  splatterCount: 24
+  trailSpacing: 0.5
+  stainLifetime: 90
+  puddleSize: 2
+  puddleGrowthTime: 12
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 577
 --- !u!114 &5988710177341981358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,24 +570,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a2601fb6aa97f914a8fb0f9f12bfa731, type: 3}
   m_PrefabInstance: {fileID: 8199417179144217061}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &844000000000000102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8033185028667360198}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1afb2d48aa715b11b5d8bb465ede3415, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::NPCBloodEffects
-  bloodMaterial: {fileID: 2100000, guid: e4dcedaa50dc52f6bca3cbdb8be4c954, type: 2}
-  splatterCount: 18
-  trailSpacing: 0.5
-  stainLifetime: 90
-  puddleSize: 0.9
-  puddleGrowthTime: 12
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 577

@@ -160,6 +160,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8443984484894668888}
   - component: {fileID: 3215450127695568636}
+  - component: {fileID: 844000000000000101}
   - component: {fileID: 5988710177341981358}
   - component: {fileID: 8026838204003978623}
   - component: {fileID: 4142789871880776131}
@@ -529,3 +530,19 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a2601fb6aa97f914a8fb0f9f12bfa731, type: 3}
   m_PrefabInstance: {fileID: 8199417179144217061}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &844000000000000101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8033185028667360198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cdbe1292121576785b3a7357ca9a3a5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::NPCPixelation
+  enablePixelation: 1
+  modelRoot: {fileID: 8520976547389965838}
+  pixelationMaterial: {fileID: 2100000, guid: 1ebd8d915b37513192ed36cb4644f54d, type: 2}
+  pixelSize: 16

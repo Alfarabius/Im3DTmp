@@ -52660,10 +52660,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1572245496}
     m_Modifications:
-    - target: {fileID: 844000000000000101, guid: 973fca3d67597af4b9606760b890bb0c, type: 3}
-      propertyPath: pixelSize
-      value: 12
-      objectReference: {fileID: 0}
     - target: {fileID: 8033185028667360198, guid: 973fca3d67597af4b9606760b890bb0c, type: 3}
       propertyPath: m_Name
       value: NPC

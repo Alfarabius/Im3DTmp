@@ -208,6 +208,13 @@ MonoBehaviour:
   confettiOrigin: {fileID: 830000000000000104}
   confettiMaterial: {fileID: 2100000, guid: 292bd700f6bd55bd9f770b98933dfb28, type: 2}
   openingAudio: {fileID: 830000000000000102}
+  top: {fileID: 4154876030974208211}
+  slideOffset: {x: 0.75, y: 0, z: 0}
+  slideDuration: 0.25
+  fallDuration: 0.45
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 577
   confettiCount: 64
   confettiSize: 0.2
   confettiColors:

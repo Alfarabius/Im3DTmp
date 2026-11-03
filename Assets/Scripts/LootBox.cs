@@ -26,6 +26,7 @@ public class LootBox : MonoBehaviour
     private bool _isOpened;
     private Collider _triggerCollider;
     private PlayerBrain _playerBrain;
+    private LootBoxEffects _effects;
 
     private void Awake()
     {
@@ -42,6 +43,7 @@ public class LootBox : MonoBehaviour
 
         // Инициализируем блок свойств материала для оптимизированной смены цвета без разрыва батчинга
         _propBlock = new MaterialPropertyBlock();
+        _effects = GetComponent<LootBoxEffects>();
     }
 
     private void OnDisable()
@@ -113,6 +115,12 @@ public class LootBox : MonoBehaviour
             _playerBrain.Heal();
         }
 
+        if (_effects != null && _effects.isActiveAndEnabled) _effects.PlayOpening(FinishOpening);
+        else FinishOpening();
+    }
+
+    private void FinishOpening()
+    {
         Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : transform.position + Vector3.up;
         if (lootPrefab != null)
         {

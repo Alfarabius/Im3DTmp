@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(LootBox))]
@@ -7,6 +8,13 @@ public class LootBoxEffects : MonoBehaviour
     [SerializeField] private Transform confettiOrigin;
     [SerializeField] private Material confettiMaterial;
     [SerializeField] private AudioSource openingAudio;
+
+    [Header("Крышка")]
+    [SerializeField] private Transform top;
+    [SerializeField] private Vector3 slideOffset = new Vector3(0.75f, 0f, 0f);
+    [SerializeField, Min(0.01f)] private float slideDuration = 0.25f;
+    [SerializeField, Min(0.01f)] private float fallDuration = 0.45f;
+    [SerializeField] private LayerMask groundMask = (1 << 0) | (1 << 6) | (1 << 9);
 
     [Header("Конфетти")]
     [SerializeField, Range(8, 128)] private int confettiCount = 64;
@@ -55,9 +63,50 @@ public class LootBoxEffects : MonoBehaviour
         if (_confetti != null) _confetti.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
-    private void HandleOpened()
+    public void PlayOpening(System.Action onCompleted)
     {
         if (openingAudio != null && openingAudio.clip != null) openingAudio.Play();
+        StartCoroutine(AnimateTop(onCompleted));
+    }
+
+    private IEnumerator AnimateTop(System.Action onCompleted)
+    {
+        if (top != null)
+        {
+            Vector3 start = top.position;
+            Vector3 offset = transform.TransformVector(slideOffset);
+            Vector3 slideEnd = start + offset;
+            var renderer = top.GetComponentInChildren<Renderer>();
+            Bounds bounds = renderer != null ? renderer.bounds : new Bounds(start, Vector3.zero);
+            Vector3 rayOrigin = bounds.center + offset + Vector3.up * 0.25f;
+            float floorY = Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 5f,
+                groundMask, QueryTriggerInteraction.Ignore) ? hit.point.y : transform.position.y;
+            Vector3 landing = slideEnd;
+            landing.y = floorY + (start.y - bounds.min.y) + 0.01f;
+
+            for (float elapsed = 0f; elapsed < slideDuration;)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / slideDuration);
+                top.position = Vector3.Lerp(start, slideEnd, Mathf.SmoothStep(0f, 1f, t));
+                yield return null;
+            }
+            top.position = slideEnd;
+
+            for (float elapsed = 0f; elapsed < fallDuration;)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / fallDuration);
+                top.position = Vector3.Lerp(slideEnd, landing, t * t);
+                yield return null;
+            }
+            top.position = landing;
+        }
+        onCompleted?.Invoke();
+    }
+
+    private void HandleOpened()
+    {
         if (_confetti == null) return;
 
         Vector3 origin = confettiOrigin != null ? confettiOrigin.position : transform.position + Vector3.up;

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -7,85 +6,80 @@ public class NPCPixelation : MonoBehaviour
 {
     [SerializeField] private bool enablePixelation = true;
     [SerializeField] private Transform modelRoot;
+    [SerializeField] private Transform headBone;
     [SerializeField] private Material pixelationMaterial;
     [Tooltip("Размер блока в пикселях экрана")]
     [SerializeField, Range(4, 64)] private int pixelSize = 16;
+    [Tooltip("Размер плейна в метрах")]
+    [SerializeField] private Vector2 faceSize = new Vector2(0.65f, 0.7f);
 
     private static readonly int PixelSizeId = Shader.PropertyToID("_PixelSize");
+    private static readonly int FaceSizeId = Shader.PropertyToID("_FaceSize");
     private NPCBrain _brain;
-    private Renderer[] _overlays;
+    private Transform _headEnd;
+    private MeshRenderer _plane;
     private MaterialPropertyBlock _properties;
-    private bool _visible;
-    private int _appliedPixelSize;
 
     private void Awake()
     {
         _brain = GetComponent<NPCBrain>();
         _properties = new MaterialPropertyBlock();
+        if (headBone == null)
+        {
+            Transform root = modelRoot != null ? modelRoot : transform;
+            foreach (Transform bone in root.GetComponentsInChildren<Transform>(true))
+            {
+                if (!string.Equals(bone.name, "head", System.StringComparison.OrdinalIgnoreCase) &&
+                    !bone.name.EndsWith(":Head", System.StringComparison.OrdinalIgnoreCase)) continue;
+                headBone = bone;
+                break;
+            }
+        }
+        if (headBone != null) _headEnd = headBone.Find("head_end");
     }
 
     private void LateUpdate()
     {
-        bool show = enablePixelation && pixelationMaterial != null &&
+        bool show = enablePixelation && pixelationMaterial != null && headBone != null &&
             (_brain.Condition == TargetCondition.HeavyWounded || _brain.Condition == TargetCondition.Dead);
-        if (show && _overlays == null) CreateOverlays();
-        if (_overlays == null || (show == _visible && pixelSize == _appliedPixelSize)) return;
+        if (show && _plane == null) CreatePlane();
+        if (_plane == null) return;
+        _plane.enabled = show;
+        if (!show) return;
 
+        _plane.transform.position = _headEnd != null
+            ? (headBone.position + _headEnd.position) * 0.5f
+            : headBone.position;
         _properties.SetFloat(PixelSizeId, pixelSize);
-        foreach (Renderer overlay in _overlays)
-        {
-            overlay.enabled = show;
-            if (show) overlay.SetPropertyBlock(_properties);
-        }
-        _visible = show;
-        _appliedPixelSize = pixelSize;
+        _properties.SetVector(FaceSizeId, new Vector4(faceSize.x, faceSize.y, 0f, 0f));
+        _plane.SetPropertyBlock(_properties);
     }
 
-    private void CreateOverlays()
+    private void CreatePlane()
     {
-        var overlays = new List<Renderer>();
-        Transform root = modelRoot != null ? modelRoot : transform;
-        foreach (Renderer source in root.GetComponentsInChildren<Renderer>(true))
-        {
-            if (!(source is SkinnedMeshRenderer) && !(source is MeshRenderer)) continue;
-            var go = new GameObject("Pixelation");
-            go.layer = source.gameObject.layer;
-            go.transform.SetParent(source.transform, false);
-            Renderer overlay;
-            if (source is SkinnedMeshRenderer skin)
-            {
-                var copy = go.AddComponent<SkinnedMeshRenderer>();
-                copy.sharedMesh = skin.sharedMesh;
-                copy.bones = skin.bones;
-                copy.rootBone = skin.rootBone;
-                copy.localBounds = skin.localBounds;
-                copy.updateWhenOffscreen = skin.updateWhenOffscreen;
-                overlay = copy;
-            }
-            else
-            {
-                go.AddComponent<MeshFilter>().sharedMesh = source.GetComponent<MeshFilter>().sharedMesh;
-                overlay = go.AddComponent<MeshRenderer>();
-            }
-            var materials = new Material[source.sharedMaterials.Length];
-            for (int i = 0; i < materials.Length; i++) materials[i] = pixelationMaterial;
-            overlay.sharedMaterials = materials;
-            overlay.shadowCastingMode = ShadowCastingMode.Off;
-            overlay.receiveShadows = false;
-            overlay.lightProbeUsage = LightProbeUsage.Off;
-            overlay.reflectionProbeUsage = ReflectionProbeUsage.Off;
-            overlay.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
-            overlay.enabled = false;
-            overlays.Add(overlay);
-        }
-        _overlays = overlays.ToArray();
+        var go = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        go.name = "Face Pixelation";
+        go.layer = gameObject.layer;
+        go.transform.SetParent(transform, false);
+        Destroy(go.GetComponent<Collider>());
+        _plane = go.GetComponent<MeshRenderer>();
+        _plane.sharedMaterial = pixelationMaterial;
+        _plane.shadowCastingMode = ShadowCastingMode.Off;
+        _plane.receiveShadows = false;
+        _plane.lightProbeUsage = LightProbeUsage.Off;
+        _plane.reflectionProbeUsage = ReflectionProbeUsage.Off;
+        _plane.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
+        // The shader turns the quad toward the camera and moves it in front of the head.
+        _plane.localBounds = new Bounds(Vector3.zero, Vector3.one * 4f);
     }
 
     private void OnDisable()
     {
-        if (_overlays != null)
-            foreach (Renderer overlay in _overlays)
-                if (overlay != null) overlay.enabled = false;
-        _visible = false;
+        if (_plane != null) _plane.enabled = false;
+    }
+
+    private void OnDestroy()
+    {
+        if (_plane != null) Destroy(_plane.gameObject);
     }
 }

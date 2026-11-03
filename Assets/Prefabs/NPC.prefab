@@ -544,5 +544,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCPixelation
   enablePixelation: 1
   modelRoot: {fileID: 8520976547389965838}
+  headBone: {fileID: 0}
   pixelationMaterial: {fileID: 2100000, guid: 1ebd8d915b37513192ed36cb4644f54d, type: 2}
   pixelSize: 16
+  faceSize: {x: 0.65, y: 0.7}

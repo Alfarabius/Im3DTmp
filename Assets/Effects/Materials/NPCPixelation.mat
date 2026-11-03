@@ -26,5 +26,6 @@ Material:
     m_Ints: []
     m_Floats:
     - _PixelSize: 16
-    m_Colors: []
+    m_Colors:
+    - _FaceSize: {r: 0.65, g: 0.7, b: 0, a: 0}
   m_BuildTextureStacks: []

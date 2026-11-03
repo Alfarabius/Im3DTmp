@@ -255,11 +255,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCBloodEffects
   bloodMaterial: {fileID: 2100000, guid: e4dcedaa50dc52f6bca3cbdb8be4c954, type: 2}
-  splatterCount: 24
+  splatterCount: 18
   trailSpacing: 0.5
   stainLifetime: 90
   stainSizeMultiplier: 3
-  puddleSize: 2
+  puddleSize: 0.8
   puddleGrowthTime: 12
   groundMask:
     serializedVersion: 2

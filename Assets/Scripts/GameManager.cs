@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
     private int _openedLootBoxesCount;
     private bool _isGameOver;
 
+    public int RequiredLootBoxes => requiredLootBoxes;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -52,14 +54,13 @@ public class GameManager : MonoBehaviour
         if (_isGameOver) return;
 
         _openedLootBoxesCount++;
+        OnLootBoxOpened?.Invoke(_openedLootBoxesCount);
         
         if (enableLootBoxWin && _openedLootBoxesCount >= requiredLootBoxes)
         {
             EndGame(true);
             return;
         }
-
-        OnLootBoxOpened?.Invoke(_openedLootBoxesCount);
     }
 
     public void ReportEnemyDeath()

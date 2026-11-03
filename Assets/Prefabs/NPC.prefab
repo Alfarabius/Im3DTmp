@@ -258,6 +258,7 @@ MonoBehaviour:
   splatterCount: 24
   trailSpacing: 0.5
   stainLifetime: 90
+  stainSizeMultiplier: 3
   puddleSize: 2
   puddleGrowthTime: 12
   groundMask:

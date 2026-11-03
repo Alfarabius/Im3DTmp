@@ -121,6 +121,7 @@ MonoBehaviour:
   standOffMultiplier: 0.9
   rotationSpeed: 10
   fireAngle: 15
+  firstShotDelay: 1
   timeBetweenShots: 2
   hitProbability: 0.7
 --- !u!136 &8755355164475993485

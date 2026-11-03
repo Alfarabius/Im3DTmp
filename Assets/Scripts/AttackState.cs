@@ -11,6 +11,7 @@ public class AttackState : MonoBehaviour, ICharacterState
     [SerializeField] private float fireAngle = 15f; 
     
     [Header("Combat Stats")]
+    [SerializeField, Min(0f)] private float firstShotDelay = 1f;
     [SerializeField] private float timeBetweenShots = 2f;
     [SerializeField, Range(0f, 1f)] private float hitProbability = 0.6f;
 
@@ -23,7 +24,7 @@ public class AttackState : MonoBehaviour, ICharacterState
     {
         _brain.Anim.SetBool("IsAiming", true);
         _brain.Agent.speed = combatWalkSpeed; 
-        _shootTimer = timeBetweenShots;
+        _shootTimer = firstShotDelay;
     }
 
     public void UpdateState()

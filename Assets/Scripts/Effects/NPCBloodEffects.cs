@@ -8,6 +8,7 @@ public class NPCBloodEffects : MonoBehaviour
     [SerializeField, Range(4, 32)] private int splatterCount = 18;
     [SerializeField, Min(0.15f)] private float trailSpacing = 0.5f;
     [SerializeField, Min(5f)] private float stainLifetime = 90f;
+    [SerializeField, Min(0.1f)] private float stainSizeMultiplier = 3f;
     [SerializeField, Min(0.1f)] private float puddleSize = 0.9f;
     [SerializeField, Min(1f)] private float puddleGrowthTime = 12f;
     [SerializeField] private LayerMask groundMask = (1 << 0) | (1 << 6) | (1 << 9);
@@ -94,7 +95,7 @@ public class NPCBloodEffects : MonoBehaviour
         if (_puddle == null) CreatePuddle();
         _puddleAge += Time.deltaTime;
         float progress = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(_puddleAge / puddleGrowthTime));
-        _puddle.localScale = Vector3.one * Mathf.Lerp(0.15f, puddleSize, progress);
+        _puddle.localScale = Vector3.one * Mathf.Lerp(0.15f, puddleSize, progress) * stainSizeMultiplier;
     }
 
     private Vector3 GroundPoint(Vector3 position)
@@ -135,7 +136,7 @@ public class NPCBloodEffects : MonoBehaviour
         {
             position = GroundPoint(position),
             velocity = Vector3.zero,
-            startSize = size,
+            startSize = size * stainSizeMultiplier,
             startLifetime = stainLifetime,
             rotation3D = new Vector3(90f, Random.Range(0f, 360f), 0f),
             startColor = Color.white * Random.Range(0.75f, 1f)

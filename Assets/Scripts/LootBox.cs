@@ -10,7 +10,6 @@ public class LootBox : MonoBehaviour
     [Tooltip("Слой игрока для проверки (выбери слой Player)")] [SerializeField] private LayerMask playerLayer;
     
     [Header("Визуал и UI")]
-    [Tooltip("Ссылка на UI подсказку (например, иконка F), которая лежит внутри коробки")] [SerializeField] private GameObject promptUI;
     [Tooltip("Рендерер коробки для управления свечением")] [SerializeField] private MeshRenderer boxRenderer;
     
     [Header("Свечение (Emission)")]
@@ -43,8 +42,13 @@ public class LootBox : MonoBehaviour
 
         // Инициализируем блок свойств материала для оптимизированной смены цвета без разрыва батчинга
         _propBlock = new MaterialPropertyBlock();
-        
-        if (promptUI != null) promptUI.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        if (LootBoxHUD.Instance != null) LootBoxHUD.Instance.SetNearby(this, false);
+        _isPlayerInZone = false;
+        _playerBrain = null;
     }
 
     private void Update()
@@ -72,8 +76,7 @@ public class LootBox : MonoBehaviour
 
         _isPlayerInZone = true;
         other.TryGetComponent(out _playerBrain);
-        
-        if (promptUI != null) promptUI.SetActive(true);
+        if (LootBoxHUD.Instance != null) LootBoxHUD.Instance.SetNearby(this, true);
         
         // Фаза фокуса: Фиксируем свечение на максимуме
         SetEmission(emissionColor * maxEmissionIntensity);
@@ -85,8 +88,7 @@ public class LootBox : MonoBehaviour
 
         _isPlayerInZone = false;
         _playerBrain = null;
-        
-        if (promptUI != null) promptUI.SetActive(false);
+        if (LootBoxHUD.Instance != null) LootBoxHUD.Instance.SetNearby(this, false);
     }
 
     private void OpenBox()
@@ -100,7 +102,7 @@ public class LootBox : MonoBehaviour
             _triggerCollider.enabled = false; 
         }
         
-        if (promptUI != null) promptUI.SetActive(false);
+        if (LootBoxHUD.Instance != null) LootBoxHUD.Instance.SetNearby(this, false);
         
         // Отключаем свечение навсегда
         SetEmission(Color.black);
@@ -114,7 +116,10 @@ public class LootBox : MonoBehaviour
         Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : transform.position + Vector3.up;
         if (lootPrefab != null)
         {
-            Instantiate(lootPrefab, spawnPos, Quaternion.identity);
+            Vector3 origin = boxRenderer != null ? boxRenderer.bounds.center : transform.position + Vector3.up * 0.5f;
+            var loot = Instantiate(lootPrefab, origin, Quaternion.identity);
+            var collectible = loot.GetComponent<Collectible>();
+            if (collectible != null) collectible.Launch(origin, spawnPos, playerLayer);
         }
         
         OnOpened?.Invoke();

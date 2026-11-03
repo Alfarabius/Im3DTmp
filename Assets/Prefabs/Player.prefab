@@ -99,6 +99,14 @@ MonoBehaviour:
   woundPulseFrequency: 0.8
   woundFadeInDuration: 0.3
   woundFadeOutDuration: 1.2
+  bloodMaterial: {fileID: 2100000, guid: e4dcedaa50dc52f6bca3cbdb8be4c954, type: 2}
+  bloodSplatterCount: 18
+  bloodTrailSpacing: 0.5
+  bloodStainLifetime: 90
+  bloodStainSizeMultiplier: 3
+  bloodGroundMask:
+    serializedVersion: 2
+    m_Bits: 577
 --- !u!114 &5294772691111863449
 MonoBehaviour:
   m_ObjectHideFlags: 0

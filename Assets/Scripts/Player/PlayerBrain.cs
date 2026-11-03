@@ -36,6 +36,7 @@ public class PlayerBrain : MonoBehaviour, ITargetable
     private ICharacterState _currentState;
     
     public event System.Action OnHitReceived;
+    public event System.Action<Vector3, Vector3> OnHit;
     
     [field: Header("Targeting")]
     [field: SerializeField] public float TargetWeight { get; set; } = 1.5f;
@@ -73,6 +74,13 @@ public class PlayerBrain : MonoBehaviour, ITargetable
         {
             ApplyHit();
         }
+    }
+
+    public void TryApplyHit(float hitProbability, Vector3 hitPoint, Vector3 hitNormal)
+    {
+        TargetCondition previousCondition = Condition;
+        TryApplyHit(hitProbability);
+        if (Condition != previousCondition) OnHit?.Invoke(hitPoint, hitNormal);
     }
 
     private void ApplyHit()

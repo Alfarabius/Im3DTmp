@@ -13,7 +13,6 @@ public class NPCBloodEffects : MonoBehaviour
     [SerializeField, Min(1f)] private float puddleGrowthTime = 12f;
     [SerializeField] private LayerMask groundMask = (1 << 0) | (1 << 6) | (1 << 9);
 
-    private static ParticleSystem _stains;
     private NPCBrain _brain;
     private ParticleSystem _splatter;
     private Transform _body;
@@ -39,14 +38,7 @@ public class NPCBloodEffects : MonoBehaviour
             break;
         }
         if (bloodMaterial == null) return;
-        _splatter = ParticleEffectFactory.Create(transform, "Blood Splatter", bloodMaterial, 48);
-        var main = _splatter.main;
-        main.gravityModifier = 0.8f;
-        var renderer = _splatter.GetComponent<ParticleSystemRenderer>();
-        renderer.renderMode = ParticleSystemRenderMode.Stretch;
-        renderer.velocityScale = 0.08f;
-        renderer.lengthScale = 1.4f;
-        ParticleEffectFactory.SetFade(_splatter, 0.45f);
+        _splatter = BloodEffectFactory.CreateSplatter(transform, bloodMaterial);
     }
 
     private void OnEnable() => _brain.OnHit += HandleHit;
@@ -60,20 +52,7 @@ public class NPCBloodEffects : MonoBehaviour
     private void HandleHit(Vector3 point, Vector3 normal)
     {
         if (_splatter == null) return;
-        _splatter.Play(false);
-        for (int i = 0; i < splatterCount; i++)
-        {
-            Vector3 direction = (normal + Random.insideUnitSphere * 0.8f + Vector3.up * 0.35f).normalized;
-            _splatter.Emit(new ParticleSystem.EmitParams
-            {
-                position = point + normal * 0.025f,
-                velocity = direction * Random.Range(1.2f, 3f),
-                startSize = Random.Range(0.025f, 0.085f),
-                startLifetime = Random.Range(0.25f, 0.55f),
-                rotation = Random.Range(0f, 360f),
-                startColor = Color.white * Random.Range(0.75f, 1f)
-            }, 1);
-        }
+        BloodEffectFactory.EmitSplatter(_splatter, point, normal, splatterCount);
         AddStain(point, Random.Range(0.15f, 0.25f));
         _lastStainPosition = transform.position;
     }
@@ -112,43 +91,16 @@ public class NPCBloodEffects : MonoBehaviour
         return position;
     }
 
-    private void EnsureStains()
-    {
-        if (_stains != null) return;
-        _stains = ParticleEffectFactory.Create(null, "NPC Blood Stains", bloodMaterial, 512);
-        var main = _stains.main;
-        main.loop = true;
-        main.startRotation3D = true;
-        main.cullingMode = ParticleSystemCullingMode.AlwaysSimulate;
-        main.ringBufferMode = ParticleSystemRingBufferMode.PauseUntilReplaced;
-        var renderer = _stains.GetComponent<ParticleSystemRenderer>();
-        renderer.renderMode = ParticleSystemRenderMode.Mesh;
-        renderer.alignment = ParticleSystemRenderSpace.World;
-        renderer.mesh = Resources.GetBuiltinResource<Mesh>("Quad.fbx");
-        ParticleEffectFactory.SetFade(_stains, 0.8f);
-        _stains.Play(false);
-    }
-
     private void AddStain(Vector3 position, float size)
     {
-        EnsureStains();
-        _stains.Emit(new ParticleSystem.EmitParams
-        {
-            position = GroundPoint(position),
-            velocity = Vector3.zero,
-            startSize = size * stainSizeMultiplier,
-            startLifetime = stainLifetime,
-            rotation3D = new Vector3(90f, Random.Range(0f, 360f), 0f),
-            startColor = Color.white * Random.Range(0.75f, 1f)
-        }, 1);
+        BloodEffectFactory.EmitStain(bloodMaterial, GroundPoint(position), size * stainSizeMultiplier, stainLifetime);
     }
 
     private void CreatePuddle()
     {
-        EnsureStains();
         var go = new GameObject("Blood Puddle", typeof(MeshFilter), typeof(MeshRenderer));
         _puddle = go.transform;
-        _puddle.SetParent(_stains.transform, false);
+        _puddle.SetParent(BloodEffectFactory.GetStainsRoot(bloodMaterial), false);
         _puddle.position = GroundPoint(_body.position) + Vector3.up * 0.002f;
         _puddle.rotation = Quaternion.Euler(90f, Random.Range(0f, 360f), 0f);
         go.GetComponent<MeshFilter>().sharedMesh = Resources.GetBuiltinResource<Mesh>("Quad.fbx");

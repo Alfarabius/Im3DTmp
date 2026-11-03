@@ -38,6 +38,14 @@ public class PlayerDamageEffects : MonoBehaviour
     [SerializeField, Min(0.01f)] private float woundFadeInDuration = 0.3f;
     [SerializeField, Min(0.01f)] private float woundFadeOutDuration = 1.2f;
 
+    [Header("Кровь")]
+    [SerializeField] private Material bloodMaterial;
+    [SerializeField, Range(4, 32)] private int bloodSplatterCount = 18;
+    [SerializeField, Min(0.15f)] private float bloodTrailSpacing = 0.5f;
+    [SerializeField, Min(5f)] private float bloodStainLifetime = 90f;
+    [SerializeField, Min(0.1f)] private float bloodStainSizeMultiplier = 3f;
+    [SerializeField] private LayerMask bloodGroundMask = (1 << 0) | (1 << 6) | (1 << 9);
+
     private PlayerBrain _playerBrain;
     private CinemachineImpulseSource _impulseSource;
     private Vignette _vignette;
@@ -48,6 +56,10 @@ public class PlayerDamageEffects : MonoBehaviour
     private bool _painAudioActive;
     private float _painBlend;
     private AudioClip _previousClip;
+    private ParticleSystem _bloodSplatter;
+    private Vector3 _lastBloodPosition;
+    private float _bloodGroundY;
+    private bool _bloodGroundFound;
 
     // Переменные для отложенной обработки промаха
     private bool _hasPendingNearMiss;
@@ -59,6 +71,8 @@ public class PlayerDamageEffects : MonoBehaviour
     {
         _playerBrain = GetComponent<PlayerBrain>();
         _impulseSource = GetComponent<CinemachineImpulseSource>();
+        _lastBloodPosition = transform.position;
+        if (bloodMaterial != null) _bloodSplatter = BloodEffectFactory.CreateSplatter(transform, bloodMaterial);
         
         // Получение компонентов постпроцессинга из Volume
         if (postProcessVolume != null && postProcessVolume.profile != null)
@@ -72,12 +86,15 @@ public class PlayerDamageEffects : MonoBehaviour
     {
         GlobalAudioEvents.OnGunshotFired += HandleGunshot;
         _playerBrain.OnHitReceived += HandleHit;
+        _playerBrain.OnHit += HandleBloodHit;
     }
 
     private void OnDisable()
     {
         GlobalAudioEvents.OnGunshotFired -= HandleGunshot;
         _playerBrain.OnHitReceived -= HandleHit;
+        _playerBrain.OnHit -= HandleBloodHit;
+        if (_bloodSplatter != null) _bloodSplatter.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         StopPainAudio();
     }
 
@@ -90,6 +107,7 @@ public class PlayerDamageEffects : MonoBehaviour
     private void LateUpdate()
     {
         UpdatePainAudio();
+        UpdateBloodTrail();
 
         // Обработка промаха в конце кадра, чтобы физическое попадание могло его отменить
         if (_hasPendingNearMiss)
@@ -139,6 +157,45 @@ public class PlayerDamageEffects : MonoBehaviour
         {
             _impulseSource.GenerateImpulse();
         }
+    }
+
+    private void HandleBloodHit(Vector3 point, Vector3 normal)
+    {
+        if (_bloodSplatter == null) return;
+        BloodEffectFactory.EmitSplatter(_bloodSplatter, point, normal, bloodSplatterCount);
+        BloodEffectFactory.EmitStain(bloodMaterial, BloodGroundPoint(point),
+            Random.Range(0.15f, 0.25f) * bloodStainSizeMultiplier, bloodStainLifetime);
+        _lastBloodPosition = transform.position;
+    }
+
+    private void UpdateBloodTrail()
+    {
+        Vector3 position = transform.position;
+        if (bloodMaterial == null || _playerBrain.Condition != TargetCondition.Wounded)
+        {
+            _lastBloodPosition = position;
+            return;
+        }
+        Vector3 distance = position - _lastBloodPosition;
+        distance.y = 0f;
+        if (distance.sqrMagnitude < bloodTrailSpacing * bloodTrailSpacing) return;
+        BloodEffectFactory.EmitStain(bloodMaterial, BloodGroundPoint(position + Random.insideUnitSphere * 0.08f),
+            Random.Range(0.09f, 0.17f) * bloodStainSizeMultiplier, bloodStainLifetime);
+        _lastBloodPosition = position;
+    }
+
+    private Vector3 BloodGroundPoint(Vector3 position)
+    {
+        if (!_bloodGroundFound)
+        {
+            _bloodGroundY = Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down,
+                out RaycastHit hit, 4f, bloodGroundMask, QueryTriggerInteraction.Ignore)
+                ? hit.point.y : transform.position.y;
+            _bloodGroundY += 0.012f;
+            _bloodGroundFound = true;
+        }
+        position.y = _bloodGroundY;
+        return position;
     }
 
     private void PlayNearMissSound(Vector3 position)

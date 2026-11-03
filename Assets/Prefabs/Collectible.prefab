@@ -97,6 +97,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Collectible
   flightDuration: 0.8
   flightHeight: 1
+  itemDefinition: {fileID: 11400000, guid: 2a4c5b1755ae5cda94aa5f989517ee87, type: 2}
+  pickupCooldown: 0.8
+  onUsed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &840000000000000309
 PrefabInstance:
   m_ObjectHideFlags: 0

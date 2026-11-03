@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2783350948651294607}
   - component: {fileID: 8736874641888502049}
+  - component: {fileID: 845000000000000101}
   - component: {fileID: 843000000000000101}
   - component: {fileID: 6823027890462101001}
   - component: {fileID: 6823027890462101002}
@@ -1316,3 +1317,21 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967131
   cameraRadius: 0.04
+--- !u!114 &845000000000000101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211337067421969027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07cbc148c64f506a89203287e8ad5c61, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
+  view: {fileID: 7801950276124739087}
+  dropSpeed: 1.5
+  environmentMask:
+    serializedVersion: 2
+    m_Bits: 577
+  reachWithRightHand: 1

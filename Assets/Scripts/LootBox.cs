@@ -11,6 +11,7 @@ public class LootBox : MonoBehaviour
     
     [Header("Визуал и UI")]
     [Tooltip("Рендерер коробки для управления свечением")] [SerializeField] private MeshRenderer boxRenderer;
+    [SerializeField] private MeshRenderer topRenderer;
     
     [Header("Свечение (Emission)")]
     [Tooltip("Базовый цвет свечения (HDR)")] [SerializeField] private Color emissionColor = Color.yellow;
@@ -136,11 +137,17 @@ public class LootBox : MonoBehaviour
 
     private void SetEmission(Color color)
     {
-        if (boxRenderer == null) return;
+        SetEmission(boxRenderer, color);
+        SetEmission(topRenderer, color);
+    }
+
+    private void SetEmission(MeshRenderer targetRenderer, Color color)
+    {
+        if (targetRenderer == null) return;
         
         // Читаем текущие свойства, меняем цвет свечения и применяем обратно
-        boxRenderer.GetPropertyBlock(_propBlock);
+        targetRenderer.GetPropertyBlock(_propBlock);
         _propBlock.SetColor("_EmissionColor", color);
-        boxRenderer.SetPropertyBlock(_propBlock);
+        targetRenderer.SetPropertyBlock(_propBlock);
     }
 }

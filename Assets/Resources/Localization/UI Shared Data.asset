@@ -75,6 +75,30 @@ MonoBehaviour:
     m_Key: cutscene.skip
     m_Metadata:
       m_Items: []
+  - m_Id: 16
+    m_Key: menu.camera_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17
+    m_Key: menu.camera_exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18
+    m_Key: menu.hide_tips
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19
+    m_Key: option.on
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20
+    m_Key: option.off
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21
+    m_Key: inventory.tips
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

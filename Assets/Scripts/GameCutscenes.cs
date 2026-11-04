@@ -18,6 +18,8 @@ public class GameCutscenes : MonoBehaviour
     private GameObject _overlay;
     private Image _picture;
     private RectTransform _skipFill;
+    private TMP_Text _skipHint;
+    private Image _skipTrack;
     private float _previousTimeScale;
     private bool _previousAudioPause;
     private bool _playing;
@@ -30,6 +32,9 @@ public class GameCutscenes : MonoBehaviour
     {
         if (_playing || frames == null || !Array.Exists(frames, frame => frame != null)) return false;
         if (_overlay == null) CreateOverlay();
+        _skipHint.text = LocalizationService.Get("cutscene.skip");
+        _skipHint.gameObject.SetActive(false);
+        _skipTrack.gameObject.SetActive(false);
         _previousTimeScale = Time.timeScale;
         _previousAudioPause = AudioListener.pause;
         Time.timeScale = 0f;
@@ -53,6 +58,8 @@ public class GameCutscenes : MonoBehaviour
             while (age < secondsPerFrame)
             {
                 bool pressed = Application.isFocused && Mouse.current != null && Mouse.current.leftButton.isPressed;
+                _skipHint.gameObject.SetActive(pressed);
+                _skipTrack.gameObject.SetActive(pressed);
                 held = pressed ? held + Time.unscaledDeltaTime : 0f;
                 _skipFill.anchorMax = new Vector2(Mathf.Clamp01(held / holdToSkip), 1f);
                 if (held >= holdToSkip)
@@ -106,6 +113,7 @@ public class GameCutscenes : MonoBehaviour
         var hintObject = new GameObject("Skip hint", typeof(RectTransform), typeof(TextMeshProUGUI));
         hintObject.transform.SetParent(_overlay.transform, false);
         var hint = hintObject.GetComponent<TextMeshProUGUI>();
+        _skipHint = hint;
         hint.font = LocalizationService.InterfaceFont;
         hint.text = LocalizationService.Get("cutscene.skip");
         hint.fontSize = 26f;
@@ -118,6 +126,7 @@ public class GameCutscenes : MonoBehaviour
         rect.sizeDelta = new Vector2(800f, 48f);
 
         var track = CreateImage("Skip progress", _overlay.transform, new Color(0.2f, 0.2f, 0.2f));
+        _skipTrack = track;
         rect = track.rectTransform;
         rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
         rect.pivot = new Vector2(1f, 0f);

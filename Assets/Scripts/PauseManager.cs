@@ -16,6 +16,9 @@ public class PauseManager : MonoBehaviour
     [Header("UI Setup")]
     [Tooltip("Ссылка на корневой объект панели меню паузы")] [SerializeField] private GameObject pauseMenuUI;
     [Tooltip("Выпадающий список разрешений экрана")] [SerializeField] private TMP_Dropdown resolutionDropdown;
+    [SerializeField] private TMP_Text hideTipsLabel;
+    [SerializeField] private Selectable firstMenuControl;
+    public static bool HideTips { get; private set; }
     
     [Header("UI Sliders")]
     [Tooltip("Слайдер чувствительности мыши")] [SerializeField] private Slider mouseSensSlider;
@@ -54,11 +57,13 @@ public class PauseManager : MonoBehaviour
     private const string PrefsSFXVol = "SFXVolume";
     private const string PrefsResolutionWidth = "ResolutionWidth";
     private const string PrefsResolutionHeight = "ResolutionHeight";
+    private const string PrefsHideTips = "HideTips";
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+        HideTips = PlayerPrefs.GetInt(PrefsHideTips, 0) != 0;
         
         // Изначально скрываем меню паузы при загрузке сцены
         if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
@@ -75,6 +80,7 @@ public class PauseManager : MonoBehaviour
 
     private void OnEnable()
     {
+        LocalizationService.LanguageChanged += RefreshTipsLabel;
         if (pauseAction != null)
         {
             pauseAction.action.Enable();
@@ -89,6 +95,7 @@ public class PauseManager : MonoBehaviour
 
     private void OnDisable()
     {
+        LocalizationService.LanguageChanged -= RefreshTipsLabel;
         if (pauseAction != null)
         {
             pauseAction.action.performed -= TogglePause;
@@ -127,6 +134,8 @@ public class PauseManager : MonoBehaviour
 
         // Включение UI панели паузы
         if (pauseMenuUI != null) pauseMenuUI.SetActive(true);
+        RefreshTipsLabel();
+        if (firstMenuControl != null) firstMenuControl.Select();
 
         // Разблокировка и отображение курсора для взаимодействия с меню
         Cursor.lockState = CursorLockMode.None;
@@ -203,6 +212,22 @@ public class PauseManager : MonoBehaviour
     // --- Методы основных кнопок меню ---
 
     public void UIResume() => ResumeGame();
+
+    public void UIToggleTips()
+    {
+        HideTips = !HideTips;
+        PlayerPrefs.SetInt(PrefsHideTips, HideTips ? 1 : 0);
+        PlayerPrefs.Save();
+        RefreshTipsLabel();
+    }
+
+    private void RefreshTipsLabel()
+    {
+        if (hideTipsLabel == null) return;
+        hideTipsLabel.font = LocalizationService.InterfaceFont;
+        hideTipsLabel.text = LocalizationService.Get("menu.hide_tips") + " [" +
+            LocalizationService.Get(HideTips ? "option.on" : "option.off") + "]";
+    }
 
     public void UIRestart()
     {

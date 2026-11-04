@@ -7,6 +7,7 @@ public class PlayerInventory : MonoBehaviour
 {
     public const int SlotCount = 3;
     public event System.Action Changed;
+    public event System.Action FirstItemPickedUp;
 
     [SerializeField] private Transform view;
     [SerializeField, Min(0f)] private float dropSpeed = 1.5f;
@@ -24,6 +25,7 @@ public class PlayerInventory : MonoBehaviour
     private Collectible _posedItem;
     private Quaternion _handViewRotation;
     private Vector3 _handRestLocalPosition;
+    private bool _hasPickedUpItem;
 
     public int SelectedSlot { get; private set; } = -1;
     public float UseProgress { get; private set; }
@@ -56,8 +58,18 @@ public class PlayerInventory : MonoBehaviour
             if (_slots[i] != null) continue;
             _slots[i] = item;
             item.Store(transform);
+            bool firstPickup = !_hasPickedUpItem;
+            _hasPickedUpItem = true;
+            if (firstPickup)
+            {
+                SelectedSlot = i;
+                _posedItem = null;
+                CancelUse();
+                _requireRelease = Mouse.current != null && Mouse.current.leftButton.isPressed;
+            }
             if (SelectedSlot == i && view != null) item.Equip(view);
             Changed?.Invoke();
+            if (firstPickup) FirstItemPickedUp?.Invoke();
             return true;
         }
         return false;

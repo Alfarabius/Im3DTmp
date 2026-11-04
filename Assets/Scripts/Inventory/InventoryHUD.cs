@@ -9,8 +9,7 @@ public class InventoryHUD : MonoBehaviour
     [SerializeField] private Image[] useBars;
     [SerializeField] private Image[] useTracks;
     [SerializeField] private Image ballAimPoint;
-    [SerializeField] private Color selectedColor = new Color(0.25f, 1f, 0.5f);
-    [SerializeField] private Color idleColor = new Color(0.78f, 0.87f, 0.95f);
+    [SerializeField] private Color selectedColor = new Color(1f, 0.65f, 0.25f);
 
     private PlayerInventory _inventory;
 
@@ -41,7 +40,7 @@ public class InventoryHUD : MonoBehaviour
             var item = _inventory != null ? _inventory.GetSlot(i) : null;
             itemIcons[i].sprite = item != null ? item.Definition.Icon : null;
             itemIcons[i].enabled = item != null && item.Definition.Icon != null;
-            slotFrames[i].color = _inventory != null && _inventory.SelectedSlot == i ? selectedColor : idleColor;
+            slotFrames[i].color = _inventory != null && _inventory.SelectedSlot == i ? selectedColor : Color.white;
         }
     }
 
@@ -58,7 +57,7 @@ public class InventoryHUD : MonoBehaviour
             useBars[i].fillAmount = progress;
         }
         var held = _inventory != null ? _inventory.SelectedItem : null;
-        ballAimPoint.gameObject.SetActive(held != null && held.Definition.Kind == InventoryItemKind.Ball &&
+        ballAimPoint.gameObject.SetActive( held != null && held.Definition.Kind == InventoryItemKind.Ball &&
             held.gameObject.activeInHierarchy && !PauseManager.IsPaused && !GameCutscenes.IsPlaying);
     }
 }

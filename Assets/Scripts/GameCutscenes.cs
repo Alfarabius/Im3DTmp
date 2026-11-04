@@ -31,6 +31,7 @@ public class GameCutscenes : MonoBehaviour
     private bool Play(Sprite[] frames, Action onFinished)
     {
         if (_playing || frames == null || !Array.Exists(frames, frame => frame != null)) return false;
+        LocalizationService.EnsureInitialized();
         if (_overlay == null) CreateOverlay();
         _skipHint.text = LocalizationService.Get("cutscene.skip");
         _skipHint.gameObject.SetActive(false);
@@ -41,6 +42,7 @@ public class GameCutscenes : MonoBehaviour
         AudioListener.pause = true;
         _playing = true;
         IsPlaying = true;
+        _picture.sprite = Array.Find(frames, frame => frame != null);
         _overlay.SetActive(true);
         StartCoroutine(Show(frames, onFinished));
         return true;
@@ -95,6 +97,7 @@ public class GameCutscenes : MonoBehaviour
     private void CreateOverlay()
     {
         _overlay = new GameObject("Cutscene", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
+        _overlay.SetActive(false);
         _overlay.transform.SetParent(transform, false);
         var canvas = _overlay.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;

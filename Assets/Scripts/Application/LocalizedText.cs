@@ -23,6 +23,8 @@ public class LocalizedText : MonoBehaviour
 
     private void Refresh()
     {
+        LocalizationService.EnsureInitialized();
+        if (_text == null) _text = GetComponent<TMP_Text>();
         _text.font = LocalizationService.InterfaceFont;
         if (string.IsNullOrEmpty(key)) return; // Динамические подписи Dropdown меняют только шрифт.
 

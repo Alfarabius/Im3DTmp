@@ -3,77 +3,68 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject:
-    fileID: 0
-  m_PrefabInstance:
-    fileID: 0
-  m_PrefabAsset:
-    fileID: 0
-  m_GameObject:
-    fileID: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script:
-    fileID: 11500000
-    guid: e9620f8c34305754d8cc9a7e49e852d9
-    type: 3
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
   m_Name: UI_ru
-  m_EditorClassIdentifier: null
+  m_EditorClassIdentifier:
   m_LocaleId:
     m_Code: ru
-  m_SharedData:
-    fileID: 11400000
-    guid: 89550af684e14cdb9b8eed6d062fdd8c
-    type: 2
+  m_SharedData: {fileID: 11400000, guid: 89550af684e14cdb9b8eed6d062fdd8c, type: 2}
   m_Metadata:
     m_Items: []
   m_TableData:
   - m_Id: 1
-    m_Localized: 1. Продолжить
+    m_Localized: "\u041F\u0440\u043E\u0434\u043E\u043B\u0436\u0438\u0442\u044C"
     m_Metadata:
       m_Items: []
   - m_Id: 2
-    m_Localized: 2. Заново
+    m_Localized: "\u0417\u0430\u043D\u043E\u0432\u043E"
     m_Metadata:
       m_Items: []
   - m_Id: 3
-    m_Localized: 10. Выйти
+    m_Localized: "\u0412\u044B\u0439\u0442\u0438"
     m_Metadata:
       m_Items: []
   - m_Id: 4
-    m_Localized: '3. Язык:'
+    m_Localized: "\u042F\u0437\u044B\u043A:"
     m_Metadata:
       m_Items: []
   - m_Id: 5
-    m_Localized: '4. Разрешение:'
+    m_Localized: "\u0420\u0430\u0437\u0440\u0435\u0448\u0435\u043D\u0438\u0435:"
     m_Metadata:
       m_Items: []
   - m_Id: 6
-    m_Localized: '5. Чувствительность мыши:'
+    m_Localized: "\u0427\u0443\u0432\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u044C
+      \u043C\u044B\u0448\u0438:"
     m_Metadata:
       m_Items: []
   - m_Id: 7
-    m_Localized: Громкость
+    m_Localized: "\u0413\u0440\u043E\u043C\u043A\u043E\u0441\u0442\u044C"
     m_Metadata:
       m_Items: []
   - m_Id: 8
-    m_Localized: 'Звук:'
+    m_Localized: "\u0417\u0432\u0443\u043A:"
     m_Metadata:
       m_Items: []
   - m_Id: 9
-    m_Localized: '6. Общая:'
+    m_Localized: "\u041E\u0431\u0449\u0430\u044F:"
     m_Metadata:
       m_Items: []
   - m_Id: 10
-    m_Localized: '7. Окружение:'
+    m_Localized: "\u041E\u043A\u0440\u0443\u0436\u0435\u043D\u0438\u0435:"
     m_Metadata:
       m_Items: []
   - m_Id: 11
-    m_Localized: '8. Эффекты:'
+    m_Localized: "\u042D\u0444\u0444\u0435\u043A\u0442\u044B:"
     m_Metadata:
       m_Items: []
   - m_Id: 12
-    m_Localized: Русский
+    m_Localized: "\u0420\u0443\u0441\u0441\u043A\u0438\u0439"
     m_Metadata:
       m_Items: []
   - m_Id: 13
@@ -81,39 +72,27 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 14
-    m_Localized: '[{key}] Открыть'
+    m_Localized: "[{key}] \u041E\u0442\u043A\u0440\u044B\u0442\u044C"
     m_Metadata:
       m_Items: []
   - m_Id: 15
-    m_Localized: Удерживайте ЛКМ, чтобы пропустить
-    m_Metadata:
-      m_Items: []
-  - m_Id: 16
-    m_Localized: МЕНЮ КАМЕРЫ
-    m_Metadata:
-      m_Items: []
-  - m_Id: 17
-    m_Localized: ESC - ВЕРНУТЬСЯ В ИГРУ
+    m_Localized: "\u0423\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0439\u0442\u0435 \u041b\u041a\u041c, \u0447\u0442\u043e\u0431\u044b \u043f\u0440\u043e\u043f\u0443\u0441\u0442\u0438\u0442\u044c"
     m_Metadata:
       m_Items: []
   - m_Id: 18
-    m_Localized: 9. СКРЫВАТЬ ПОДСКАЗКИ
+    m_Localized: "\u0421\u043a\u0440\u044b\u0432\u0430\u0442\u044c \u043f\u043e\u0434\u0441\u043a\u0430\u0437\u043a\u0438"
     m_Metadata:
       m_Items: []
   - m_Id: 19
-    m_Localized: ВКЛ
+    m_Localized: "\u0412\u041a\u041b"
     m_Metadata:
       m_Items: []
   - m_Id: 20
-    m_Localized: ВЫКЛ
+    m_Localized: "\u0412\u042b\u041a\u041b"
     m_Metadata:
       m_Items: []
   - m_Id: 21
-    m_Localized: 'Удерживайте ЛКМ - бросить / использовать
-
-      ПКМ - выбросить
-
-      1,2,3 - взять'
+    m_Localized: "\u0423\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0439\u0442\u0435 \u041b\u041a\u041c - \u0431\u0440\u043e\u0441\u0438\u0442\u044c / \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c\n\u041f\u041a\u041c - \u0432\u044b\u0431\u0440\u043e\u0441\u0438\u0442\u044c\n1,2,3 - \u0432\u0437\u044f\u0442\u044c"
     m_Metadata:
       m_Items: []
   references:

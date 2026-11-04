@@ -17,7 +17,6 @@ public class PauseManager : MonoBehaviour
     [Tooltip("Ссылка на корневой объект панели меню паузы")] [SerializeField] private GameObject pauseMenuUI;
     [Tooltip("Выпадающий список разрешений экрана")] [SerializeField] private TMP_Dropdown resolutionDropdown;
     [SerializeField] private TMP_Text hideTipsLabel;
-    [SerializeField] private Selectable firstMenuControl;
     public static bool HideTips { get; private set; }
     
     [Header("UI Sliders")]
@@ -135,7 +134,6 @@ public class PauseManager : MonoBehaviour
         // Включение UI панели паузы
         if (pauseMenuUI != null) pauseMenuUI.SetActive(true);
         RefreshTipsLabel();
-        if (firstMenuControl != null) firstMenuControl.Select();
 
         // Разблокировка и отображение курсора для взаимодействия с меню
         Cursor.lockState = CursorLockMode.None;
@@ -224,6 +222,7 @@ public class PauseManager : MonoBehaviour
     private void RefreshTipsLabel()
     {
         if (hideTipsLabel == null) return;
+        LocalizationService.EnsureInitialized();
         hideTipsLabel.font = LocalizationService.InterfaceFont;
         hideTipsLabel.text = LocalizationService.Get("menu.hide_tips") + " [" +
             LocalizationService.Get(HideTips ? "option.on" : "option.off") + "]";

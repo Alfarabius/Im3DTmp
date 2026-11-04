@@ -3,116 +3,94 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject:
-    fileID: 0
-  m_PrefabInstance:
-    fileID: 0
-  m_PrefabAsset:
-    fileID: 0
-  m_GameObject:
-    fileID: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script:
-    fileID: 11500000
-    guid: e9620f8c34305754d8cc9a7e49e852d9
-    type: 3
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
   m_Name: UI_en
-  m_EditorClassIdentifier: null
+  m_EditorClassIdentifier:
   m_LocaleId:
     m_Code: en
-  m_SharedData:
-    fileID: 11400000
-    guid: 89550af684e14cdb9b8eed6d062fdd8c
-    type: 2
+  m_SharedData: {fileID: 11400000, guid: 89550af684e14cdb9b8eed6d062fdd8c, type: 2}
   m_Metadata:
     m_Items: []
   m_TableData:
   - m_Id: 1
-    m_Localized: 1. Resume
+    m_Localized: "Resume"
     m_Metadata:
       m_Items: []
   - m_Id: 2
-    m_Localized: 2. Restart
+    m_Localized: "Restart"
     m_Metadata:
       m_Items: []
   - m_Id: 3
-    m_Localized: 10. Quit
+    m_Localized: "Quit"
     m_Metadata:
       m_Items: []
   - m_Id: 4
-    m_Localized: '3. Language:'
+    m_Localized: "Language:"
     m_Metadata:
       m_Items: []
   - m_Id: 5
-    m_Localized: '4. Resolution:'
+    m_Localized: "Resolution:"
     m_Metadata:
       m_Items: []
   - m_Id: 6
-    m_Localized: '5. Mouse sensitivity:'
+    m_Localized: "Mouse sensitivity:"
     m_Metadata:
       m_Items: []
   - m_Id: 7
-    m_Localized: Volume
+    m_Localized: "Volume"
     m_Metadata:
       m_Items: []
   - m_Id: 8
-    m_Localized: 'Sounds:'
+    m_Localized: "Sounds:"
     m_Metadata:
       m_Items: []
   - m_Id: 9
-    m_Localized: '6. Master:'
+    m_Localized: "Master:"
     m_Metadata:
       m_Items: []
   - m_Id: 10
-    m_Localized: '7. Ambient:'
+    m_Localized: "Ambient:"
     m_Metadata:
       m_Items: []
   - m_Id: 11
-    m_Localized: '8. Effects:'
+    m_Localized: "Effects:"
     m_Metadata:
       m_Items: []
   - m_Id: 12
-    m_Localized: Русский
+    m_Localized: "Русский"
     m_Metadata:
       m_Items: []
   - m_Id: 13
-    m_Localized: English
+    m_Localized: "English"
     m_Metadata:
       m_Items: []
   - m_Id: 14
-    m_Localized: '[{key}] Open'
+    m_Localized: "[{key}] Open"
     m_Metadata:
       m_Items: []
   - m_Id: 15
-    m_Localized: Hold LMB to skip
-    m_Metadata:
-      m_Items: []
-  - m_Id: 16
-    m_Localized: CAMERA MENU
-    m_Metadata:
-      m_Items: []
-  - m_Id: 17
-    m_Localized: ESC - BACK TO GAME
+    m_Localized: "Hold LMB to skip"
     m_Metadata:
       m_Items: []
   - m_Id: 18
-    m_Localized: 9. HIDE TIPS
+    m_Localized: "Hide Tips"
     m_Metadata:
       m_Items: []
   - m_Id: 19
-    m_Localized: 'ON'
+    m_Localized: "ON"
     m_Metadata:
       m_Items: []
   - m_Id: 20
-    m_Localized: 'OFF'
+    m_Localized: "OFF"
     m_Metadata:
       m_Items: []
   - m_Id: 21
-    m_Localized: 'Hold LMB - throw / use
-
-      RMB - drop
-
-      1,2,3 - take'
+    m_Localized: "Hold LMB - throw / use\nRMB - drop\n1,2,3 - take"
     m_Metadata:
       m_Items: []

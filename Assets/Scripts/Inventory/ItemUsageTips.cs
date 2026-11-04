@@ -36,6 +36,7 @@ public class ItemUsageTips : MonoBehaviour
 
     private void RefreshText()
     {
+        LocalizationService.EnsureInitialized();
         text.font = LocalizationService.InterfaceFont;
         text.text = LocalizationService.Get("inventory.tips");
     }

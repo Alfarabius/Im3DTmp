@@ -29,7 +29,7 @@ public static class LocalizationService
 
     public static void Initialize(GameApplicationSettings settings, string language)
     {
-        if (settings.RussianTable == null || settings.EnglishTable == null || settings.InterfaceFont == null)
+        if (settings == null || settings.RussianTable == null || settings.EnglishTable == null || settings.InterfaceFont == null)
             throw new InvalidOperationException("Application settings must contain both language tables and a UI font.");
 
         _settings = settings;
@@ -55,8 +55,28 @@ public static class LocalizationService
         LanguageChanged?.Invoke();
     }
 
+    public static void EnsureInitialized()
+    {
+        if (_settings != null && InterfaceFont != null) return;
+
+        var settings = _settings != null ? _settings : Resources.Load<GameApplicationSettings>("GameApplicationSettings");
+        if (settings == null) throw new InvalidOperationException("GameApplicationSettings is missing from Resources.");
+
+        string language = Language;
+        if (_settings == null)
+        {
+#if UNITY_EDITOR
+            language = settings.EditorOverrideLang;
+#else
+            language = PlayerPrefs.GetString(LanguagePreference, language);
+#endif
+        }
+        Initialize(settings, language);
+    }
+
     public static string Get(string key)
     {
+        EnsureInitialized();
         StringTable table = Language == "ru" ? _settings.RussianTable : _settings.EnglishTable;
         StringTableEntry entry = table.GetEntry(key) ?? _settings.EnglishTable.GetEntry(key);
         if (entry != null) return entry.Value;

@@ -38,6 +38,8 @@ public class ItemUsageTips : MonoBehaviour
     {
         LocalizationService.EnsureInitialized();
         text.font = LocalizationService.InterfaceFont;
+        text.outlineWidth = 0.18f;
+        text.outlineColor = Color.black;
         text.text = LocalizationService.Get("inventory.tips");
     }
 

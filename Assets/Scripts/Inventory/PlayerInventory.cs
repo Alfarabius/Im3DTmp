@@ -22,6 +22,8 @@ public class PlayerInventory : MonoBehaviour
     private Transform _hand;
     private float _useElapsed;
     private bool _requireRelease;
+    private bool _useStarted;
+    private int _inputResetFrame = -1;
     private Collectible _posedItem;
     private Quaternion _handViewRotation;
     private Vector3 _handRestLocalPosition;
@@ -46,6 +48,20 @@ public class PlayerInventory : MonoBehaviour
             else if (bone.name == "hand.R") _hand = bone;
         }
         if (_hand != null) _handRestLocalPosition = _hand.localPosition;
+    }
+
+    private void OnEnable()
+    {
+        PauseManager.OnGamePaused += ResetUseInput;
+        PauseManager.OnGameResumed += ResetUseInput;
+        ResetUseInput();
+    }
+
+    private void ResetUseInput()
+    {
+        CancelUse();
+        _requireRelease = true;
+        _inputResetFrame = Time.frameCount;
     }
 
     public Collectible GetSlot(int index) => index >= 0 && index < SlotCount ? _slots[index] : null;
@@ -100,6 +116,7 @@ public class PlayerInventory : MonoBehaviour
             _requireRelease = true;
             return;
         }
+        if (Time.frameCount == _inputResetFrame) return;
         var keyboard = Keyboard.current;
         if (keyboard != null)
         {
@@ -109,6 +126,14 @@ public class PlayerInventory : MonoBehaviour
         }
         var mouse = Mouse.current;
         if (mouse == null) return;
+        if (_requireRelease)
+        {
+            if (!mouse.leftButton.isPressed && !mouse.leftButton.wasPressedThisFrame && !mouse.leftButton.wasReleasedThisFrame &&
+                !mouse.rightButton.isPressed && !mouse.rightButton.wasPressedThisFrame && !mouse.rightButton.wasReleasedThisFrame)
+                _requireRelease = false;
+            CancelUse();
+            return;
+        }
         if (mouse.rightButton.wasPressedThisFrame)
         {
             DropSelected();
@@ -116,16 +141,17 @@ public class PlayerInventory : MonoBehaviour
             return;
         }
         var item = SelectedItem;
+        if (mouse.leftButton.wasPressedThisFrame) _useStarted = true;
         if (!mouse.leftButton.isPressed)
         {
             if (item != null && item.Definition.Kind == InventoryItemKind.Ball &&
-                (_useElapsed > 0f || mouse.leftButton.wasPressedThisFrame) && !_requireRelease)
+                _useStarted)
                 ThrowSelected();
             _requireRelease = false;
             CancelUse();
             return;
         }
-        if (item == null || _requireRelease || item.Definition.Kind == InventoryItemKind.Shield) return;
+        if (item == null || !_useStarted || item.Definition.Kind == InventoryItemKind.Shield) return;
         _useElapsed += Time.deltaTime;
         UseProgress = Mathf.Clamp01(_useElapsed / item.Definition.UseDuration);
         if (item.Definition.Kind == InventoryItemKind.Ball) return;
@@ -143,6 +169,7 @@ public class PlayerInventory : MonoBehaviour
 
     private void CancelUse()
     {
+        _useStarted = false;
         _useElapsed = 0f;
         UseProgress = 0f;
     }
@@ -249,6 +276,8 @@ public class PlayerInventory : MonoBehaviour
 
     private void OnDisable()
     {
+        PauseManager.OnGamePaused -= ResetUseInput;
+        PauseManager.OnGameResumed -= ResetUseInput;
         if (_hand != null) _hand.localPosition = _handRestLocalPosition;
         CancelUse();
     }

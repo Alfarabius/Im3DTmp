@@ -17,6 +17,7 @@ public class PauseManager : MonoBehaviour
     [Tooltip("Ссылка на корневой объект панели меню паузы")] [SerializeField] private GameObject pauseMenuUI;
     [Tooltip("Выпадающий список разрешений экрана")] [SerializeField] private TMP_Dropdown resolutionDropdown;
     [SerializeField] private TMP_Text hideTipsLabel;
+    [SerializeField] private Toggle hideTipsToggle;
     public static bool HideTips { get; private set; }
     
     [Header("UI Sliders")]
@@ -63,6 +64,7 @@ public class PauseManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
         HideTips = PlayerPrefs.GetInt(PrefsHideTips, 0) != 0;
+        if (hideTipsToggle != null) hideTipsToggle.SetIsOnWithoutNotify(HideTips);
         
         // Изначально скрываем меню паузы при загрузке сцены
         if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
@@ -211,9 +213,9 @@ public class PauseManager : MonoBehaviour
 
     public void UIResume() => ResumeGame();
 
-    public void UIToggleTips()
+    public void SetHideTips(bool value)
     {
-        HideTips = !HideTips;
+        HideTips = value;
         PlayerPrefs.SetInt(PrefsHideTips, HideTips ? 1 : 0);
         PlayerPrefs.Save();
         RefreshTipsLabel();
@@ -224,8 +226,8 @@ public class PauseManager : MonoBehaviour
         if (hideTipsLabel == null) return;
         LocalizationService.EnsureInitialized();
         hideTipsLabel.font = LocalizationService.InterfaceFont;
-        hideTipsLabel.text = LocalizationService.Get("menu.hide_tips") + " [" +
-            LocalizationService.Get(HideTips ? "option.on" : "option.off") + "]";
+        hideTipsLabel.text = LocalizationService.Get("menu.hide_tips");
+        if (hideTipsToggle != null) hideTipsToggle.SetIsOnWithoutNotify(HideTips);
     }
 
     public void UIRestart()

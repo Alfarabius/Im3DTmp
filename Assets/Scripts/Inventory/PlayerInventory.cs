@@ -12,6 +12,7 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField, Min(0f)] private float dropSpeed = 1.5f;
     [SerializeField] private LayerMask environmentMask = (1 << 0) | (1 << 6) | (1 << 9);
     [SerializeField] private bool reachWithRightHand = true;
+    [SerializeField, Min(0f)] private float heldDistanceOffset = 0.1f;
 
     private readonly Collectible[] _slots = new Collectible[SlotCount];
     private PlayerBrain _brain;
@@ -20,6 +21,8 @@ public class PlayerInventory : MonoBehaviour
     private Transform _hand;
     private float _useElapsed;
     private bool _requireRelease;
+    private Collectible _posedItem;
+    private Quaternion _handViewRotation;
 
     public int SelectedSlot { get; private set; } = -1;
     public float UseProgress { get; private set; }
@@ -60,9 +63,10 @@ public class PlayerInventory : MonoBehaviour
 
     public void SelectSlot(int index)
     {
-        if (index < 0 || index >= SlotCount || index == SelectedSlot) return;
+        if (index < 0 || index >= SlotCount) return;
         if (SelectedItem != null) SelectedItem.Store(transform);
-        SelectedSlot = index;
+        SelectedSlot = index == SelectedSlot ? -1 : index;
+        _posedItem = null;
         CancelUse();
         _requireRelease = Mouse.current != null && Mouse.current.leftButton.isPressed;
         if (SelectedItem != null && view != null) SelectedItem.Equip(view);
@@ -180,12 +184,16 @@ public class PlayerInventory : MonoBehaviour
     private void LateUpdate()
     {
         var item = SelectedItem;
-        if (item == null || view == null) return;
+        if (item == null || view == null)
+        {
+            _posedItem = null;
+            return;
+        }
         bool visible = _brain.Condition == TargetCondition.Normal || _brain.Condition == TargetCondition.Wounded;
         item.gameObject.SetActive(visible);
         if (!visible) return;
         var definition = item.Definition;
-        Vector3 heldPosition = definition.HeldPosition;
+        Vector3 heldPosition = definition.HeldPosition + Vector3.forward * heldDistanceOffset;
         Vector3 heldAngles = definition.HeldEulerAngles;
         if (definition.Kind == InventoryItemKind.Heal && UseProgress > 0f)
         {
@@ -204,13 +212,23 @@ public class PlayerInventory : MonoBehaviour
         Vector3 direction = target - shoulder;
         if (direction.sqrMagnitude < 0.0001f || upperLength < 0.001f || lowerLength < 0.001f) return;
         float distance = Mathf.Clamp(direction.magnitude, Mathf.Abs(upperLength - lowerLength) + 0.001f,
-            upperLength + lowerLength - 0.001f);
+            (upperLength + lowerLength) * 0.96f);
         direction.Normalize();
-        Vector3 bend = Vector3.ProjectOnPlane(view.right - view.up, direction).normalized;
+        target = shoulder + direction * distance;
+        Vector3 bend = Vector3.ProjectOnPlane(transform.right - Vector3.up, direction);
+        if (bend.sqrMagnitude < 0.001f) bend = Vector3.ProjectOnPlane(transform.forward, direction);
+        bend.Normalize();
         float along = (upperLength * upperLength + distance * distance - lowerLength * lowerLength) / (2f * distance);
         Vector3 elbow = shoulder + direction * along + bend * Mathf.Sqrt(Mathf.Max(0f, upperLength * upperLength - along * along));
         _upperArm.rotation = Quaternion.FromToRotation(_forearm.position - shoulder, elbow - shoulder) * _upperArm.rotation;
         _forearm.rotation = Quaternion.FromToRotation(_hand.position - _forearm.position, target - _forearm.position) * _forearm.rotation;
+        if (_posedItem != item)
+        {
+            _handViewRotation = Quaternion.Inverse(view.rotation) * _hand.rotation;
+            _posedItem = item;
+        }
+        _hand.rotation = view.rotation * _handViewRotation;
+        item.transform.position += _hand.position - item.transform.TransformPoint(definition.GripOffset);
     }
 
     private void OnDisable() => CancelUse();

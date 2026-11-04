@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
 
     private int _openedLootBoxesCount;
     private bool _isGameOver;
+    private readonly List<GameObject> _lootBag = new List<GameObject>();
 
     public int RequiredLootBoxes => requiredLootBoxes;
     public bool PhoneCountdownActive { get; private set; }
@@ -65,7 +67,21 @@ public class GameManager : MonoBehaviour
     {
         if (_openedLootBoxesCount + 1 == requiredLootBoxes) return phonePrefab;
         if (randomLootPrefabs == null || randomLootPrefabs.Length == 0) return null;
-        return randomLootPrefabs[Random.Range(0, randomLootPrefabs.Length)];
+        if (_lootBag.Count == 0)
+        {
+            foreach (var prefab in randomLootPrefabs)
+                if (prefab != null) _lootBag.Add(prefab);
+            for (int i = _lootBag.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                (_lootBag[i], _lootBag[j]) = (_lootBag[j], _lootBag[i]);
+            }
+        }
+        if (_lootBag.Count == 0) return null;
+        int last = _lootBag.Count - 1;
+        var loot = _lootBag[last];
+        _lootBag.RemoveAt(last);
+        return loot;
     }
 
     public void StartPhoneCountdown()

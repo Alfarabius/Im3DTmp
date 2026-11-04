@@ -1335,3 +1335,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 577
   reachWithRightHand: 1
+  heldDistanceOffset: 0.1

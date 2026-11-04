@@ -169,6 +169,7 @@ public class Collectible : MonoBehaviour
     public void Throw(Vector3 position, Vector3 impulse, PlayerBrain owner)
     {
         Drop(position, Vector3.zero, owner);
+        if (_solid is SphereCollider sphere) _body.position = position - transform.TransformVector(sphere.center);
         _body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         _body.AddForce(impulse, ForceMode.Impulse);
         _thrown = true;

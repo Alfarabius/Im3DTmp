@@ -12,7 +12,7 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField, Min(0f)] private float dropSpeed = 1.5f;
     [SerializeField] private LayerMask environmentMask = (1 << 0) | (1 << 6) | (1 << 9);
     [SerializeField] private bool reachWithRightHand = true;
-    [SerializeField, Min(0f)] private float heldDistanceOffset = 0.1f;
+    [SerializeField, Min(0f)] private float heldDistanceOffset = 0.25f;
 
     private readonly Collectible[] _slots = new Collectible[SlotCount];
     private PlayerBrain _brain;
@@ -23,6 +23,7 @@ public class PlayerInventory : MonoBehaviour
     private bool _requireRelease;
     private Collectible _posedItem;
     private Quaternion _handViewRotation;
+    private Vector3 _handRestLocalPosition;
 
     public int SelectedSlot { get; private set; } = -1;
     public float UseProgress { get; private set; }
@@ -42,6 +43,7 @@ public class PlayerInventory : MonoBehaviour
             else if (bone.name == "forearm.R") _forearm = bone;
             else if (bone.name == "hand.R") _hand = bone;
         }
+        if (_hand != null) _handRestLocalPosition = _hand.localPosition;
     }
 
     public Collectible GetSlot(int index) => index >= 0 && index < SlotCount ? _slots[index] : null;
@@ -79,6 +81,7 @@ public class PlayerInventory : MonoBehaviour
 
     private void Update()
     {
+        if (_hand != null) _hand.localPosition = _handRestLocalPosition;
         if (!CanInteract)
         {
             CancelUse();
@@ -205,14 +208,15 @@ public class PlayerInventory : MonoBehaviour
             view.rotation * Quaternion.Euler(heldAngles));
         if (!reachWithRightHand || _upperArm == null || _forearm == null || _hand == null) return;
 
-        Vector3 target = item.transform.TransformPoint(definition.GripOffset);
+        Vector3 gripTarget = item.transform.TransformPoint(definition.GripOffset);
+        Vector3 target = gripTarget;
         Vector3 shoulder = _upperArm.position;
         float upperLength = Vector3.Distance(shoulder, _forearm.position);
         float lowerLength = Vector3.Distance(_forearm.position, _hand.position);
         Vector3 direction = target - shoulder;
         if (direction.sqrMagnitude < 0.0001f || upperLength < 0.001f || lowerLength < 0.001f) return;
         float distance = Mathf.Clamp(direction.magnitude, Mathf.Abs(upperLength - lowerLength) + 0.001f,
-            (upperLength + lowerLength) * 0.96f);
+            upperLength + lowerLength - 0.001f);
         direction.Normalize();
         target = shoulder + direction * distance;
         Vector3 bend = Vector3.ProjectOnPlane(transform.right - Vector3.up, direction);
@@ -228,8 +232,12 @@ public class PlayerInventory : MonoBehaviour
             _posedItem = item;
         }
         _hand.rotation = view.rotation * _handViewRotation;
-        item.transform.position += _hand.position - item.transform.TransformPoint(definition.GripOffset);
+        _hand.position = gripTarget;
     }
 
-    private void OnDisable() => CancelUse();
+    private void OnDisable()
+    {
+        if (_hand != null) _hand.localPosition = _handRestLocalPosition;
+        CancelUse();
+    }
 }

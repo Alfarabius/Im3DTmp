@@ -201,8 +201,8 @@ public class PlayerInventory : MonoBehaviour
         if (definition.Kind == InventoryItemKind.Heal && UseProgress > 0f)
         {
             float raise = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(UseProgress * 4f));
-            heldPosition += new Vector3(-0.12f, 0.13f, -0.1f) * raise;
-            heldAngles += new Vector3(-65f, 0f, 0f) * raise;
+            heldPosition += new Vector3(-0.1f, 0.08f, 0f) * raise;
+            heldAngles += new Vector3(-10f, 0f, 0f) * raise;
         }
         item.transform.SetPositionAndRotation(view.position + view.rotation * heldPosition,
             view.rotation * Quaternion.Euler(heldAngles));

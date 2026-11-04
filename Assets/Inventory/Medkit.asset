@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e29fb0a2988c5de8a5f09b84ee98a236, type: 3}
-  m_Name: Milk
+  m_Name: Medkit
   m_EditorClassIdentifier: Assembly-CSharp::InventoryItemDefinition
-  displayName: Milk
+  displayName: Medkit
   kind: 3
   icon: {fileID: 21300000, guid: 9d00335affb05590bdeef9b3f8369f05, type: 3}
   useDuration: 3
   consumeOnUse: 1
   heldPosition: {x: 0.24, y: -0.3, z: 0.55}
   heldEulerAngles: {x: -8, y: 0, z: -12}
-  heldScale: 0.65
-  gripOffset: {x: 0, y: 0.08, z: 0}
+  heldScale: 0.85
+  gripOffset: {x: 0, y: 0.273, z: 0}
   minThrowImpulse: 3
   maxThrowImpulse: 18
   stunDuration: 5

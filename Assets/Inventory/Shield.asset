@@ -18,9 +18,9 @@ MonoBehaviour:
   useDuration: 2
   consumeOnUse: 0
   heldPosition: {x: 0.24, y: -0.27, z: 0.6}
-  heldEulerAngles: {x: -90, y: 0, z: -12}
+  heldEulerAngles: {x: -8, y: 0, z: -12}
   heldScale: 0.75
-  gripOffset: {x: 0, y: 0, z: -0.18}
+  gripOffset: {x: 0, y: 0.25, z: -0.1}
   minThrowImpulse: 3
   maxThrowImpulse: 18
   stunDuration: 5

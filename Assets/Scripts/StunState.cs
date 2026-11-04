@@ -5,7 +5,6 @@ public class StunState : MonoBehaviour, ICharacterState
 {
     private EnemyBrain _brain;
     private float _remaining;
-    private float _animationSpeed;
 
     private void Awake() => _brain = GetComponent<EnemyBrain>();
 
@@ -19,8 +18,8 @@ public class StunState : MonoBehaviour, ICharacterState
             _brain.Agent.velocity = Vector3.zero;
         }
         _brain.Anim.SetFloat("Speed", 0f);
-        _animationSpeed = _brain.Anim.speed;
-        _brain.Anim.speed = 0f;
+        _brain.Anim.ResetTrigger("Attack");
+        _brain.Anim.SetBool("IsStunned", true);
     }
 
     public void UpdateState()
@@ -31,7 +30,7 @@ public class StunState : MonoBehaviour, ICharacterState
 
     public void Exit()
     {
-        _brain.Anim.speed = _animationSpeed;
+        _brain.Anim.SetBool("IsStunned", false);
         if (_brain.Agent.isActiveAndEnabled && _brain.Agent.isOnNavMesh) _brain.Agent.isStopped = false;
     }
 }

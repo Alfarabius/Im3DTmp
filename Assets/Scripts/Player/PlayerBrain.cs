@@ -59,6 +59,7 @@ public class PlayerBrain : MonoBehaviour, ITargetable
 
     private void Update()
     {
+        if (GameCutscenes.IsPlaying) return;
         _currentState?.UpdateState();
     }
 

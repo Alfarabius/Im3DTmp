@@ -20,7 +20,7 @@ MonoBehaviour:
   heldPosition: {x: 0.22, y: -0.24, z: 0.48}
   heldEulerAngles: {x: 0, y: 0, z: -10}
   heldScale: 1
-  gripOffset: {x: 0, y: 0.03, z: 0}
+  gripOffset: {x: 0, y: 0.09, z: 0.015}
   minThrowImpulse: 3
   maxThrowImpulse: 18
   stunDuration: 5

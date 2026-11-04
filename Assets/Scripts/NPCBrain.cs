@@ -83,6 +83,7 @@ public class NPCBrain : MonoBehaviour, ITargetable
 
     private void Update()
     {
+        if (GameCutscenes.IsPlaying) return;
         currentStaminaDebug = CurrentStamina;
         if (Condition == TargetCondition.HeavyWounded || Condition == TargetCondition.Dead) return;
         

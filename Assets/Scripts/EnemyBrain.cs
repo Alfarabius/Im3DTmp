@@ -114,7 +114,11 @@ public class EnemyBrain : MonoBehaviour
         if (!_huntRequested || !BeginHunt()) ChangeState(GetComponent<PatrolState>());
     }
 
-    private void Update() => _currentState?.UpdateState();
+    private void Update()
+    {
+        if (GameCutscenes.IsPlaying) return;
+        _currentState?.UpdateState();
+    }
 
     public void Stun(float duration)
     {

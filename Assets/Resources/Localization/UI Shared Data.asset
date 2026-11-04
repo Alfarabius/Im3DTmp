@@ -71,6 +71,10 @@ MonoBehaviour:
     m_Key: interaction.open_loot
     m_Metadata:
       m_Items: []
+  - m_Id: 15
+    m_Key: cutscene.skip
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -99,12 +99,14 @@ public class PauseManager : MonoBehaviour
 
     private void TogglePause(InputAction.CallbackContext context)
     {
+        if (GameCutscenes.IsPlaying) return;
         if (IsPaused) ResumeGame();
         else PauseGame();
     }
 
     public void PauseGame()
     {
+        if (GameCutscenes.IsPlaying) return;
         // Обновляем список на случай смены дисплея после запуска игры.
         InitializeResolutions();
 

@@ -74,3 +74,7 @@ MonoBehaviour:
     m_Localized: "[{key}] Open"
     m_Metadata:
       m_Items: []
+  - m_Id: 15
+    m_Localized: "Hold LMB to skip"
+    m_Metadata:
+      m_Items: []

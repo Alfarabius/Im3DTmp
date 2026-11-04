@@ -75,7 +75,7 @@ public class PlayerInventory : MonoBehaviour
         Changed?.Invoke();
     }
 
-    private bool CanInteract => !PauseManager.IsPaused && Application.isFocused &&
+    private bool CanInteract => !PauseManager.IsPaused && !GameCutscenes.IsPlaying && Application.isFocused &&
         Cursor.lockState == CursorLockMode.Locked &&
         (_brain.Condition == TargetCondition.Normal || _brain.Condition == TargetCondition.Wounded);
 

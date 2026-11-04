@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
 
     private int _openedLootBoxesCount;
     private bool _isGameOver;
+    private GameCutscenes _cutscenes;
+    private PhoneCallAudio _phoneAudio;
     private readonly List<GameObject> _lootBag = new List<GameObject>();
 
     public int RequiredLootBoxes => requiredLootBoxes;
@@ -36,6 +38,8 @@ public class GameManager : MonoBehaviour
         }
         
         Instance = this;
+        _cutscenes = GetComponent<GameCutscenes>();
+        _phoneAudio = GetComponent<PhoneCallAudio>();
         InitializeLootBoxes();
     }
 
@@ -89,12 +93,14 @@ public class GameManager : MonoBehaviour
         if (_isGameOver || PhoneCountdownActive) return;
         PhoneTimeRemaining = phoneCountdownDuration;
         PhoneCountdownActive = true;
+        if (_phoneAudio != null) _phoneAudio.PlayDialing();
     }
 
     private void Update()
     {
         if (!PhoneCountdownActive || _isGameOver) return;
         PhoneTimeRemaining = Mathf.Max(0f, PhoneTimeRemaining - Time.deltaTime);
+        if (_phoneAudio != null) _phoneAudio.UpdateCountdown(phoneCountdownDuration - PhoneTimeRemaining);
         if (PhoneTimeRemaining <= 0f) EndGame(true);
     }
 
@@ -116,10 +122,12 @@ public class GameManager : MonoBehaviour
     {
         _isGameOver = true;
         PhoneCountdownActive = false;
+        if (_phoneAudio != null) _phoneAudio.Finish(isWin);
         
         if (isWin)
         {
-            GameSessionController.CompleteGame();
+            if (_cutscenes == null || !_cutscenes.PlayVictory(GameSessionController.CompleteGame))
+                GameSessionController.CompleteGame();
         }
         else
         {

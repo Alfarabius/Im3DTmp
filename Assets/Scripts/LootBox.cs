@@ -57,7 +57,7 @@ public class LootBox : MonoBehaviour
 
     private void Update()
     {
-        if (_isOpened) return;
+        if (_isOpened || GameCutscenes.IsPlaying) return;
 
         // Фаза ожидания: Плавная пульсация свечения
         if (boxRenderer != null && !_isPlayerInZone)

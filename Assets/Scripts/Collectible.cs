@@ -153,7 +153,7 @@ public class Collectible : MonoBehaviour
         transform.localScale = _worldScale;
         transform.position = position;
         IsStored = false;
-        _ready = true;
+        _ready = !_thrown;
         _pickupAfter = Time.time + pickupCooldown;
         _trigger.enabled = false;
         _solid.enabled = true;
@@ -164,6 +164,7 @@ public class Collectible : MonoBehaviour
         _dropper = owner;
         Physics.IgnoreCollision(_solid, owner.Controller, true);
         gameObject.SetActive(true);
+        if (itemDefinition.Kind == InventoryItemKind.Ball) Destroy(gameObject, itemDefinition.ThrownLifetime);
     }
 
     public void Throw(Vector3 position, Vector3 impulse, PlayerBrain owner)

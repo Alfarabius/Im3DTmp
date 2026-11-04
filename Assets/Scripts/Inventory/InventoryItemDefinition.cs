@@ -17,6 +17,7 @@ public class InventoryItemDefinition : ScriptableObject
     [SerializeField, Min(0f)] private float minThrowImpulse = 3f;
     [SerializeField, Min(0f)] private float maxThrowImpulse = 18f;
     [SerializeField, Min(0.1f)] private float stunDuration = 5f;
+    [SerializeField, Min(0.1f)] private float thrownLifetime = 5f;
 
     public string DisplayName => displayName;
     public InventoryItemKind Kind => kind;
@@ -30,4 +31,5 @@ public class InventoryItemDefinition : ScriptableObject
     public float MinThrowImpulse => minThrowImpulse;
     public float MaxThrowImpulse => maxThrowImpulse;
     public float StunDuration => stunDuration;
+    public float ThrownLifetime => thrownLifetime;
 }

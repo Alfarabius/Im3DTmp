@@ -24,3 +24,4 @@ MonoBehaviour:
   minThrowImpulse: 3
   maxThrowImpulse: 18
   stunDuration: 5
+  thrownLifetime: 5

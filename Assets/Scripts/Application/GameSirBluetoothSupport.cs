@@ -52,7 +52,16 @@ public static class GameSirBluetoothSupport
             if (source == null) continue;
             // Смещения и нормализацию берём из раскладки, которую Unity прочитала из HID.
             // Номера кнопок: SDL GameControllerDB, Windows, VID 1949 / PID 0402.
-            BuildLayout(source);
+            try
+            {
+                BuildLayout(source);
+            }
+            catch (InvalidOperationException exception)
+            {
+                Debug.LogWarning("[Input] GameSir HID: " + exception.Message + ". Controls: " +
+                    string.Join(", ", source.controls.Select(item => item.name.ToString())));
+                return;
+            }
             _registered = true;
             InputSystem.onDeviceChange -= DeviceChanged;
             InputSystem.onAfterUpdate -= RegisterConnectedDevice;
@@ -81,17 +90,22 @@ public static class GameSirBluetoothSupport
         foreach (string child in new[] { "x", "y", "up", "down", "left", "right" })
             Alias(builder, source, "leftStick/" + child, "stick/" + child);
 
-        var x = Find(source, "rx");
-        var y = Find(source, "ry");
+        var axes = RightStickAxes(source);
+        var x = axes[0];
+        var y = axes[1];
+        string xName = x.name.ToString();
+        string yName = y.name.ToString();
         uint start = Math.Min(x.offset, y.offset);
         uint end = Math.Max(x.offset * 8 + x.bit + x.sizeInBits, y.offset * 8 + y.bit + y.sizeInBits);
         builder.AddControl("rightStick").WithByteOffset(start).WithSizeInBits(end - start * 8);
-        Alias(builder, source, "rightStick/x", "rx", start);
-        Alias(builder, source, "rightStick/y", "ry", start);
-        Direction(builder, source, "up", "ry", "clampMin=-1,clampMax=0,invert=true");
-        Direction(builder, source, "down", "ry", "clampMin=0,clampMax=1,invert=false");
-        Direction(builder, source, "left", "rx", "clampMin=-1,clampMax=0,invert=true");
-        Direction(builder, source, "right", "rx", "clampMin=0,clampMax=1,invert=false");
+        Alias(builder, source, "rightStick/x", xName, start);
+        string yParameters = string.Join(",", y.parameters.Where(value => value.name != "invert").Select(value => value.ToString()));
+        Alias(builder, source, "rightStick/y", yName, start)
+            .WithParameters((string.IsNullOrEmpty(yParameters) ? "" : yParameters + ",") + "invert=true");
+        Direction(builder, source, "up", yName, "clampMin=-1,clampMax=0,invert=true");
+        Direction(builder, source, "down", yName, "clampMin=0,clampMax=1,invert=false");
+        Direction(builder, source, "left", xName, "clampMin=-1,clampMax=0,invert=true");
+        Direction(builder, source, "right", xName, "clampMin=0,clampMax=1,invert=false");
 
         Alias(builder, source, "dpad", "hat");
         foreach (string child in new[] { "up", "down", "left", "right" })
@@ -119,7 +133,25 @@ public static class GameSirBluetoothSupport
         throw new InvalidOperationException("GameSir HID control is missing: " + name);
     }
 
-    private static void Alias(InputControlLayout.Builder builder, InputControlLayout source, string target, string origin,
+    private static InputControlLayout.ControlItem[] RightStickAxes(InputControlLayout source)
+    {
+        var axes = source.controls.Where(item => item.layout == "Axis" && !item.name.ToString().Contains("/") &&
+                item.offset != InputStateBlock.InvalidOffset && item.sizeInBits > 0 && item.format != default)
+            .OrderBy(item => item.offset).ThenBy(item => item.bit).ToArray();
+        foreach (var pair in new[] { new[] { "rx", "ry" }, new[] { "z", "rz" }, new[] { "rotateX", "rotateY" },
+                     new[] { "rotationX", "rotationY" }, new[] { "z", "rotateZ" } })
+        {
+            var x = Array.FindIndex(axes, item => item.name == pair[0]);
+            var y = Array.FindIndex(axes, item => item.name == pair[1]);
+            if (x >= 0 && y >= 0) return new[] { axes[x], axes[y] };
+        }
+        if (axes.Length == 2) return axes;
+        throw new InvalidOperationException("Cannot identify right stick axes: " +
+            string.Join(", ", axes.Select(item => item.name.ToString())));
+    }
+
+    private static InputControlLayout.Builder.ControlBuilder Alias(InputControlLayout.Builder builder,
+        InputControlLayout source, string target, string origin,
         uint parentOffset = 0)
     {
         var item = Find(source, origin);
@@ -134,6 +166,7 @@ public static class GameSirBluetoothSupport
         else control.UsingStateFrom(origin);
         if (!item.layout.IsEmpty()) control.WithLayout(item.layout.ToString());
         CopyParameters(control, item);
+        return control;
     }
 
     private static void Direction(InputControlLayout.Builder builder, InputControlLayout source, string direction,

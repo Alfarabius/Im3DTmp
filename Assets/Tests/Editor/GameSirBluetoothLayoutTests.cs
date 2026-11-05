@@ -7,7 +7,8 @@ using UnityEngine.InputSystem.Layouts;
 
 public class GameSirBluetoothLayoutTests
 {
-    private static InputControlLayout NativeLayout()
+    private static InputControlLayout NativeLayout(string rightX = "rx", string rightY = "ry", uint offset = 4,
+        bool invertRightY = true)
     {
         var b = new InputControlLayout.Builder().WithName("NativeHID").WithFormat("HID");
         b.AddControl("stick").WithLayout("Stick").WithByteOffset(1).WithBitOffset(0).WithSizeInBits(16);
@@ -15,10 +16,10 @@ public class GameSirBluetoothLayoutTests
             b.AddControl("stick/" + child).WithLayout(child == "x" || child == "y" ? "Axis" : "Button")
                 .WithFormat("BYTE").WithByteOffset(0).WithBitOffset(0).WithSizeInBits(8)
                 .WithParameters("normalize,normalizeMin=0,normalizeMax=1,normalizeZero=0.5");
-        b.AddControl("rx").WithLayout("Axis").WithFormat("BYTE").WithByteOffset(4).WithBitOffset(0).WithSizeInBits(8)
+        b.AddControl(rightX).WithLayout("Axis").WithFormat("BYTE").WithByteOffset(offset).WithBitOffset(0).WithSizeInBits(8)
             .WithParameters("normalize,normalizeMin=0,normalizeMax=1,normalizeZero=0.5");
-        b.AddControl("ry").WithLayout("Axis").WithFormat("BYTE").WithByteOffset(5).WithBitOffset(0).WithSizeInBits(8)
-            .WithParameters("normalize,normalizeMin=0,normalizeMax=1,normalizeZero=0.5,invert=true");
+        b.AddControl(rightY).WithLayout("Axis").WithFormat("BYTE").WithByteOffset(offset + 1).WithBitOffset(0).WithSizeInBits(8)
+            .WithParameters("normalize,normalizeMin=0,normalizeMax=1,normalizeZero=0.5,invert=" + (invertRightY ? "true" : "false"));
         b.AddControl("hat").WithLayout("Dpad").WithByteOffset(7).WithBitOffset(0).WithSizeInBits(4);
         foreach (string child in new[] { "up", "down", "left", "right" })
             b.AddControl("hat/" + child).WithLayout("DiscreteButton").WithFormat("BIT").WithSizeInBits(4)
@@ -78,6 +79,21 @@ public class GameSirBluetoothLayoutTests
     {
         var source = new InputControlLayout.Builder().WithName("Incomplete").WithFormat("HID").Build();
         Assert.Throws<InvalidOperationException>(() => GameSirBluetoothSupport.BuildLayout(source));
+    }
+
+    [Test]
+    public void MissingRxRyDoesNotPreventMappingOtherNativeAxisNames()
+    {
+        foreach (var names in new[] { new[] { "z", "rz" }, new[] { "rotateX", "rotateY" },
+                     new[] { "vendorHorizontal", "vendorVertical" } })
+        {
+            var layout = GameSirBluetoothSupport.BuildLayout(NativeLayout(names[0], names[1], 3, false));
+            Assert.AreEqual(3, Control(layout, "rightStick").offset);
+            Assert.AreEqual(0, Control(layout, "rightStick/x").offset);
+            Assert.AreEqual(1, Control(layout, "rightStick/y").offset);
+            Assert.AreEqual("button4", Control(layout, "buttonWest").useStateFrom);
+            Assert.IsTrue(Control(layout, "rightStick/y").parameters.Single(value => value.name == "invert").value.ToBoolean());
+        }
     }
 
     [Test]

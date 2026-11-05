@@ -16,7 +16,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 61c9348b2ce05cdb82b2f52f4d333bf4, type: 3}
   useDuration: 2
   consumeOnUse: 0
-  heldPosition: {x: 0.24, y: -0.27, z: 0.55}
-  heldEulerAngles: {x: -8, y: 0, z: -12}
-  heldScale: 0.45
-  gripOffset: {x: 0, y: 0.08, z: 0}
+  itemPosition: {x: -0.007485, y: -0.034871, z: 0.004901}
+  itemEulerAngles: {x: -8, y: 0, z: -12}
+  itemScale: 0.45

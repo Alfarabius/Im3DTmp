@@ -148,7 +148,7 @@ public class Collectible : MonoBehaviour
     public void UpdateHeldScale(Transform anchor)
     {
         Vector3 scale = anchor.lossyScale;
-        transform.localScale = new Vector3(_worldScale.x / scale.x, _worldScale.y / scale.y, _worldScale.z / scale.z) * itemDefinition.HeldScale;
+        transform.localScale = new Vector3(_worldScale.x / scale.x, _worldScale.y / scale.y, _worldScale.z / scale.z) * itemDefinition.ItemScale;
     }
 
     public void DropBroken(Vector3 velocity, PlayerBrain owner, float lifetime)

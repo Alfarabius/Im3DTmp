@@ -24,7 +24,8 @@ public class PlayerInventory : MonoBehaviour
     private bool _requireRelease;
     private bool _useStarted;
     private int _inputResetFrame = -1;
-    private Collectible _posedItem;
+    private static readonly Vector3 HandAnchorPosition = new Vector3(0.24f, -0.2f, 0.6f);
+    private bool _handRotationCached;
     private Quaternion _handViewRotation;
     private Vector3 _handRestLocalPosition;
     private bool _hasPickedUpItem;
@@ -79,7 +80,6 @@ public class PlayerInventory : MonoBehaviour
             if (firstPickup)
             {
                 SelectedSlot = i;
-                _posedItem = null;
                 CancelUse();
                 _requireRelease = Mouse.current != null && Mouse.current.leftButton.isPressed;
             }
@@ -96,7 +96,6 @@ public class PlayerInventory : MonoBehaviour
         if (index < 0 || index >= SlotCount) return;
         if (SelectedItem != null) SelectedItem.Store(transform);
         SelectedSlot = index == SelectedSlot ? -1 : index;
-        _posedItem = null;
         CancelUse();
         _requireRelease = Mouse.current != null && Mouse.current.leftButton.isPressed;
         if (SelectedItem != null && view != null) SelectedItem.Equip(view);
@@ -230,7 +229,6 @@ public class PlayerInventory : MonoBehaviour
         var item = SelectedItem;
         if (item == null || view == null)
         {
-            _posedItem = null;
             return;
         }
         bool visible = _brain.Condition == TargetCondition.Normal || _brain.Condition == TargetCondition.Wounded;
@@ -238,20 +236,21 @@ public class PlayerInventory : MonoBehaviour
         if (!visible) return;
         item.UpdateHeldScale(view);
         var definition = item.Definition;
-        Vector3 heldPosition = definition.HeldPosition + Vector3.forward * heldDistanceOffset;
-        Vector3 heldAngles = definition.HeldEulerAngles;
+        Vector3 handPosition = HandAnchorPosition + Vector3.forward * heldDistanceOffset;
+        Quaternion useRotation = Quaternion.identity;
         if (definition.Kind == InventoryItemKind.Heal && UseProgress > 0f)
         {
             float raise = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(UseProgress * 4f));
-            heldPosition += new Vector3(-0.1f, 0.08f, 0f) * raise;
-            heldAngles += new Vector3(-10f, 0f, 0f) * raise;
+            handPosition += new Vector3(-0.1f, 0.08f, 0f) * raise;
+            useRotation = Quaternion.Euler(-10f * raise, 0f, 0f);
         }
-        item.transform.SetPositionAndRotation(view.position + view.rotation * heldPosition,
-            view.rotation * Quaternion.Euler(heldAngles));
+        Vector3 handTarget = view.position + view.rotation * handPosition;
+        Quaternion itemBasis = view.rotation * useRotation;
+        item.transform.SetPositionAndRotation(handTarget + itemBasis * definition.ItemPosition,
+            itemBasis * Quaternion.Euler(definition.ItemEulerAngles));
         if (!reachWithRightHand || _upperArm == null || _forearm == null || _hand == null) return;
 
-        Vector3 gripTarget = item.transform.TransformPoint(definition.GripOffset);
-        Vector3 target = gripTarget;
+        Vector3 target = handTarget;
         Vector3 shoulder = _upperArm.position;
         float upperLength = Vector3.Distance(shoulder, _forearm.position);
         float lowerLength = Vector3.Distance(_forearm.position, _hand.position);
@@ -268,13 +267,13 @@ public class PlayerInventory : MonoBehaviour
         Vector3 elbow = shoulder + direction * along + bend * Mathf.Sqrt(Mathf.Max(0f, upperLength * upperLength - along * along));
         _upperArm.rotation = Quaternion.FromToRotation(_forearm.position - shoulder, elbow - shoulder) * _upperArm.rotation;
         _forearm.rotation = Quaternion.FromToRotation(_hand.position - _forearm.position, target - _forearm.position) * _forearm.rotation;
-        if (_posedItem != item)
+        if (!_handRotationCached)
         {
             _handViewRotation = Quaternion.Inverse(view.rotation) * _hand.rotation;
-            _posedItem = item;
+            _handRotationCached = true;
         }
-        _hand.rotation = view.rotation * _handViewRotation * Quaternion.Euler(definition.GripEulerAngles);
-        _hand.position = gripTarget;
+        _hand.rotation = view.rotation * _handViewRotation;
+        _hand.position = handTarget;
     }
 
     private void OnDisable()
@@ -282,6 +281,7 @@ public class PlayerInventory : MonoBehaviour
         PauseManager.OnGamePaused -= ResetUseInput;
         PauseManager.OnGameResumed -= ResetUseInput;
         if (_hand != null) _hand.localPosition = _handRestLocalPosition;
+        _handRotationCached = false;
         CancelUse();
     }
 }

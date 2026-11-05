@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class PauseMenuControlStyle : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
     [SerializeField] private TMP_Text[] labels;
+    [SerializeField] private bool tintLabels = true;
     [SerializeField] private Graphic[] symbols;
 
     private Image _background;
@@ -37,7 +38,7 @@ public class PauseMenuControlStyle : MonoBehaviour, IPointerEnterHandler, IPoint
         bool highlighted = _hovered || _selected;
         var ink = highlighted ? new Color(0.025f, 0.045f, 0.07f) : new Color(0.8f, 0.9f, 1f);
         if (_background != null) _background.color = highlighted ? new Color(0.25f, 1f, 0.5f) : Color.clear;
-        if (labels != null)
+        if (tintLabels && labels != null)
             foreach (var label in labels) label.color = ink;
         if (symbols != null)
             foreach (var symbol in symbols) symbol.color = ink;

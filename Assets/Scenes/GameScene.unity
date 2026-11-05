@@ -9674,15 +9674,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4578053501540272938, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 33.505
+      value: 33.2
       objectReference: {fileID: 0}
     - target: {fileID: 4578053501540272938, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4578053501540272938, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -17.163
+      value: -17.03
       objectReference: {fileID: 0}
     - target: {fileID: 4578053501540272938, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -22724,7 +22724,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4578053501540272938, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 38.07
+      value: 38.295
       objectReference: {fileID: 0}
     - target: {fileID: 4578053501540272938, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
       propertyPath: m_LocalPosition.y
@@ -22732,7 +22732,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4578053501540272938, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12.85
+      value: -13.036
       objectReference: {fileID: 0}
     - target: {fileID: 4578053501540272938, guid: dd93758dde0760a42a98982cc4785e3c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -51047,7 +51047,7 @@ MonoBehaviour:
   m_Name: null
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8, g: 0.9, b: 1, a: 1}
+  m_Color: {r: 0.14150941, g: 0.14150941, b: 0.14150941, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -54344,7 +54344,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Hold LMB - throw / use
+  m_text: 'Hold LMB - use
 
     RMB - drop
 

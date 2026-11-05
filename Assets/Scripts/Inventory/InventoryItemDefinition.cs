@@ -10,10 +10,18 @@ public class InventoryItemDefinition : ScriptableObject
     [SerializeField] private Sprite icon;
     [SerializeField, Min(0.1f)] private float useDuration = 2f;
     [SerializeField] private bool consumeOnUse;
+    [Header("Положение в руке")]
+    [Tooltip("Смещение предмета относительно камеры: X вправо, Y вверх, Z вперёд.")]
     [SerializeField] private Vector3 heldPosition = new Vector3(0.24f, -0.27f, 0.55f);
+    [Tooltip("Поворот предмета в градусах относительно камеры.")]
     [SerializeField] private Vector3 heldEulerAngles = new Vector3(-8f, 0f, -12f);
+    [Tooltip("Масштаб предмета при удержании.")]
     [SerializeField, Min(0.01f)] private float heldScale = 0.45f;
+    [Tooltip("Точка на предмете, к которой подводится кисть, в локальных координатах предмета.")]
     [SerializeField] private Vector3 gripOffset = new Vector3(0f, 0.08f, 0f);
+    [Tooltip("Дополнительный поворот кисти в градусах.")]
+    [SerializeField] private Vector3 gripEulerAngles;
+    [Header("Бросок")]
     [SerializeField, Min(0f)] private float minThrowImpulse = 3f;
     [SerializeField, Min(0f)] private float maxThrowImpulse = 18f;
     [SerializeField, Min(0.1f)] private float stunDuration = 5f;
@@ -28,6 +36,7 @@ public class InventoryItemDefinition : ScriptableObject
     public Vector3 HeldEulerAngles => heldEulerAngles;
     public float HeldScale => heldScale;
     public Vector3 GripOffset => gripOffset;
+    public Vector3 GripEulerAngles => gripEulerAngles;
     public float MinThrowImpulse => minThrowImpulse;
     public float MaxThrowImpulse => maxThrowImpulse;
     public float StunDuration => stunDuration;

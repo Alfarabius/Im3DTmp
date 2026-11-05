@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 840000000000000302}
   - component: {fileID: 840000000000000303}
   - component: {fileID: 840000000000000304}
+  - component: {fileID: 840000000000000305}
   m_Layer: 2
   m_Name: Shield
   m_TagString: Untagged
@@ -1325,3 +1326,25 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &840000000000000305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840000000000000300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: add2e8d9ae9651f3b3672c6e5f207a05, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ShieldBreakEffects
+  fragments:
+  - {fileID: 4900000, guid: e18a9215ae255683af400dbf3ffbf596, type: 3}
+  - {fileID: 4900000, guid: d991f7752ae45276a1440d081d7d9b90, type: 3}
+  materials:
+  - {fileID: 2100000, guid: b5a22058698b5bb68ecd6462dfe9ba0b, type: 2}
+  - {fileID: 2100000, guid: 57b9cc68f5345363850e1fb9dbbcb2bd, type: 2}
+  - {fileID: 2100000, guid: 970613bd09095c52b1542531baf3c7db, type: 2}
+  lifetime: 5
+  separationSpeed: 1.8
+  spinSpeed: 3

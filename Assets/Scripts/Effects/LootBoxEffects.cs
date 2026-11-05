@@ -13,7 +13,8 @@ public class LootBoxEffects : MonoBehaviour
     [SerializeField] private Transform top;
     [SerializeField] private Vector3 slideOffset = new Vector3(0.75f, 0f, 0f);
     [SerializeField, Min(0.01f)] private float slideDuration = 0.25f;
-    [SerializeField, Min(0.01f)] private float fallDuration = 0.45f;
+    [Tooltip("Максимальное ожидание приземления крышки перед появлением содержимого.")]
+    [SerializeField, Min(0.1f)] private float landingTimeout = 2f;
     [SerializeField] private LayerMask groundMask = (1 << 0) | (1 << 6) | (1 << 9);
 
     [Header("Конфетти")]
@@ -81,8 +82,6 @@ public class LootBoxEffects : MonoBehaviour
             Vector3 rayOrigin = bounds.center + offset + Vector3.up * 0.25f;
             float floorY = Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 5f,
                 groundMask, QueryTriggerInteraction.Ignore) ? hit.point.y : transform.position.y;
-            Vector3 landing = slideEnd;
-            landing.y = floorY + (start.y - bounds.min.y) + 0.01f;
 
             for (float elapsed = 0f; elapsed < slideDuration;)
             {
@@ -93,14 +92,41 @@ public class LootBoxEffects : MonoBehaviour
             }
             top.position = slideEnd;
 
-            for (float elapsed = 0f; elapsed < fallDuration;)
+            top.SetParent(null, true);
+            top.gameObject.layer = 2;
+            var solid = top.GetComponent<Collider>();
+            if (solid == null)
             {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / fallDuration);
-                top.position = Vector3.Lerp(slideEnd, landing, t * t);
+                var box = top.gameObject.AddComponent<BoxCollider>();
+                var filter = top.GetComponent<MeshFilter>();
+                if (filter != null && filter.sharedMesh != null)
+                {
+                    box.center = filter.sharedMesh.bounds.center;
+                    box.size = filter.sharedMesh.bounds.size;
+                }
+                solid = box;
+            }
+            solid.isTrigger = false;
+            var body = top.GetComponent<Rigidbody>();
+            if (body == null) body = top.gameObject.AddComponent<Rigidbody>();
+            body.isKinematic = false;
+            body.useGravity = true;
+            body.mass = 0.3f;
+            body.angularDamping = 0.8f;
+            body.interpolation = RigidbodyInterpolation.Interpolate;
+            body.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            body.linearVelocity = offset.normalized * 0.6f;
+            body.angularVelocity = Vector3.Cross(Vector3.up, offset.normalized) * 2.3f;
+            var player = FindFirstObjectByType<PlayerBrain>();
+            if (player != null) Physics.IgnoreCollision(solid, player.Controller, true);
+
+            float maxFallTime = Mathf.Max(landingTimeout, 0.1f);
+            for (float elapsed = 0f; elapsed < maxFallTime; elapsed += Time.deltaTime)
+            {
+                if (elapsed >= 0.1f && solid.bounds.min.y <= floorY + 0.04f &&
+                    Mathf.Abs(body.linearVelocity.y) < 0.5f) break;
                 yield return null;
             }
-            top.position = landing;
         }
         onCompleted?.Invoke();
     }

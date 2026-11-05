@@ -198,7 +198,9 @@ public class PlayerInventory : MonoBehaviour
         _slots[SelectedSlot] = null;
         SelectedSlot = -1;
         CancelUse();
-        Destroy(item.gameObject);
+        var breakEffects = item.GetComponent<ShieldBreakEffects>();
+        if (breakEffects == null || !breakEffects.Break(_brain, sourceDirection))
+            item.DropBroken(-sourceDirection.normalized * 0.5f, _brain, 5f);
         Changed?.Invoke();
         return true;
     }
@@ -234,6 +236,7 @@ public class PlayerInventory : MonoBehaviour
         bool visible = _brain.Condition == TargetCondition.Normal || _brain.Condition == TargetCondition.Wounded;
         item.gameObject.SetActive(visible);
         if (!visible) return;
+        item.UpdateHeldScale(view);
         var definition = item.Definition;
         Vector3 heldPosition = definition.HeldPosition + Vector3.forward * heldDistanceOffset;
         Vector3 heldAngles = definition.HeldEulerAngles;
@@ -270,7 +273,7 @@ public class PlayerInventory : MonoBehaviour
             _handViewRotation = Quaternion.Inverse(view.rotation) * _hand.rotation;
             _posedItem = item;
         }
-        _hand.rotation = view.rotation * _handViewRotation;
+        _hand.rotation = view.rotation * _handViewRotation * Quaternion.Euler(definition.GripEulerAngles);
         _hand.position = gripTarget;
     }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -48,7 +49,10 @@ public class PauseManager : MonoBehaviour
     public static event Action OnGamePaused;
     public static event Action OnGameResumed;
 
-    private Resolution[] _resolutions;
+    private Vector2Int[] _resolutions;
+    private bool _buildingResolutionOptions;
+    private Coroutine _resolutionChange;
+    private Vector2Int _requestedResolution;
 
     // Константы ключей для сохранения настроек, чтобы избежать опечаток
     private const string PrefsMouseSens = "MouseSensitivity";
@@ -196,6 +200,7 @@ public class PauseManager : MonoBehaviour
         float savedSFX = PlayerPrefs.GetFloat(PrefsSFXVol, 1f);
         if (sfxVolSlider != null) sfxVolSlider.value = savedSFX;
         ApplyVolume("SFXVolume", savedSFX);
+        RestoreResolution();
     }
 
     // Вспомогательный метод для перевода линейного значения слайдера (0.0001 - 1) в децибелы (-80 - 0)
@@ -245,75 +250,67 @@ public class PauseManager : MonoBehaviour
     private void InitializeResolutions()
     {
         if (resolutionDropdown == null) return;
-
-        Resolution[] allResolutions = Screen.resolutions;
-        List<Resolution> filteredResolutions = new List<Resolution>();
+        var current = new Vector2Int(Screen.width, Screen.height);
+        _resolutions = DisplayResolutions.GetSizes(Screen.resolutions, current);
         List<string> options = new List<string>();
-        
-        int targetIndex = 0;
-        int currentResolutionIndex = -1;
-        int savedResolutionIndex = -1;
-        int savedWidth = PlayerPrefs.GetInt(PrefsResolutionWidth, -1);
-        int savedHeight = PlayerPrefs.GetInt(PrefsResolutionHeight, -1);
+        foreach (var size in _resolutions) options.Add(size.x + " x " + size.y);
 
-        for (int i = 0; i < allResolutions.Length; i++)
+        var selected = _resolutionChange != null ? _requestedResolution : current;
+        int selectedIndex = DisplayResolutions.IndexOf(_resolutions, selected.x, selected.y);
+        if (selectedIndex < 0) selectedIndex = DisplayResolutions.IndexOf(_resolutions, current.x, current.y);
+        _buildingResolutionOptions = true;
+        try
         {
-            float ratio = (float)allResolutions[i].width / allResolutions[i].height;
-            
-            // Отсеиваем только 16:9
-            if (Mathf.Abs(ratio - (16f / 9f)) < 0.05f)
-            {
-                filteredResolutions.Add(allResolutions[i]);
-                options.Add(allResolutions[i].width + " x " + allResolutions[i].height);
-
-                // Запоминаем индекс 1920x1080 относительно нового, отфильтрованного списка
-                if (allResolutions[i].width == 1920 && allResolutions[i].height == 1080)
-                {
-                    targetIndex = filteredResolutions.Count - 1;
-                }
-
-                if (allResolutions[i].width == Screen.width && allResolutions[i].height == Screen.height)
-                {
-                    currentResolutionIndex = filteredResolutions.Count - 1;
-                }
-
-                if (allResolutions[i].width == savedWidth && allResolutions[i].height == savedHeight)
-                {
-                    savedResolutionIndex = filteredResolutions.Count - 1;
-                }
-            }
+            resolutionDropdown.ClearOptions();
+            resolutionDropdown.AddOptions(options);
+            resolutionDropdown.interactable = _resolutions.Length > 1;
+            if (selectedIndex >= 0) resolutionDropdown.SetValueWithoutNotify(selectedIndex);
+            resolutionDropdown.RefreshShownValue();
         }
+        finally
+        {
+            _buildingResolutionOptions = false;
+        }
+    }
 
-        // Перезаписываем глобальный массив только нужными разрешениями
-        _resolutions = filteredResolutions.ToArray();
-
-        resolutionDropdown.ClearOptions();
-        resolutionDropdown.AddOptions(options);
-        resolutionDropdown.interactable = _resolutions.Length > 0;
-
-        if (_resolutions.Length == 0) return;
-
-        // Индекс мог измениться вместе со списком, поэтому ищем сохранённые размеры заново.
-        // Если режима больше нет, выбираем текущий, затем 1920x1080 или первый доступный.
-        int finalIndex = savedResolutionIndex >= 0 ? savedResolutionIndex :
-            currentResolutionIndex >= 0 ? currentResolutionIndex : targetIndex;
-
-        // Тихо устанавливаем значение в Dropdown, чтобы не вызвать сброс сохранений
-        resolutionDropdown.SetValueWithoutNotify(finalIndex);
-        resolutionDropdown.RefreshShownValue();
+    private void RestoreResolution()
+    {
+        int width = PlayerPrefs.GetInt(PrefsResolutionWidth, -1);
+        int height = PlayerPrefs.GetInt(PrefsResolutionHeight, -1);
+        int index = DisplayResolutions.IndexOf(_resolutions, width, height);
+        if (index >= 0 && (Screen.width != width || Screen.height != height)) SetResolution(index);
     }
 
     // Назначается на событие OnValueChanged в компоненте Dropdown
     public void SetResolution(int resolutionIndex)
     {
-        if (_resolutions == null || resolutionIndex < 0 || resolutionIndex >= _resolutions.Length) return;
+        if (_buildingResolutionOptions || _resolutions == null || resolutionIndex < 0 || resolutionIndex >= _resolutions.Length) return;
 
-        Resolution resolution = _resolutions[resolutionIndex];
-        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
-        
-        PlayerPrefs.SetInt(PrefsResolutionWidth, resolution.width);
-        PlayerPrefs.SetInt(PrefsResolutionHeight, resolution.height);
+        if (_resolutionChange != null) StopCoroutine(_resolutionChange);
+        _requestedResolution = _resolutions[resolutionIndex];
+        Screen.SetResolution(_requestedResolution.x, _requestedResolution.y, Screen.fullScreenMode);
+        PlayerPrefs.SetInt(PrefsResolutionWidth, _requestedResolution.x);
+        PlayerPrefs.SetInt(PrefsResolutionHeight, _requestedResolution.y);
         PlayerPrefs.Save();
+        if (resolutionDropdown != null) resolutionDropdown.SetValueWithoutNotify(resolutionIndex);
+        _resolutionChange = StartCoroutine(ConfirmResolution(_requestedResolution));
+    }
+
+    private IEnumerator ConfirmResolution(Vector2Int requested)
+    {
+        float deadline = Time.realtimeSinceStartup + 2f;
+        yield return null;
+        while ((Screen.width != requested.x || Screen.height != requested.y) && Time.realtimeSinceStartup < deadline)
+            yield return null;
+
+        _resolutionChange = null;
+        if (Screen.width > 0 && Screen.height > 0 && (Screen.width != requested.x || Screen.height != requested.y))
+        {
+            PlayerPrefs.SetInt(PrefsResolutionWidth, Screen.width);
+            PlayerPrefs.SetInt(PrefsResolutionHeight, Screen.height);
+            PlayerPrefs.Save();
+        }
+        InitializeResolutions();
     }
 
     // --- Обработчики Слайдеров (сохранение в PlayerPrefs) ---

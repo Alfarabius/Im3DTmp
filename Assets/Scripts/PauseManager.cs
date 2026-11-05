@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
@@ -19,6 +20,7 @@ public class PauseManager : MonoBehaviour
     [Tooltip("Выпадающий список разрешений экрана")] [SerializeField] private TMP_Dropdown resolutionDropdown;
     [SerializeField] private TMP_Text hideTipsLabel;
     [SerializeField] private Toggle hideTipsToggle;
+    [SerializeField] private Selectable firstMenuControl;
     public static bool HideTips { get; private set; }
     
     [Header("UI Sliders")]
@@ -38,6 +40,7 @@ public class PauseManager : MonoBehaviour
     
     [Tooltip("Ссылка на действие снятия с паузы в UI")] 
     [SerializeField] private InputActionReference resumeAction;
+    [SerializeField] private InputActionReference menuCancelAction;
     
     [Header("Controls")]
     [Tooltip("Ссылка на действие паузы (например, кнопка Esc)")] [SerializeField] private InputActionReference pauseAction;
@@ -53,6 +56,7 @@ public class PauseManager : MonoBehaviour
     private bool _buildingResolutionOptions;
     private Coroutine _resolutionChange;
     private Vector2Int _requestedResolution;
+    private int _lastPauseToggleFrame = -1;
 
     // Константы ключей для сохранения настроек, чтобы избежать опечаток
     private const string PrefsMouseSens = "MouseSensitivity";
@@ -86,6 +90,12 @@ public class PauseManager : MonoBehaviour
     private void OnEnable()
     {
         LocalizationService.LanguageChanged += RefreshTipsLabel;
+        GameInput.ControlsChanged += SelectMenuControl;
+        if (menuCancelAction != null)
+        {
+            menuCancelAction.action.Enable();
+            menuCancelAction.action.performed += CancelMenu;
+        }
         if (pauseAction != null)
         {
             pauseAction.action.Enable();
@@ -101,6 +111,8 @@ public class PauseManager : MonoBehaviour
     private void OnDisable()
     {
         LocalizationService.LanguageChanged -= RefreshTipsLabel;
+        GameInput.ControlsChanged -= SelectMenuControl;
+        if (menuCancelAction != null) menuCancelAction.action.performed -= CancelMenu;
         if (pauseAction != null)
         {
             pauseAction.action.performed -= TogglePause;
@@ -111,9 +123,17 @@ public class PauseManager : MonoBehaviour
 
     private void TogglePause(InputAction.CallbackContext context)
     {
-        if (GameCutscenes.IsPlaying) return;
+        if (GameCutscenes.IsPlaying || _lastPauseToggleFrame == Time.frameCount) return;
+        _lastPauseToggleFrame = Time.frameCount;
         if (IsPaused) ResumeGame();
         else PauseGame();
+    }
+
+    private void CancelMenu(InputAction.CallbackContext context)
+    {
+        if (!IsPaused || !(context.control?.device is Gamepad)) return;
+        if (resolutionDropdown != null && resolutionDropdown.IsExpanded) return;
+        ResumeGame();
     }
 
     public void PauseGame()
@@ -139,6 +159,7 @@ public class PauseManager : MonoBehaviour
 
         // Включение UI панели паузы
         if (pauseMenuUI != null) pauseMenuUI.SetActive(true);
+        SelectMenuControl();
         RefreshTipsLabel();
 
         // Разблокировка и отображение курсора для взаимодействия с меню
@@ -166,6 +187,7 @@ public class PauseManager : MonoBehaviour
         }
 
         // Скрытие UI панели паузы
+        if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
         if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
 
         // Блокировка и скрытие курсора
@@ -173,6 +195,15 @@ public class PauseManager : MonoBehaviour
         Cursor.visible = false;
 
         OnGameResumed?.Invoke();
+    }
+
+    private void SelectMenuControl()
+    {
+        if (!IsPaused || !GameInput.UsingGamepad || pauseMenuUI == null || EventSystem.current == null) return;
+        var selected = EventSystem.current.currentSelectedGameObject;
+        if (selected != null && selected.activeInHierarchy && selected.transform.IsChildOf(pauseMenuUI.transform)) return;
+        var first = firstMenuControl != null ? firstMenuControl : pauseMenuUI.GetComponentInChildren<Selectable>();
+        if (first != null) EventSystem.current.SetSelectedGameObject(first.gameObject);
     }
 
     // --- Загрузка настроек ---

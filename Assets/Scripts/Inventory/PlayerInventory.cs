@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [DefaultExecutionOrder(10000)]
-[RequireComponent(typeof(PlayerBrain))]
+[RequireComponent(typeof(PlayerBrain), typeof(PlayerInput))]
 public class PlayerInventory : MonoBehaviour
 {
     public const int SlotCount = 3;
@@ -29,6 +29,9 @@ public class PlayerInventory : MonoBehaviour
     private Quaternion _handViewRotation;
     private Vector3 _handRestLocalPosition;
     private bool _hasPickedUpItem;
+    private InputAction _useAction;
+    private InputAction _dropAction;
+    private InputAction[] _slotActions;
 
     public int SelectedSlot { get; private set; } = -1;
     public float UseProgress { get; private set; }
@@ -37,6 +40,10 @@ public class PlayerInventory : MonoBehaviour
     private void Awake()
     {
         _brain = GetComponent<PlayerBrain>();
+        var actions = GetComponent<PlayerInput>().actions;
+        _useAction = actions.FindAction("Player/Action", true);
+        _dropAction = actions.FindAction("Player/AltAction", true);
+        _slotActions = new[] { actions.FindAction("Player/Slot1", true), actions.FindAction("Player/Slot2", true), actions.FindAction("Player/Slot3", true) };
         if (view == null)
         {
             var camera = GetComponentInChildren<Camera>();
@@ -55,7 +62,13 @@ public class PlayerInventory : MonoBehaviour
     {
         PauseManager.OnGamePaused += ResetUseInput;
         PauseManager.OnGameResumed += ResetUseInput;
+        InputSystem.onDeviceChange += OnDeviceChange;
         ResetUseInput();
+    }
+
+    private void OnDeviceChange(InputDevice device, InputDeviceChange change)
+    {
+        if (change == InputDeviceChange.Removed || change == InputDeviceChange.Disconnected) ResetUseInput();
     }
 
     private void ResetUseInput()
@@ -81,7 +94,7 @@ public class PlayerInventory : MonoBehaviour
             {
                 SelectedSlot = i;
                 CancelUse();
-                _requireRelease = Mouse.current != null && Mouse.current.leftButton.isPressed;
+                _requireRelease = _useAction.IsPressed();
             }
             if (SelectedSlot == i && view != null) item.Equip(view);
             Changed?.Invoke();
@@ -97,7 +110,7 @@ public class PlayerInventory : MonoBehaviour
         if (SelectedItem != null) SelectedItem.Store(transform);
         SelectedSlot = index == SelectedSlot ? -1 : index;
         CancelUse();
-        _requireRelease = Mouse.current != null && Mouse.current.leftButton.isPressed;
+        _requireRelease = _useAction.IsPressed();
         if (SelectedItem != null && view != null) SelectedItem.Equip(view);
         Changed?.Invoke();
     }
@@ -116,32 +129,29 @@ public class PlayerInventory : MonoBehaviour
             return;
         }
         if (Time.frameCount == _inputResetFrame) return;
-        var keyboard = Keyboard.current;
-        if (keyboard != null)
+        for (int i = 0; i < _slotActions.Length; i++)
         {
-            if (keyboard.digit1Key.wasPressedThisFrame) SelectSlot(0);
-            else if (keyboard.digit2Key.wasPressedThisFrame) SelectSlot(1);
-            else if (keyboard.digit3Key.wasPressedThisFrame) SelectSlot(2);
+            if (!_slotActions[i].WasPressedThisFrame()) continue;
+            SelectSlot(i);
+            break;
         }
-        var mouse = Mouse.current;
-        if (mouse == null) return;
         if (_requireRelease)
         {
-            if (!mouse.leftButton.isPressed && !mouse.leftButton.wasPressedThisFrame && !mouse.leftButton.wasReleasedThisFrame &&
-                !mouse.rightButton.isPressed && !mouse.rightButton.wasPressedThisFrame && !mouse.rightButton.wasReleasedThisFrame)
+            if (!_useAction.IsPressed() && !_useAction.WasPressedThisFrame() && !_useAction.WasReleasedThisFrame() &&
+                !_dropAction.IsPressed() && !_dropAction.WasPressedThisFrame() && !_dropAction.WasReleasedThisFrame())
                 _requireRelease = false;
             CancelUse();
             return;
         }
-        if (mouse.rightButton.wasPressedThisFrame)
+        if (_dropAction.WasPressedThisFrame())
         {
             DropSelected();
-            _requireRelease = mouse.leftButton.isPressed;
+            _requireRelease = _useAction.IsPressed();
             return;
         }
         var item = SelectedItem;
-        if (mouse.leftButton.wasPressedThisFrame) _useStarted = true;
-        if (!mouse.leftButton.isPressed)
+        if (_useAction.WasPressedThisFrame()) _useStarted = true;
+        if (!_useAction.IsPressed())
         {
             if (item != null && item.Definition.Kind == InventoryItemKind.Ball &&
                 _useStarted)
@@ -280,6 +290,7 @@ public class PlayerInventory : MonoBehaviour
     {
         PauseManager.OnGamePaused -= ResetUseInput;
         PauseManager.OnGameResumed -= ResetUseInput;
+        InputSystem.onDeviceChange -= OnDeviceChange;
         if (_hand != null) _hand.localPosition = _handRestLocalPosition;
         _handRotationCached = false;
         CancelUse();

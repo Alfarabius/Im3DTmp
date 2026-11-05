@@ -31,6 +31,7 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
 
     [Header("Camera & Look Settings")]
     [SerializeField] private float mouseSensitivity = 0.1f;
+    [SerializeField, Min(1f)] private float gamepadLookSpeed = 180f;
     [SerializeField] private float maxLookAngle = 80f;
     [SerializeField] private float camHeightSmoothTime = 0.1f;
     [SerializeField] private float leanAngle = 15f;
@@ -147,7 +148,10 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
         if (_brain.BodycamTarget == null) return;
 
         // Вращение персонажа по оси Y и камеры по оси X (с ограничением угла)
-        Vector2 lookInput = lookAction.action.ReadValue<Vector2>() * mouseSensitivity;
+        Vector2 lookInput = lookAction.action.ReadValue<Vector2>();
+        lookInput *= lookAction.action.activeControl?.device is Gamepad
+            ? gamepadLookSpeed * Time.deltaTime
+            : mouseSensitivity;
         transform.Rotate(Vector3.up * lookInput.x);
         _pitch -= lookInput.y;
         _pitch = Mathf.Clamp(_pitch, -maxLookAngle, maxLookAngle);

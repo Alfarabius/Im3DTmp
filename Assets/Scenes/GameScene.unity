@@ -26884,6 +26884,7 @@ MonoBehaviour:
   resolutionDropdown: {fileID: 1680660892}
   hideTipsLabel: {fileID: 890000000000000039}
   hideTipsToggle: {fileID: 890000000000000040}
+  firstMenuControl: {fileID: 381950134}
   mouseSensSlider: {fileID: 300425400}
   masterVolSlider: {fileID: 809141114}
   ambientVolSlider: {fileID: 868287162}
@@ -26894,6 +26895,7 @@ MonoBehaviour:
   uiMapName: UI
   lookActionName: Look
   resumeAction: {fileID: 6725083035202998020, guid: fc6c4fd205424bf49a2c9e1c94756076, type: 3}
+  menuCancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
   pauseAction: {fileID: -3007512366807388346, guid: fc6c4fd205424bf49a2c9e1c94756076, type: 3}
 --- !u!114 &1163827654
 MonoBehaviour:

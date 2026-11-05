@@ -16,10 +16,15 @@ public class LocalizedText : MonoBehaviour
     private void OnEnable()
     {
         LocalizationService.LanguageChanged += Refresh;
+        GameInput.ControlsChanged += Refresh;
         Refresh();
     }
 
-    private void OnDisable() => LocalizationService.LanguageChanged -= Refresh;
+    private void OnDisable()
+    {
+        LocalizationService.LanguageChanged -= Refresh;
+        GameInput.ControlsChanged -= Refresh;
+    }
 
     private void Refresh()
     {
@@ -29,7 +34,7 @@ public class LocalizedText : MonoBehaviour
         if (string.IsNullOrEmpty(key)) return; // Динамические подписи Dropdown меняют только шрифт.
 
         string value = LocalizationService.Get(key);
-        if (bindingAction != null) value = value.Replace("{key}", bindingAction.action.GetBindingDisplayString());
+        if (bindingAction != null) value = value.Replace("{key}", GameInput.GetButtonLabel(bindingAction.action));
         _text.text = value;
     }
 }

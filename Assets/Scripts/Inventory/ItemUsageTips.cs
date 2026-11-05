@@ -17,6 +17,7 @@ public class ItemUsageTips : MonoBehaviour
         _inventory = FindFirstObjectByType<PlayerInventory>();
         if (_inventory != null) _inventory.FirstItemPickedUp += Show;
         LocalizationService.LanguageChanged += RefreshText;
+        GameInput.ControlsChanged += RefreshText;
         panel.gameObject.SetActive(false);
     }
 
@@ -24,6 +25,7 @@ public class ItemUsageTips : MonoBehaviour
     {
         if (_inventory != null) _inventory.FirstItemPickedUp -= Show;
         LocalizationService.LanguageChanged -= RefreshText;
+        GameInput.ControlsChanged -= RefreshText;
         panel.gameObject.SetActive(false);
     }
 
@@ -40,7 +42,7 @@ public class ItemUsageTips : MonoBehaviour
         text.font = LocalizationService.InterfaceFont;
         text.outlineWidth = 0.18f;
         text.outlineColor = Color.black;
-        text.text = LocalizationService.Get("inventory.tips");
+        text.text = LocalizationService.Get(GameInput.UsingGamepad ? "inventory.tips_gamepad" : "inventory.tips");
     }
 
     private void Update()

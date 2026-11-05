@@ -24,6 +24,18 @@ public class GameCutscenes : MonoBehaviour
     private bool _previousAudioPause;
     private bool _playing;
 
+    private void OnEnable()
+    {
+        GameInput.ControlsChanged += RefreshSkipHint;
+        LocalizationService.LanguageChanged += RefreshSkipHint;
+    }
+
+    private void RefreshSkipHint()
+    {
+        if (_skipHint != null)
+            _skipHint.text = LocalizationService.Get(GameInput.UsingGamepad ? "cutscene.skip_gamepad" : "cutscene.skip");
+    }
+
     private void Start() => Play(introFrames, null);
 
     public bool PlayVictory(Action onFinished) => Play(victoryFrames, onFinished);
@@ -33,7 +45,7 @@ public class GameCutscenes : MonoBehaviour
         if (_playing || frames == null || !Array.Exists(frames, frame => frame != null)) return false;
         LocalizationService.EnsureInitialized();
         if (_overlay == null) CreateOverlay();
-        _skipHint.text = LocalizationService.Get("cutscene.skip");
+        RefreshSkipHint();
         _skipHint.gameObject.SetActive(false);
         _skipTrack.gameObject.SetActive(false);
         _previousTimeScale = Time.timeScale;
@@ -59,7 +71,9 @@ public class GameCutscenes : MonoBehaviour
             float age = 0f;
             while (age < secondsPerFrame)
             {
-                bool pressed = Application.isFocused && Mouse.current != null && Mouse.current.leftButton.isPressed;
+                bool pressed = Application.isFocused &&
+                    ((Mouse.current != null && Mouse.current.leftButton.isPressed) ||
+                     (Gamepad.current != null && Gamepad.current.buttonSouth.isPressed));
                 _skipHint.gameObject.SetActive(pressed);
                 _skipTrack.gameObject.SetActive(pressed);
                 held = pressed ? held + Time.unscaledDeltaTime : 0f;
@@ -90,6 +104,8 @@ public class GameCutscenes : MonoBehaviour
 
     private void OnDisable()
     {
+        GameInput.ControlsChanged -= RefreshSkipHint;
+        LocalizationService.LanguageChanged -= RefreshSkipHint;
         StopAllCoroutines();
         RestoreGame();
     }

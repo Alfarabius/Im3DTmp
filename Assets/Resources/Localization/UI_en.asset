@@ -94,3 +94,11 @@ MonoBehaviour:
     m_Localized: "Hold LMB - throw / use\nRMB - drop\n1,2,3 - take"
     m_Metadata:
       m_Items: []
+  - m_Id: 22
+    m_Localized: "Hold RT - throw / use\nLT - drop\nD-pad: Left/Up/Right - take"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23
+    m_Localized: "Hold A to skip"
+    m_Metadata:
+      m_Items: []

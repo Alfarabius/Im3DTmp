@@ -51922,10 +51922,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1572245496}
     m_Modifications:
-    - target: {fileID: 1707511787342389546, guid: d7c1cd9188969334285fc06900fab650, type: 3}
-      propertyPath: targetLayers.m_Bits
-      value: 256
-      objectReference: {fileID: 0}
     - target: {fileID: 4460386674477859660, guid: d7c1cd9188969334285fc06900fab650, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.03548646
@@ -54881,6 +54877,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuControlStyle
   labels:
   - {fileID: 890000000000000039}
+  tintLabels: 1
   symbols:
   - {fileID: 891000000000000006}
   - {fileID: 891000000000000010}
@@ -54900,6 +54897,7 @@ MonoBehaviour:
   m_Name: null
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuControlStyle
   labels: []
+  tintLabels: 1
   symbols: []
 --- !u!114 &891000000000000025
 MonoBehaviour:
@@ -54914,6 +54912,7 @@ MonoBehaviour:
   m_Name: null
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuControlStyle
   labels: []
+  tintLabels: 1
   symbols: []
 --- !u!114 &891000000000000026
 MonoBehaviour:
@@ -54928,6 +54927,7 @@ MonoBehaviour:
   m_Name: null
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuControlStyle
   labels: []
+  tintLabels: 1
   symbols: []
 --- !u!114 &891000000000000027
 MonoBehaviour:
@@ -54942,6 +54942,7 @@ MonoBehaviour:
   m_Name: null
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuControlStyle
   labels: []
+  tintLabels: 1
   symbols: []
 --- !u!114 &891000000000000028
 MonoBehaviour:
@@ -54956,6 +54957,7 @@ MonoBehaviour:
   m_Name: null
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuControlStyle
   labels: []
+  tintLabels: 1
   symbols: []
 --- !u!114 &891000000000000029
 MonoBehaviour:
@@ -54971,9 +54973,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuControlStyle
   labels:
   - {fileID: 1403900730}
+  tintLabels: 0
   symbols:
   - {fileID: 537347040}
-  tintLabels: 0
 --- !u!1 &891000000000000030
 GameObject:
   m_ObjectHideFlags: 0

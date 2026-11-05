@@ -17,9 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 9d00335affb05590bdeef9b3f8369f05, type: 3}
   useDuration: 3
   consumeOnUse: 1
-  itemPosition: {x: -0.048246, y: -0.22477, z: 0.031589}
+  itemPosition: {x: -0.14, y: 0.08, z: 0.05}
   itemEulerAngles: {x: -8, y: 0, z: -12}
-  itemScale: 0.85
+  itemScale: 1.2
   minThrowImpulse: 3
   maxThrowImpulse: 18
   stunDuration: 5
+  thrownLifetime: 5

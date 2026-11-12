@@ -56224,6 +56224,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0.00809
       objectReference: {fileID: 0}
+    - target: {fileID: 6603715912907902081, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6823027890462101001, guid: 9b0de1a6f7a7bce47b9c52e590250f01, type: 3}
       propertyPath: postProcessVolume
       value: 

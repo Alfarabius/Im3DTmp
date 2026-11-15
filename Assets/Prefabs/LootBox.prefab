@@ -208,7 +208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LootBoxEffects
   confettiOrigin: {fileID: 830000000000000104}
-  confettiMaterial: {fileID: 2100000, guid: 292bd700f6bd55bd9f770b98933dfb28, type: 2}
+  confettiMaterial: {fileID: 0}
   openingAudio: {fileID: 830000000000000102}
   top: {fileID: 4154876030974208211}
   slideOffset: {x: 0.75, y: 0, z: 0}

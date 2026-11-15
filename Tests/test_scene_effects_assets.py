@@ -81,7 +81,10 @@ class SceneEffectAssetsTests(unittest.TestCase):
             fx = effect(ASSETS / f"Prefabs/{prefab_name}.prefab", script)
             for name in names:
                 material = ASSETS / f"Effects/Materials/{name}.mat"
-                self.assertIn(f"guid: {guid(material)}", fx)
+                if name == "Confetti":
+                    self.assertIn("confettiMaterial: {fileID: 0}", fx)
+                else:
+                    self.assertIn(f"guid: {guid(material)}", fx)
                 self.assertIn(f"guid: {guid(shader)}", material.read_text())
         flash = (ASSETS / "Effects/Materials/MuzzleFlash.mat").read_text()
         texture = ASSETS / "EvolveGames/BodyCamController/WeaponEffects/Textures/FlashParticle.tif"

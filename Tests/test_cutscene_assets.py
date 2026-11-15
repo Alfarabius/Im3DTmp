@@ -39,7 +39,9 @@ class CutsceneAssetsTests(unittest.TestCase):
             frames = re.search(rf"  {field}:\n((?:  - .*\n)+)", scene)[1]
             self.assertEqual(re.findall(r"guid: (\w+)", frames), expected)
             self.assertEqual(re.findall(r"fileID: (-?\d+)", frames), ["21300000"] * 3)
-        self.assertIn("  secondsPerFrame: 4\n", scene)
+        self.assertIn("  charactersPerSecond: 30\n", scene)
+        self.assertIn("  minimumReadTime: 4\n", scene)
+        self.assertIn("  readingCharactersPerSecond: 18\n", scene)
         self.assertIn("  holdToSkip: 1\n", scene)
 
     def test_six_captions_match_requested_text_and_have_english_translations(self):

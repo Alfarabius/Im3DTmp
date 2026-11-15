@@ -27329,7 +27329,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 3bd11d29bf9441acaa8e1b288640da35, type: 3}
   - {fileID: 21300000, guid: 206a8939c15b4f1194762a3e1b94a8bb, type: 3}
   - {fileID: 21300000, guid: d0982874a6dd4324937897cc55da855f, type: 3}
-  secondsPerFrame: 4
+  charactersPerSecond: 30
+  minimumReadTime: 4
+  readingCharactersPerSecond: 18
   holdToSkip: 1
 --- !u!114 &1163827655
 MonoBehaviour:

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [DefaultExecutionOrder(-1000)]
@@ -9,7 +10,10 @@ public class GameCutscenes : MonoBehaviour
 {
     [SerializeField] private Sprite[] introFrames;
     [SerializeField] private Sprite[] victoryFrames;
-    [SerializeField, Min(0.1f)] private float secondsPerFrame = 4f;
+    [SerializeField, Min(1f)] private float charactersPerSecond = 30f;
+    [FormerlySerializedAs("secondsPerFrame")]
+    [SerializeField, Min(0.1f)] private float minimumReadTime = 4f;
+    [SerializeField, Min(1f)] private float readingCharactersPerSecond = 18f;
     [SerializeField, Min(0.1f)] private float holdToSkip = 1f;
 
     public static bool IsPlaying { get; private set; }
@@ -19,7 +23,8 @@ public class GameCutscenes : MonoBehaviour
     private TMP_Text _caption;
     private string _captionKey;
     private int _captionCharacterCount;
-    private float _captionProgress;
+    private float _typingElapsed;
+    private float _readingElapsed;
     private RectTransform _skipFill;
     private TMP_Text _skipHint;
     private Image _skipTrack;
@@ -51,11 +56,19 @@ public class GameCutscenes : MonoBehaviour
         _caption.text = LocalizationService.Get(_captionKey);
         _caption.ForceMeshUpdate();
         _captionCharacterCount = _caption.textInfo.characterCount;
+        _readingElapsed = 0f;
         UpdateCaptionVisibility();
     }
 
-    private void UpdateCaptionVisibility() =>
-        _caption.maxVisibleCharacters = Mathf.FloorToInt(_captionCharacterCount * Mathf.Clamp01(_captionProgress));
+    private void UpdateCaptionVisibility()
+    {
+        float speed = Mathf.Max(1f, charactersPerSecond);
+        _caption.maxVisibleCharacters = _typingElapsed >= _captionCharacterCount / speed
+            ? _captionCharacterCount : Mathf.FloorToInt(_typingElapsed * speed);
+    }
+
+    private float ReadingTime => Mathf.Max(Mathf.Max(0.1f, minimumReadTime),
+        _captionCharacterCount / Mathf.Max(1f, readingCharactersPerSecond));
 
     private void Start() => Play(introFrames, "cutscene.intro.", null);
 
@@ -85,17 +98,15 @@ public class GameCutscenes : MonoBehaviour
     {
         float held = 0f;
         bool skipped = false;
-        float duration = Mathf.Max(0.1f, secondsPerFrame);
         for (int i = 0; i < frames.Length; i++)
         {
             var frame = frames[i];
             if (frame == null) continue;
             _picture.sprite = frame;
             _captionKey = captionPrefix + (i + 1);
-            _captionProgress = 0f;
+            _typingElapsed = 0f;
             RefreshCaption();
-            float age = 0f;
-            while (age < duration)
+            while (_readingElapsed < ReadingTime)
             {
                 bool pressed = Application.isFocused && GameInput.AnyButtonPressed();
                 _skipHint.gameObject.SetActive(pressed);
@@ -109,9 +120,16 @@ public class GameCutscenes : MonoBehaviour
                 }
                 if (Application.isFocused)
                 {
-                    age += Time.unscaledDeltaTime;
-                    _captionProgress = age / duration;
-                    UpdateCaptionVisibility();
+                    if (_caption.maxVisibleCharacters < _captionCharacterCount)
+                    {
+                        _typingElapsed += Time.unscaledDeltaTime;
+                        UpdateCaptionVisibility();
+                    }
+                    else
+                    {
+                        // Reading time starts on the frame after the final character appears.
+                        _readingElapsed += Time.unscaledDeltaTime;
+                    }
                 }
                 yield return null;
             }

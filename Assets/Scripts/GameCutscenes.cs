@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -106,7 +107,8 @@ public class GameCutscenes : MonoBehaviour
             _captionKey = captionPrefix + (i + 1);
             _typingElapsed = 0f;
             RefreshCaption();
-            while (_readingElapsed < ReadingTime)
+            bool advanceFrame = false;
+            while (!advanceFrame && _readingElapsed < ReadingTime)
             {
                 bool pressed = Application.isFocused && GameInput.AnyButtonPressed();
                 _skipHint.gameObject.SetActive(pressed);
@@ -120,7 +122,20 @@ public class GameCutscenes : MonoBehaviour
                 }
                 if (Application.isFocused)
                 {
-                    if (_caption.maxVisibleCharacters < _captionCharacterCount)
+                    if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+                    {
+                        if (_caption.maxVisibleCharacters >= _captionCharacterCount)
+                        {
+                            advanceFrame = true;
+                        }
+                        else
+                        {
+                            _typingElapsed = _captionCharacterCount / Mathf.Max(1f, charactersPerSecond);
+                            _readingElapsed = 0f;
+                            UpdateCaptionVisibility();
+                        }
+                    }
+                    else if (_caption.maxVisibleCharacters < _captionCharacterCount)
                     {
                         _typingElapsed += Time.unscaledDeltaTime;
                         UpdateCaptionVisibility();
@@ -131,6 +146,7 @@ public class GameCutscenes : MonoBehaviour
                         _readingElapsed += Time.unscaledDeltaTime;
                     }
                 }
+                // Consume the click before entering the next slide's input loop.
                 yield return null;
             }
             if (skipped) break;

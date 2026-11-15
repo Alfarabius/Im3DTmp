@@ -150,12 +150,20 @@ public class PlayerInventory : MonoBehaviour
             return;
         }
         var item = SelectedItem;
-        if (_useAction.WasPressedThisFrame()) _useStarted = true;
+        if (_useAction.WasPressedThisFrame())
+        {
+            if (item != null && item.Definition.Kind == InventoryItemKind.Ball)
+            {
+                // The same press edge handles mouse and gamepad, after the pause/release guard.
+                _requireRelease = true;
+                CancelUse();
+                ThrowSelected();
+                return;
+            }
+            _useStarted = true;
+        }
         if (!_useAction.IsPressed())
         {
-            if (item != null && item.Definition.Kind == InventoryItemKind.Ball &&
-                _useStarted)
-                ThrowSelected();
             _requireRelease = false;
             CancelUse();
             return;
@@ -163,7 +171,6 @@ public class PlayerInventory : MonoBehaviour
         if (item == null || !_useStarted || item.Definition.Kind == InventoryItemKind.Shield) return;
         _useElapsed += Time.deltaTime;
         UseProgress = Mathf.Clamp01(_useElapsed / item.Definition.UseDuration);
-        if (item.Definition.Kind == InventoryItemKind.Ball) return;
         if (UseProgress < 1f) return;
         _requireRelease = true;
         CancelUse();
@@ -187,7 +194,7 @@ public class PlayerInventory : MonoBehaviour
     {
         var item = SelectedItem;
         if (item == null || view == null) return;
-        float impulse = Mathf.Lerp(item.Definition.MinThrowImpulse, item.Definition.MaxThrowImpulse, UseProgress);
+        float impulse = item.Definition.MaxThrowImpulse;
         Vector3 position = GetDropPosition();
         _slots[SelectedSlot] = null;
         SelectedSlot = -1;

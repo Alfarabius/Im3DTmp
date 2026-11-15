@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -54,15 +55,18 @@ public static class GameInput
     {
         if (action == null) return string.Empty;
         string fallback = null;
+        var labels = new List<string>();
         foreach (var binding in action.bindings)
         {
             if (binding.isComposite || binding.isPartOfComposite || string.IsNullOrEmpty(binding.effectivePath)) continue;
             string path = binding.effectivePath;
             if (fallback == null) fallback = path;
             bool gamepad = path.StartsWith("<Gamepad>", StringComparison.OrdinalIgnoreCase);
-            if (gamepad == UsingGamepad) return GetBindingLabel(path);
+            if (gamepad != UsingGamepad) continue;
+            string label = GetBindingLabel(path);
+            if (!labels.Contains(label)) labels.Add(label);
         }
-        return GetBindingLabel(fallback);
+        return labels.Count > 0 ? string.Join("/", labels) : GetBindingLabel(fallback);
     }
 
     public static string GetBindingLabel(string path)

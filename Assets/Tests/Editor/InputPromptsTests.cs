@@ -15,17 +15,18 @@ public class InputPromptsTests
         .Invoke(null, new object[] { value });
 
     [Test]
-    public void InteractionPromptUsesPhysicalFAndSwitchesToXboxX()
+    public void InteractionPromptShowsBothKeysAndSwitchesToXboxX()
     {
         using (var action = new InputAction("Interact", InputActionType.Button))
         {
             action.AddBinding("<Keyboard>/f");
+            action.AddBinding("<Keyboard>/e");
             action.AddBinding("<Gamepad>/buttonWest");
-            Assert.AreEqual("F", GameInput.GetButtonLabel(action));
+            Assert.AreEqual("F/E", GameInput.GetButtonLabel(action));
             SetGamepad(true);
             Assert.AreEqual("X", GameInput.GetButtonLabel(action));
             SetGamepad(false);
-            Assert.AreEqual("F", GameInput.GetButtonLabel(action));
+            Assert.AreEqual("F/E", GameInput.GetButtonLabel(action));
         }
     }
 

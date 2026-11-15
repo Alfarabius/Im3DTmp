@@ -51,7 +51,7 @@ public class InventoryHUD : MonoBehaviour
             float progress = _inventory != null && _inventory.SelectedSlot == i ? _inventory.UseProgress : 0f;
             var item = _inventory != null ? _inventory.GetSlot(i) : null;
             bool selected = _inventory != null && _inventory.SelectedSlot == i && item != null &&
-                item.Definition.Kind != InventoryItemKind.Shield;
+                item.Definition.Kind != InventoryItemKind.Shield && item.Definition.Kind != InventoryItemKind.Ball;
             useTracks[i].enabled = selected;
             useBars[i].enabled = selected;
             useBars[i].fillAmount = progress;

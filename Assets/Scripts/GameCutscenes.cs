@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 [DefaultExecutionOrder(-1000)]
@@ -17,6 +16,10 @@ public class GameCutscenes : MonoBehaviour
 
     private GameObject _overlay;
     private Image _picture;
+    private TMP_Text _caption;
+    private string _captionKey;
+    private int _captionCharacterCount;
+    private float _captionProgress;
     private RectTransform _skipFill;
     private TMP_Text _skipHint;
     private Image _skipTrack;
@@ -27,7 +30,13 @@ public class GameCutscenes : MonoBehaviour
     private void OnEnable()
     {
         GameInput.ControlsChanged += RefreshSkipHint;
-        LocalizationService.LanguageChanged += RefreshSkipHint;
+        LocalizationService.LanguageChanged += RefreshText;
+    }
+
+    private void RefreshText()
+    {
+        RefreshSkipHint();
+        RefreshCaption();
     }
 
     private void RefreshSkipHint()
@@ -36,11 +45,23 @@ public class GameCutscenes : MonoBehaviour
             _skipHint.text = LocalizationService.Get(GameInput.UsingGamepad ? "cutscene.skip_gamepad" : "cutscene.skip");
     }
 
-    private void Start() => Play(introFrames, null);
+    private void RefreshCaption()
+    {
+        if (_caption == null || string.IsNullOrEmpty(_captionKey)) return;
+        _caption.text = LocalizationService.Get(_captionKey);
+        _caption.ForceMeshUpdate();
+        _captionCharacterCount = _caption.textInfo.characterCount;
+        UpdateCaptionVisibility();
+    }
 
-    public bool PlayVictory(Action onFinished) => Play(victoryFrames, onFinished);
+    private void UpdateCaptionVisibility() =>
+        _caption.maxVisibleCharacters = Mathf.FloorToInt(_captionCharacterCount * Mathf.Clamp01(_captionProgress));
 
-    private bool Play(Sprite[] frames, Action onFinished)
+    private void Start() => Play(introFrames, "cutscene.intro.", null);
+
+    public bool PlayVictory(Action onFinished) => Play(victoryFrames, "cutscene.victory.", onFinished);
+
+    private bool Play(Sprite[] frames, string captionPrefix, Action onFinished)
     {
         if (_playing || frames == null || !Array.Exists(frames, frame => frame != null)) return false;
         LocalizationService.EnsureInitialized();
@@ -56,24 +77,27 @@ public class GameCutscenes : MonoBehaviour
         IsPlaying = true;
         _picture.sprite = Array.Find(frames, frame => frame != null);
         _overlay.SetActive(true);
-        StartCoroutine(Show(frames, onFinished));
+        StartCoroutine(Show(frames, captionPrefix, onFinished));
         return true;
     }
 
-    private IEnumerator Show(Sprite[] frames, Action onFinished)
+    private IEnumerator Show(Sprite[] frames, string captionPrefix, Action onFinished)
     {
         float held = 0f;
         bool skipped = false;
-        foreach (var frame in frames)
+        float duration = Mathf.Max(0.1f, secondsPerFrame);
+        for (int i = 0; i < frames.Length; i++)
         {
+            var frame = frames[i];
             if (frame == null) continue;
             _picture.sprite = frame;
+            _captionKey = captionPrefix + (i + 1);
+            _captionProgress = 0f;
+            RefreshCaption();
             float age = 0f;
-            while (age < secondsPerFrame)
+            while (age < duration)
             {
-                bool pressed = Application.isFocused &&
-                    ((Mouse.current != null && Mouse.current.leftButton.isPressed) ||
-                     (Gamepad.current != null && Gamepad.current.buttonSouth.isPressed));
+                bool pressed = Application.isFocused && GameInput.AnyButtonPressed();
                 _skipHint.gameObject.SetActive(pressed);
                 _skipTrack.gameObject.SetActive(pressed);
                 held = pressed ? held + Time.unscaledDeltaTime : 0f;
@@ -83,7 +107,12 @@ public class GameCutscenes : MonoBehaviour
                     skipped = true;
                     break;
                 }
-                if (Application.isFocused) age += Time.unscaledDeltaTime;
+                if (Application.isFocused)
+                {
+                    age += Time.unscaledDeltaTime;
+                    _captionProgress = age / duration;
+                    UpdateCaptionVisibility();
+                }
                 yield return null;
             }
             if (skipped) break;
@@ -97,6 +126,7 @@ public class GameCutscenes : MonoBehaviour
         if (!_playing) return;
         _playing = false;
         IsPlaying = false;
+        _captionKey = null;
         Time.timeScale = _previousTimeScale;
         AudioListener.pause = _previousAudioPause;
         if (_overlay != null) _overlay.SetActive(false);
@@ -105,7 +135,7 @@ public class GameCutscenes : MonoBehaviour
     private void OnDisable()
     {
         GameInput.ControlsChanged -= RefreshSkipHint;
-        LocalizationService.LanguageChanged -= RefreshSkipHint;
+        LocalizationService.LanguageChanged -= RefreshText;
         StopAllCoroutines();
         RestoreGame();
     }
@@ -121,13 +151,30 @@ public class GameCutscenes : MonoBehaviour
         var scaler = _overlay.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 1f;
 
         var background = CreateImage("Background", _overlay.transform, Color.black);
         Stretch(background.rectTransform);
         _picture = CreateImage("Frame", _overlay.transform, Color.white);
         Stretch(_picture.rectTransform);
+        _picture.rectTransform.anchorMin = new Vector2(0.08f, 0.24f);
+        _picture.rectTransform.anchorMax = new Vector2(0.92f, 0.94f);
         _picture.preserveAspect = true;
+
+        var captionObject = new GameObject("Caption", typeof(RectTransform), typeof(TextMeshProUGUI));
+        captionObject.transform.SetParent(_overlay.transform, false);
+        _caption = captionObject.GetComponent<TextMeshProUGUI>();
+        _caption.font = LocalizationService.InterfaceFont;
+        _caption.fontSize = 32f;
+        _caption.enableAutoSizing = true;
+        _caption.fontSizeMin = 24f;
+        _caption.fontSizeMax = 32f;
+        _caption.textWrappingMode = TextWrappingModes.Normal;
+        _caption.alignment = TextAlignmentOptions.Top;
+        _caption.raycastTarget = false;
+        Stretch(_caption.rectTransform);
+        _caption.rectTransform.anchorMin = new Vector2(0.1f, 0.1f);
+        _caption.rectTransform.anchorMax = new Vector2(0.9f, 0.2f);
 
         var hintObject = new GameObject("Skip hint", typeof(RectTransform), typeof(TextMeshProUGUI));
         hintObject.transform.SetParent(_overlay.transform, false);

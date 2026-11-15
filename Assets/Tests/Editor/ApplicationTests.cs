@@ -60,8 +60,8 @@ public class ApplicationTests
             Assert.That(settings.RussianTable.GetEntry(entry.Key)?.Value, Is.Not.Null.And.Not.Empty, entry.Key);
             Assert.That(settings.EnglishTable.GetEntry(entry.Key)?.Value, Is.Not.Null.And.Not.Empty, entry.Key);
         }
-        StringAssert.Contains("{key}", settings.RussianTable.GetEntry("interaction.open_loot").Value);
-        StringAssert.Contains("{key}", settings.EnglishTable.GetEntry("interaction.open_loot").Value);
+        Assert.That(settings.RussianTable.GetEntry("interaction.open_loot").Value, Is.EqualTo("[E] Открыть"));
+        Assert.That(settings.EnglishTable.GetEntry("interaction.open_loot").Value, Is.EqualTo("[E] Open"));
     }
 
     [Test]

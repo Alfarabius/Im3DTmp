@@ -27322,13 +27322,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameCutscenes
   introFrames:
-  - {fileID: 21300000, guid: 3083eebe3bff5690ac6b73ba0dd8a2dd, type: 3}
-  - {fileID: 21300002, guid: 3083eebe3bff5690ac6b73ba0dd8a2dd, type: 3}
-  - {fileID: 21300004, guid: 3083eebe3bff5690ac6b73ba0dd8a2dd, type: 3}
+  - {fileID: 21300000, guid: a53ab612248962e4f9183e9ea8bc3b09, type: 3}
+  - {fileID: 21300000, guid: 6418ab7a3b9948c28c68ecb6ef67959b, type: 3}
+  - {fileID: 21300000, guid: 7418e77405b14424931c32ec85d7c718, type: 3}
   victoryFrames:
-  - {fileID: 21300006, guid: 3083eebe3bff5690ac6b73ba0dd8a2dd, type: 3}
-  - {fileID: 21300008, guid: 3083eebe3bff5690ac6b73ba0dd8a2dd, type: 3}
-  - {fileID: 21300010, guid: 3083eebe3bff5690ac6b73ba0dd8a2dd, type: 3}
+  - {fileID: 21300000, guid: 3bd11d29bf9441acaa8e1b288640da35, type: 3}
+  - {fileID: 21300000, guid: 206a8939c15b4f1194762a3e1b94a8bb, type: 3}
+  - {fileID: 21300000, guid: d0982874a6dd4324937897cc55da855f, type: 3}
   secondsPerFrame: 4
   holdToSkip: 1
 --- !u!114 &1163827655

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 public static class GameInput
 {
@@ -49,6 +50,28 @@ public static class GameInput
         if (UsingGamepad == gamepad) return;
         UsingGamepad = gamepad;
         ControlsChanged?.Invoke();
+    }
+
+    public static bool AnyButtonPressed()
+    {
+        foreach (var device in InputSystem.devices)
+        {
+            if (AnyButtonPressed(device)) return true;
+        }
+        return false;
+    }
+
+    private static bool AnyButtonPressed(InputDevice device)
+    {
+        if (!device.enabled) return false;
+        foreach (var control in device.allControls)
+        {
+            // Movement, scrolling and stick directions must not count as buttons.
+            if (control is ButtonControl button && !button.synthetic &&
+                !(button.parent is StickControl) && !(button.parent is DeltaControl) &&
+                !(button.parent is AxisControl) && button.isPressed) return true;
+        }
+        return false;
     }
 
     public static string GetButtonLabel(InputAction action)

@@ -15,6 +15,7 @@ public class ShieldBreakEffects : MonoBehaviour
     {
         public Vector3[] vertices;
         public Vector3[] normals;
+        public Vector2[] uvs;
         public SubmeshData[] submeshes;
     }
 
@@ -58,6 +59,7 @@ public class ShieldBreakEffects : MonoBehaviour
         if (Meshes.TryGetValue(asset, out var cached) && cached != null) return cached;
         var data = JsonUtility.FromJson<MeshData>(asset.text);
         var mesh = new Mesh { name = asset.name, vertices = data.vertices, normals = data.normals };
+        if (data.uvs != null && data.uvs.Length == data.vertices.Length) mesh.uv = data.uvs;
         mesh.subMeshCount = data.submeshes.Length;
         for (int i = 0; i < data.submeshes.Length; i++) mesh.SetTriangles(data.submeshes[i].triangles, i);
         mesh.RecalculateBounds();

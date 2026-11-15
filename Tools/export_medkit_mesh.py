@@ -8,6 +8,7 @@ from pathlib import Path
 import struct
 
 import bpy
+from mathutils import Vector
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,10 +20,10 @@ def vector(value):
     return "{x: %.9g, y: %.9g, z: %.9g}" % tuple(value)
 
 
-def export():
+def export(source=SOURCE, output=OUTPUT, name="Medkit", transform=None):
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
-    bpy.ops.import_scene.fbx(filepath=str(SOURCE))
+    bpy.ops.import_scene.fbx(filepath=str(source))
     objects = [obj for obj in bpy.context.scene.objects if obj.type == "MESH"]
     if len(objects) != 1:
         raise ValueError("Expected the supplied model's single mesh")
@@ -39,8 +40,12 @@ def export():
             point = matrix @ mesh.vertices[loop.vertex_index].co
             normal = (normal_matrix @ mesh.corner_normals[loop_index].vector).normalized()
             uv = mesh.uv_layers.active.data[loop_index].uv
-            data = struct.pack("<8f", point.x, point.z, point.y,
-                               normal.x, normal.z, normal.y, uv.x, uv.y)
+            point = Vector((point.x, point.z, point.y))
+            normal = Vector((normal.x, normal.z, normal.y))
+            if transform is not None:
+                point = transform @ point
+                normal = (transform.to_3x3().inverted().transposed() @ normal).normalized()
+            data = struct.pack("<8f", *point, *normal, uv.x, uv.y)
             if data not in lookup:
                 lookup[data] = len(vertices)
                 vertices.append(data)
@@ -64,7 +69,7 @@ Mesh:
   m_CorrespondingSourceObject: {{fileID: 0}}
   m_PrefabInstance: {{fileID: 0}}
   m_PrefabAsset: {{fileID: 0}}
-  m_Name: Medkit
+  m_Name: {name}
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -128,9 +133,10 @@ Mesh:
     size: 0
     path:
 """
-    OUTPUT.write_text(text)
-    print(f"Exported {len(vertices)} vertices / {len(indices) // 3} triangles to {OUTPUT}")
+    output.write_text(text)
+    print(f"Exported {len(vertices)} vertices / {len(indices) // 3} triangles to {output}")
     print(f"Source mesh size in metres: {[b-a for a,b in zip(minimum,maximum)]}")
+    return vertices, indices
 
 
 if __name__ == "__main__":

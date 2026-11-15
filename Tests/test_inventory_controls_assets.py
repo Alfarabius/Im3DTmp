@@ -4,6 +4,7 @@ import math
 import re
 import struct
 import unittest
+from collections import Counter
 from pathlib import Path
 
 from test_integration_assets import documents, table_values
@@ -82,14 +83,68 @@ class InventoryControlsAssetsTests(unittest.TestCase):
         for vertex in vertices:
             self.assertTrue(all(math.isfinite(value) for value in vertex))
             self.assertAlmostEqual(sum(n * n for n in vertex[3:6]), 1, places=5)
-        # Model's own 0.36 child scale and Y=90 rotation: width is source Z.
+        # World visual is doubled; the compensating held scale keeps its old size.
         dimensions = [max(v[i] for v in vertices) - min(v[i] for v in vertices) for i in range(3)]
-        self.assertAlmostEqual(dimensions[2] * 0.36, 0.312, delta=0.002)
-        self.assertAlmostEqual(dimensions[1] * 0.36, 0.270, delta=0.002)
-        self.assertAlmostEqual(dimensions[0] * 0.36, 0.135, delta=0.002)
+        self.assertAlmostEqual(dimensions[2] * 0.72, 0.623, delta=0.002)
+        self.assertAlmostEqual(dimensions[1] * 0.72, 0.541, delta=0.002)
+        self.assertAlmostEqual(dimensions[0] * 0.72, 0.270, delta=0.002)
         prefab = (ASSETS / "Prefabs/Medkit.prefab").read_text()
-        self.assertIn("m_LocalScale: {x: 0.36, y: 0.36, z: 0.36}", prefab)
+        self.assertIn("m_LocalScale: {x: 0.72, y: 0.72, z: 0.72}", prefab)
         self.assertIn("m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}", prefab)
+        definition = (ASSETS / "Inventory/Medkit.asset").read_text()
+        held_scale = float(re.search(r"itemScale: ([\d.]+)", definition)[1])
+        self.assertAlmostEqual(0.72 * held_scale, 0.36 * 1.2)
+
+    def test_shield_and_phone_prefabs_use_new_textured_meshes(self):
+        for name in ["Shield", "Phone"]:
+            prefab = (ASSETS / f"Prefabs/{name}.prefab").read_text()
+            self.assertNotIn("0000000000000000e000000000000000", prefab)
+            self.assertIn(guid(ASSETS / f"Inventory/{name}Mesh.asset"), prefab)
+            self.assertIn(guid(ASSETS / "Inventory/ItemModel.mat"), prefab)
+            self.assertIn(guid(ASSETS / f"Inventory/{name}.asset"), prefab)
+            definition = (ASSETS / f"Inventory/{name}.asset").read_text()
+            self.assertIn(guid(ASSETS / f"Inventory/{name}Icon.png"), definition)
+            ids = re.findall(r"^--- !u!\d+ &(-?\d+)", prefab, re.M)
+            self.assertEqual(len(ids), len(set(ids)))
+            text = (ASSETS / f"Inventory/{name}Mesh.asset").read_text()
+            vertices = list(struct.iter_unpack("<8f", bytes.fromhex(re.search(r"_typelessdata: ([0-9a-f]+)", text)[1])))
+            self.assertEqual(len(vertices), int(re.search(r"m_VertexCount: (\d+)", text)[1]))
+            indices = bytes.fromhex(re.search(r"m_IndexBuffer: ([0-9a-f]+)", text)[1])
+            indices = struct.unpack("<" + "H" * (len(indices)//2), indices)
+            self.assertLess(max(indices), len(vertices))
+            self.assertEqual(len(indices), int(re.search(r"indexCount: (\d+)", text)[1]))
+            height = max(v[1] for v in vertices) - min(v[1] for v in vertices)
+            self.assertAlmostEqual(height, .5 if name == "Shield" else .4, places=6)
+
+    def test_shield_fragments_are_two_closed_textured_halves_of_new_shape(self):
+        prefab = (ASSETS / "Prefabs/Shield.prefab").read_text()
+        mesh = (ASSETS / "Inventory/ShieldMesh.asset").read_text()
+        whole = list(struct.iter_unpack("<8f", bytes.fromhex(re.search(r"_typelessdata: ([0-9a-f]+)", mesh)[1])))
+        for name, left in [("ShieldLeft", True), ("ShieldRight", False)]:
+            self.assertIn(guid(ASSETS / f"Inventory/{name}.json"), prefab)
+            data = json.loads((ASSETS / f"Inventory/{name}.json").read_text())
+            vertices = [tuple(v[a] for a in "xyz") for v in data["vertices"]]
+            self.assertEqual(len(data["normals"]), len(vertices))
+            self.assertEqual(len(data["uvs"]), len(vertices))
+            self.assertEqual(len(data["submeshes"]), 1)
+            self.assertTrue(all(math.isfinite(x) for v in data["uvs"] for x in v.values()))
+            if left:
+                self.assertLessEqual(max(v[0] for v in vertices), 1e-6)
+            else:
+                self.assertGreaterEqual(min(v[0] for v in vertices), -1e-6)
+            for axis in [1, 2]:
+                self.assertAlmostEqual(min(v[axis] for v in vertices), min(v[axis] for v in whole), places=6)
+                self.assertAlmostEqual(max(v[axis] for v in vertices), max(v[axis] for v in whole), places=6)
+            triangles = data["submeshes"][0]["triangles"]
+            edges, volume = Counter(), 0
+            for i in range(0, len(triangles), 3):
+                a,b,c = [vertices[j] for j in triangles[i:i+3]]
+                volume += (a[0]*(b[1]*c[2]-b[2]*c[1]) + a[1]*(b[2]*c[0]-b[0]*c[2]) + a[2]*(b[0]*c[1]-b[1]*c[0])) / 6
+                for p,q in [(a,b),(b,c),(c,a)]:
+                    edge = tuple(sorted((tuple(round(v,6) for v in p),tuple(round(v,6) for v in q))))
+                    edges[edge] += 1
+            self.assertGreater(volume, 0)
+            self.assertTrue(all(count == 2 for count in edges.values()), name + " has an open edge")
 
     def test_item_tips_keep_three_lines_and_distinguish_throw_from_hold(self):
         for locale in ["ru", "en"]:

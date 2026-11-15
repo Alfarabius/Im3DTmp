@@ -19,7 +19,7 @@ MonoBehaviour:
   consumeOnUse: 0
   itemPosition: {x: -0.03, y: 0.06, z: 0.038372}
   itemEulerAngles: {x: -8, y: 0, z: -12}
-  itemScale: 1
+  itemScale: 0.5
   minThrowImpulse: 10
   maxThrowImpulse: 36
   stunDuration: 5

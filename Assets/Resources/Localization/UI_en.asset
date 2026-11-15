@@ -103,26 +103,26 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 24
-    m_Localized: "Our little Gingerbread town was getting ready for its annual celebration"
+    m_Localized: "Our little gingerbread town was getting ready for its annual festival."
     m_Metadata:
       m_Items: []
   - m_Id: 25
-    m_Localized: "Suddenly, Mr. Gingerbread went berserk and grabbed a shotgun"
+    m_Localized: "Then, out of nowhere, Mr. Gingerbread snapped and grabbed his gun."
     m_Metadata:
       m_Items: []
   - m_Id: 26
-    m_Localized: "I remembered a phone in one of the presents. I had to find it and call the police"
+    m_Localized: "I remembered there was a phone in one of the presents. I had to find it and call the police."
     m_Metadata:
       m_Items: []
   - m_Id: 27
-    m_Localized: "The police arrived very quickly"
+    m_Localized: "The police showed up in no time."
     m_Metadata:
       m_Items: []
   - m_Id: 28
-    m_Localized: "Mr. Gingerbread refused to drop the shotgun. The reasons for his behavior remain unknown"
+    m_Localized: "Mr. Gingerbread wouldn't put the gun down. We still don't know what made him snap."
     m_Metadata:
       m_Items: []
   - m_Id: 29
-    m_Localized: "Many were hurt that day. The event left a lasting scar on our town"
+    m_Localized: "A lot of people got hurt that day. Our little town hasn't been the same since."
     m_Metadata:
       m_Items: []

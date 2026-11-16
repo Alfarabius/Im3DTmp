@@ -13,13 +13,6 @@ public class LocalizedText : MonoBehaviour
 
     private void Awake() => _text = GetComponent<TMP_Text>();
 
-    public void SetLiteralText(string value)
-    {
-        key = string.Empty;
-        Refresh();
-        _text.text = value;
-    }
-
     private void OnEnable()
     {
         LocalizationService.LanguageChanged += Refresh;

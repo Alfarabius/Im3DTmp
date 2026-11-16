@@ -5,6 +5,8 @@ import unittest
 import wave
 from pathlib import Path
 
+import yaml
+
 
 ASSETS = Path(__file__).resolve().parents[1] / "Assets"
 
@@ -41,26 +43,53 @@ class PauseMenuAssetsTests(unittest.TestCase):
         source = (ASSETS / "Scripts/PauseTitlesMenu.cs").read_text()
         self.assertRegex(source, r'TextArea\(6, 30\), InspectorName\("Текст титров"\)\]\s+private string titlesText')
         self.assertNotIn("LocalizationService.Get(", source)
+        body = self.docs[reference(titles, "body")][1]
+        self.assertEqual(json.loads(re.search(r"^  m_text: (.+)", body, re.M)[1]), text)
+        owner = reference(body, "m_GameObject")
+        localizer = guid(ASSETS / "Scripts/Application/LocalizedText.cs")
+        self.assertFalse(any(kind == 114 and f"guid: {localizer}" in block
+                             and reference(block, "m_GameObject") == owner
+                             for kind, block in self.docs.values()))
 
-    def test_titles_is_connected_to_existing_left_layout_and_button_template(self):
+    def test_titles_buttons_exist_in_scene_with_localized_labels_and_click_handlers(self):
         ident, titles = self.component("PauseTitlesMenu")
         _, pause = self.component("PauseManager")
         self.assertEqual(reference(pause, "titlesMenu"), ident)
-        layout = self.docs[reference(titles, "leftLayout")][1]
+        button = self.docs[reference(titles, "openButton")][1]
+        owner = self.docs[reference(button, "m_GameObject")][1]
+        rect_id = int(re.search(r"component: \{fileID: (-?\d+)", owner)[1])
+        rect = self.docs[rect_id][1]
+        layout = self.docs[reference(rect, "m_Father")][1]
         self.assertIn("  m_Name: LeftColumn\n", self.docs[reference(layout, "m_GameObject")][1])
+        self.assertIn(f"  - {{fileID: {rect_id}}}\n", layout)
         main = reference(titles, "mainMenu")
         parent = self.docs[reference(layout, "m_Father")][1]
         self.assertEqual(reference(parent, "m_GameObject"), main)
-        button = self.docs[reference(titles, "buttonTemplate")][1]
-        owner = reference(button, "m_GameObject")
-        self.assertIn("  m_Name: ResumeButton\n", self.docs[owner][1])
-        self.assertIn("UnityEngine.UI::UnityEngine.UI.Button", button)
-        # The cloned Titles button fits without resizing the existing controls.
+        for field, name, handler in [("openButton", "TitlesButton", "Show"),
+                                     ("backButton", "BackToPauseButton", "Close")]:
+            control = self.docs[reference(titles, field)][1]
+            self.assertIn("UnityEngine.UI::UnityEngine.UI.Button", control)
+            self.assertIn(f"m_Target: {{fileID: {ident}}}", control)
+            self.assertIn(f"m_MethodName: {handler}\n", control)
+            self.assertIn(f"  m_Name: {name}\n", self.docs[reference(control, "m_GameObject")][1])
+        # The added button fits without resizing the existing controls.
         children = re.search(r"  m_Children:(.*?)(?=\n  m_Father:)", layout, re.S)[1]
         transforms = [self.docs[int(i)][1] for i in re.findall(r"fileID: (-?\d+)", children)]
         heights = [float(re.search(r"m_SizeDelta: \{x: [^,]+, y: ([^}]+)", d)[1]) for d in transforms]
         available = float(re.search(r"m_SizeDelta: \{x: [^,]+, y: ([^}]+)", layout)[1])
-        self.assertLessEqual(sum(heights) + 140 + len(heights) * 10, available)
+        self.assertLessEqual(sum(heights) + (len(heights) - 1) * 10, available)
+        def table(name):
+            data = (ASSETS / f"Resources/Localization/{name}.asset").read_text()
+            return yaml.safe_load(re.sub(r"^%.*\n|^--- !u!.*\n", "", data, flags=re.M))["MonoBehaviour"]
+        keys = {entry["m_Id"]: entry["m_Key"] for entry in table("UI Shared Data")["m_Entries"]}
+        for locale, expected in [("ru", ["Титры", "Назад"]), ("en", ["Titles", "Back"])]:
+            values = {keys[row["m_Id"]]: row["m_Localized"] for row in table(f"UI_{locale}")["m_TableData"]}
+            self.assertEqual([values["menu.titles"], values["menu.back"]], expected)
+        localizer = guid(ASSETS / "Scripts/Application/LocalizedText.cs")
+        bindings = [re.search(r"^  key:[ \t]*(.*)$", block, re.M)[1] for kind, block in self.docs.values()
+                    if kind == 114 and f"guid: {localizer}" in block]
+        self.assertEqual(bindings.count("menu.titles"), 2)  # Entry button and submenu heading.
+        self.assertEqual(bindings.count("menu.back"), 1)
 
     def test_music_has_its_own_looping_source_with_uploaded_clip_and_master_volume(self):
         _, music = self.component("PauseCutsceneMusic")

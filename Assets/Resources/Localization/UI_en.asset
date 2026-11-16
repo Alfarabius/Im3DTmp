@@ -126,3 +126,11 @@ MonoBehaviour:
     m_Localized: "A lot of people got hurt that day. Our little town hasn't been the same since."
     m_Metadata:
       m_Items: []
+  - m_Id: 30
+    m_Localized: "Titles"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31
+    m_Localized: "Back"
+    m_Metadata:
+      m_Items: []

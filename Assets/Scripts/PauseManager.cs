@@ -21,6 +21,7 @@ public class PauseManager : MonoBehaviour
     [SerializeField] private TMP_Text hideTipsLabel;
     [SerializeField] private Toggle hideTipsToggle;
     [SerializeField] private Selectable firstMenuControl;
+    [SerializeField] private PauseTitlesMenu titlesMenu;
     public static bool HideTips { get; private set; }
     
     [Header("UI Sliders")]
@@ -125,13 +126,19 @@ public class PauseManager : MonoBehaviour
     {
         if (GameCutscenes.IsPlaying || _lastPauseToggleFrame == Time.frameCount) return;
         _lastPauseToggleFrame = Time.frameCount;
-        if (IsPaused) ResumeGame();
+        if (IsPaused && titlesMenu != null && titlesMenu.IsOpen) titlesMenu.Close();
+        else if (IsPaused) ResumeGame();
         else PauseGame();
     }
 
     private void CancelMenu(InputAction.CallbackContext context)
     {
         if (!IsPaused || !(context.control?.device is Gamepad)) return;
+        if (titlesMenu != null && titlesMenu.IsOpen)
+        {
+            titlesMenu.Close();
+            return;
+        }
         if (resolutionDropdown != null && resolutionDropdown.IsExpanded) return;
         ResumeGame();
     }
@@ -200,6 +207,11 @@ public class PauseManager : MonoBehaviour
     private void SelectMenuControl()
     {
         if (!IsPaused || !GameInput.UsingGamepad || pauseMenuUI == null || EventSystem.current == null) return;
+        if (titlesMenu != null && titlesMenu.IsOpen)
+        {
+            titlesMenu.SelectFirstControl();
+            return;
+        }
         var selected = EventSystem.current.currentSelectedGameObject;
         if (selected != null && selected.activeInHierarchy && selected.transform.IsChildOf(pauseMenuUI.transform)) return;
         var first = firstMenuControl != null ? firstMenuControl : pauseMenuUI.GetComponentInChildren<Selectable>();

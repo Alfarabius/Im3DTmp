@@ -234,8 +234,9 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
         bool isSprintPressed = sprintAction.action.IsPressed() && _brain.Controller.isGrounded;
         bool isWounded = _brain.Condition == TargetCondition.Wounded;
         float currentSpeed = walkSpeed;
-        // Проверяем запас на момент нажатия, до расхода и восстановления в этом кадре.
-        float jumpStamina = _brain.CurrentStamina;
+        // После полного истощения ждём общего порога восстановления, как и эффекты отдышки.
+        // Фиксируем доступность до расхода и восстановления стамины в этом кадре.
+        bool hasJumpStamina = _brain.CurrentStamina > 0f && !_brain.IsStaminaDepleted;
 
         // Отслеживание полного истощения: пока стамина не восстановится до порога, бежать нельзя
         if (_brain.CurrentStamina <= 0f)
@@ -278,7 +279,7 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
         // Буферизация прыжка: запоминаем нажатие пробела на короткое время, чтобы прыжок сработал при касании земли
         if (jumpAction.action.WasPressedThisFrame())
         {
-            if (jumpStamina <= 0f)
+            if (!hasJumpStamina)
             {
                 _jumpBufferCounter = 0f;
                 if (exhaustedJumpAudio != null && exhaustedJumpClip != null)
@@ -295,7 +296,7 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
         }
 
         // Выполнение прыжка: проверяем таймеры, состояние ранения, стамину и свободное место над головой (если сидим)
-        if (_jumpBufferCounter > 0f && _coyoteTimeCounter > 0f && !isWounded && jumpStamina > 0f)
+        if (_jumpBufferCounter > 0f && _coyoteTimeCounter > 0f && !isWounded && hasJumpStamina)
         {
             if (_isCrouching && !CanStandUp()) return;
 

@@ -27492,6 +27492,7 @@ MonoBehaviour:
   charactersPerSecond: 30
   minimumReadTime: 4
   readingCharactersPerSecond: 18
+  skipHoldDelay: 0.3
   holdToSkip: 1
 --- !u!114 &1163827655
 MonoBehaviour:

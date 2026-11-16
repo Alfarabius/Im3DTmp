@@ -71,6 +71,18 @@ public class Collectible : MonoBehaviour
         _origin = origin;
         _destination = destination;
         _playerLayer = playerLayer;
+        if (itemDefinition != null && itemDefinition.Kind == InventoryItemKind.Shield)
+        {
+            var player = FindFirstObjectByType<PlayerBrain>();
+            if (player != null)
+            {
+                // The shield's decorated face points along local -Z.
+                Vector3 awayFromPlayer = origin - player.transform.position;
+                awayFromPlayer.y = 0f;
+                if (awayFromPlayer.sqrMagnitude > 0.0001f)
+                    transform.rotation = Quaternion.LookRotation(awayFromPlayer, Vector3.up);
+            }
+        }
         _rotation = transform.rotation;
         _elapsed = 0f;
         _ready = false;
@@ -97,7 +109,8 @@ public class Collectible : MonoBehaviour
         _elapsed += Time.deltaTime;
         float t = Mathf.Clamp01(_elapsed / flightDuration);
         transform.position = Vector3.Lerp(_origin, _destination, t) + Vector3.up * (4f * flightHeight * t * (1f - t));
-        transform.rotation = Quaternion.AngleAxis(360f * t, Vector3.up) * _rotation;
+        transform.rotation = itemDefinition != null && itemDefinition.Kind == InventoryItemKind.Shield
+            ? _rotation : Quaternion.AngleAxis(360f * t, Vector3.up) * _rotation;
         if (t < 1f) return;
         _flying = false;
         _ready = true;

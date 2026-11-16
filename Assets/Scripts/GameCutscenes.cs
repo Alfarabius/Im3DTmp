@@ -15,6 +15,7 @@ public class GameCutscenes : MonoBehaviour
     [FormerlySerializedAs("secondsPerFrame")]
     [SerializeField, Min(0.1f)] private float minimumReadTime = 4f;
     [SerializeField, Min(1f)] private float readingCharactersPerSecond = 18f;
+    [SerializeField, Min(0f)] private float skipHoldDelay = 0.3f;
     [SerializeField, Min(0.1f)] private float holdToSkip = 1f;
 
     public static bool IsPlaying { get; private set; }
@@ -97,7 +98,7 @@ public class GameCutscenes : MonoBehaviour
 
     private IEnumerator Show(Sprite[] frames, string captionPrefix, Action onFinished)
     {
-        float held = 0f;
+        float holdStartedAt = -1f;
         bool skipped = false;
         for (int i = 0; i < frames.Length; i++)
         {
@@ -111,11 +112,15 @@ public class GameCutscenes : MonoBehaviour
             while (!advanceFrame && _readingElapsed < ReadingTime)
             {
                 bool pressed = Application.isFocused && GameInput.AnyButtonPressed();
-                _skipHint.gameObject.SetActive(pressed);
-                _skipTrack.gameObject.SetActive(pressed);
-                held = pressed ? held + Time.unscaledDeltaTime : 0f;
-                _skipFill.anchorMax = new Vector2(Mathf.Clamp01(held / holdToSkip), 1f);
-                if (held >= holdToSkip)
+                if (!pressed) holdStartedAt = -1f;
+                else if (holdStartedAt < 0f) holdStartedAt = Time.unscaledTime;
+                float held = pressed ? Time.unscaledTime - holdStartedAt : 0f;
+                float skipElapsed = Mathf.Max(0f, held - Mathf.Max(0f, skipHoldDelay));
+                bool skipping = pressed && skipElapsed > 0f;
+                _skipHint.gameObject.SetActive(skipping);
+                _skipTrack.gameObject.SetActive(skipping);
+                _skipFill.anchorMax = new Vector2(Mathf.Clamp01(skipElapsed / holdToSkip), 1f);
+                if (skipping && skipElapsed >= holdToSkip)
                 {
                     skipped = true;
                     break;

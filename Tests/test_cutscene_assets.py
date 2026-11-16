@@ -42,6 +42,7 @@ class CutsceneAssetsTests(unittest.TestCase):
         self.assertIn("  charactersPerSecond: 30\n", scene)
         self.assertIn("  minimumReadTime: 4\n", scene)
         self.assertIn("  readingCharactersPerSecond: 18\n", scene)
+        self.assertIn("  skipHoldDelay: 0.3\n", scene)
         self.assertIn("  holdToSkip: 1\n", scene)
 
     def test_six_captions_match_requested_text_and_have_english_translations(self):

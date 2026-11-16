@@ -1355,4 +1355,5 @@ MonoBehaviour:
   sfxMixerGroup: {fileID: -4502576610630677228, guid: ddb28457edbc91f48946fc13af951299, type: 2}
   deathVolume: 0.5
   deathLabel: {fileID: 0}
-  textFadeDuration: 2.5
+  bleedingFeedbackDelay: 3
+  textFadeDuration: 5

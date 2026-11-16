@@ -31,7 +31,9 @@ public class PlayerDeadState : MonoBehaviour, ICharacterState
 
     private IEnumerator ReportDeathWithDelay()
     {
-        yield return new WaitForSeconds(deathDelay);
+        var feedback = GetComponent<PlayerDeathFeedback>();
+        float feedbackRemaining = feedback != null ? feedback.RemainingTime : 0f;
+        yield return new WaitForSeconds(Mathf.Max(deathDelay, feedbackRemaining));
         
         if (GameManager.Instance != null)
         {

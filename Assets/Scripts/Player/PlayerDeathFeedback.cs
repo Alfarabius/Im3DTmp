@@ -8,16 +8,29 @@ public class PlayerDeathFeedback : MonoBehaviour
     [SerializeField] private AudioMixerGroup sfxMixerGroup;
     [SerializeField, Range(0f, 1f)] private float deathVolume = 0.5f;
     [SerializeField] private TMP_Text deathLabel;
-    [SerializeField, Min(0.1f)] private float textFadeDuration = 2.5f;
+    [SerializeField, Min(0f)] private float bleedingFeedbackDelay = 3f;
+    [SerializeField, Min(0.1f)] private float textFadeDuration = 5f;
 
     private bool _started;
+    private bool _feedbackVisible;
     private float _elapsed;
+    private float _startDelay;
 
-    public void Play()
+    public float RemainingTime => _started
+        ? Mathf.Max(0f, _startDelay + Mathf.Max(0.1f, textFadeDuration) - _elapsed) : 0f;
+
+    public void Play(bool bleeding = false)
     {
         // Кровотечение и добивающий выстрел используют один сигнал смерти.
         if (_started) return;
         _started = true;
+        _startDelay = bleeding ? Mathf.Max(0f, bleedingFeedbackDelay) : 0f;
+        if (_startDelay <= 0f) BeginFeedback();
+    }
+
+    private void BeginFeedback()
+    {
+        _feedbackVisible = true;
         if (deathLabel != null)
         {
             deathLabel.alpha = 1f;
@@ -41,9 +54,15 @@ public class PlayerDeathFeedback : MonoBehaviour
 
     private void Update()
     {
-        if (!_started || deathLabel == null || !deathLabel.gameObject.activeSelf) return;
+        if (!_started) return;
         _elapsed += Time.deltaTime;
-        float progress = Mathf.Clamp01(_elapsed / Mathf.Max(0.1f, textFadeDuration));
+        if (!_feedbackVisible)
+        {
+            if (_elapsed < _startDelay) return;
+            BeginFeedback();
+        }
+        if (deathLabel == null || !deathLabel.gameObject.activeSelf) return;
+        float progress = Mathf.Clamp01((_elapsed - _startDelay) / Mathf.Max(0.1f, textFadeDuration));
         deathLabel.alpha = 1f - Mathf.SmoothStep(0f, 1f, progress);
         if (progress >= 1f) deathLabel.gameObject.SetActive(false);
     }

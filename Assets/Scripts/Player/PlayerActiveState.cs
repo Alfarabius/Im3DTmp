@@ -234,9 +234,8 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
         bool isSprintPressed = sprintAction.action.IsPressed() && _brain.Controller.isGrounded;
         bool isWounded = _brain.Condition == TargetCondition.Wounded;
         float currentSpeed = walkSpeed;
-        // После полного истощения ждём общего порога восстановления, как и эффекты отдышки.
         // Фиксируем доступность до расхода и восстановления стамины в этом кадре.
-        bool hasJumpStamina = _brain.CurrentStamina > 0f && !_brain.IsStaminaDepleted;
+        bool hasJumpStamina = _brain.CurrentStamina > 0f;
 
         // Отслеживание полного истощения: пока стамина не восстановится до порога, бежать нельзя
         if (_brain.CurrentStamina <= 0f)
@@ -261,15 +260,9 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
         }
         else if (isSprintPressed && targetInput.magnitude > 0.1f)
         {
-            if (!_isExhausted)
-            {
-                currentSpeed = runSpeed;
-                _brain.CurrentStamina -= staminaDrain * Time.deltaTime;
-            }
-            else
-            {
-                currentSpeed = walkSpeed; 
-            }
+            currentSpeed = _isExhausted ? walkSpeed : runSpeed;
+            // Попытка бежать расходует восстановленный запас и во время истощения.
+            _brain.CurrentStamina = Mathf.Max(0f, _brain.CurrentStamina - staminaDrain * Time.deltaTime);
         }
         else
         {
@@ -322,6 +315,8 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
 
     private void RegenStamina()
     {
+        if (!_brain.Controller.isGrounded) return;
+
         // Восстановление стамины в спокойном состоянии или при ходьбе
         if (_brain.CurrentStamina < _brain.MaxStamina)
         {

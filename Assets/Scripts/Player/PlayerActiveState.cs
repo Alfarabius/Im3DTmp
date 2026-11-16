@@ -18,6 +18,8 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
     [SerializeField] private float jumpBufferTime = 0.15f;
     [SerializeField] private float coyoteTime = 0.15f;
     [SerializeField] private LayerMask environmentMask;
+    [SerializeField] private AudioSource exhaustedJumpAudio;
+    [SerializeField] private AudioClip exhaustedJumpClip;
     
     [Header("Collision Checks")]
     [SerializeField] private float ceilingCheckRadius = 0.3f;
@@ -232,6 +234,8 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
         bool isSprintPressed = sprintAction.action.IsPressed() && _brain.Controller.isGrounded;
         bool isWounded = _brain.Condition == TargetCondition.Wounded;
         float currentSpeed = walkSpeed;
+        // Проверяем запас на момент нажатия, до расхода и восстановления в этом кадре.
+        float jumpStamina = _brain.CurrentStamina;
 
         // Отслеживание полного истощения: пока стамина не восстановится до порога, бежать нельзя
         if (_brain.CurrentStamina <= 0f)
@@ -274,7 +278,16 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
         // Буферизация прыжка: запоминаем нажатие пробела на короткое время, чтобы прыжок сработал при касании земли
         if (jumpAction.action.WasPressedThisFrame())
         {
-            _jumpBufferCounter = jumpBufferTime;
+            if (jumpStamina <= 0f)
+            {
+                _jumpBufferCounter = 0f;
+                if (exhaustedJumpAudio != null && exhaustedJumpClip != null)
+                    exhaustedJumpAudio.PlayOneShot(exhaustedJumpClip);
+            }
+            else
+            {
+                _jumpBufferCounter = jumpBufferTime;
+            }
         }
         else
         {
@@ -282,12 +295,12 @@ public class PlayerActiveState : MonoBehaviour, ICharacterState
         }
 
         // Выполнение прыжка: проверяем таймеры, состояние ранения, стамину и свободное место над головой (если сидим)
-        if (_jumpBufferCounter > 0f && _coyoteTimeCounter > 0f && !isWounded && _brain.CurrentStamina >= jumpStaminaCost)
+        if (_jumpBufferCounter > 0f && _coyoteTimeCounter > 0f && !isWounded && jumpStamina > 0f)
         {
             if (_isCrouching && !CanStandUp()) return;
 
             _velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
-            _brain.CurrentStamina -= jumpStaminaCost;
+            _brain.CurrentStamina = Mathf.Max(0f, _brain.CurrentStamina - jumpStaminaCost);
             
             _jumpBufferCounter = 0f;
             _coyoteTimeCounter = 0f;

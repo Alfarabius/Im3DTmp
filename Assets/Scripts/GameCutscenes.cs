@@ -19,6 +19,14 @@ public class GameCutscenes : MonoBehaviour
     [SerializeField, Min(0.1f)] private float holdToSkip = 1f;
 
     public static bool IsPlaying { get; private set; }
+    private static bool _introStarted;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetSession()
+    {
+        _introStarted = false;
+        IsPlaying = false;
+    }
 
     private GameObject _overlay;
     private Image _picture;
@@ -72,7 +80,11 @@ public class GameCutscenes : MonoBehaviour
     private float ReadingTime => Mathf.Max(Mathf.Max(0.1f, minimumReadTime),
         _captionCharacterCount / Mathf.Max(1f, readingCharactersPerSecond));
 
-    private void Start() => Play(introFrames, "cutscene.intro.", null);
+    private void Start()
+    {
+        if (!_introStarted && Play(introFrames, "cutscene.intro.", null))
+            _introStarted = true;
+    }
 
     public bool PlayVictory(Action onFinished) => Play(victoryFrames, "cutscene.victory.", onFinished);
 

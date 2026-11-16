@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 340667015179945644}
   - component: {fileID: 7089974461923747856}
   - component: {fileID: 7044359789660482870}
+  - component: {fileID: 893000000000000100}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -169,6 +170,8 @@ MonoBehaviour:
   jumpAction: {fileID: 2497792107252123222, guid: fc6c4fd205424bf49a2c9e1c94756076, type: 3}
   leanLeftAction: {fileID: 1189494488144980547, guid: fc6c4fd205424bf49a2c9e1c94756076, type: 3}
   leanRightAction: {fileID: 3731718318030017053, guid: fc6c4fd205424bf49a2c9e1c94756076, type: 3}
+  exhaustedJumpAudio: {fileID: 1583827444691228899}
+  exhaustedJumpClip: {fileID: 8300000, guid: bc94924c0651ac84ab6d426abf0ffae7, type: 3}
 --- !u!114 &3064296887890052432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1336,3 +1339,20 @@ MonoBehaviour:
     m_Bits: 577
   reachWithRightHand: 1
   heldDistanceOffset: 0.25
+--- !u!114 &893000000000000100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211337067421969027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a5c8a452db84beab7dd1d0808c28dd2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDeathFeedback
+  deathClip: {fileID: 8300000, guid: b89b93c0ac3b0f941bcaae7e71ee2023, type: 3}
+  sfxMixerGroup: {fileID: -4502576610630677228, guid: ddb28457edbc91f48946fc13af951299, type: 2}
+  deathVolume: 0.5
+  deathLabel: {fileID: 0}
+  textFadeDuration: 2.5

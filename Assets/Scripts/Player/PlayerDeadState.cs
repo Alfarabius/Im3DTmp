@@ -14,6 +14,7 @@ public class PlayerDeadState : MonoBehaviour, ICharacterState
 
     public void Enter()
     {
+        GetComponent<PlayerDeathFeedback>()?.Play();
         _brain.Anim.CrossFade("Dead", 0.25f);
         StartCoroutine(ReportDeathWithDelay());
     }

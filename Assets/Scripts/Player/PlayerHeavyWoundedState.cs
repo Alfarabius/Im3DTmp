@@ -14,6 +14,7 @@ public class PlayerHeavyWoundedState : MonoBehaviour, ICharacterState
     public void Enter()
     {
         _timer = timeToDie;
+        GetComponent<PlayerDeathFeedback>()?.Play();
         
         if (_brain.BodycamTarget != null && _brain.HeadBone != null)
         {

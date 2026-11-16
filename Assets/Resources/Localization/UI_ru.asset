@@ -135,6 +135,10 @@ MonoBehaviour:
     m_Localized: "Назад"
     m_Metadata:
       m_Items: []
+  - m_Id: 32
+    m_Localized: "Вы Погибли"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

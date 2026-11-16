@@ -134,3 +134,7 @@ MonoBehaviour:
     m_Localized: "Back"
     m_Metadata:
       m_Items: []
+  - m_Id: 32
+    m_Localized: "You Died"
+    m_Metadata:
+      m_Items: []
